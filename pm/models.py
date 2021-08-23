@@ -9,14 +9,16 @@ import uuid, os
 '''
 user_creators = db.Table('user_creators',
     db.Column('creator_id', db.String(32), db.ForeignKey('user.id')),   #创建者ID
-    db.Column('created_id', db.String(32), db.ForeignKey('user.id'))    #被创建者ID
+    db.Column('created_id', db.String(32), db.ForeignKey('user.id')),   #被创建者ID
+    db.Column('created_time', db.DateTime, default=datetime.utcnow)     #创建时间
 )
 '''
     用户更新者自关系表
 '''
-user_updates = db.Table('user_updates',
+user_updaters = db.Table('user_updaters',
     db.Column('updater_id', db.String(32), db.ForeignKey('user.id')),   #更新者ID
-    db.Column('updated_id', db.String(32), db.ForeignKey('user.id'))    #被更新者ID
+    db.Column('updated_id', db.String(32), db.ForeignKey('user.id')),   #被更新者ID
+    db.Column('updated_time', db.DateTime, default=datetime.utcnow)     #更新时间
 )
 class User(db.Model, UserMixin):
     id = db.Column(db.String(32), primary_key=True)
@@ -26,9 +28,7 @@ class User(db.Model, UserMixin):
     svn_id = db.Column(db.String(24))
     svn_pwd = db.Column(db.String(24))
     created_by = db.relationship('User', secondary=user_creators, primaryjoin=(user_creators.c.creator_id == id), secondaryjoin=(user_creators.c.created_id == id), backref=db.backref('user_creators', lazy='dynamic'))
-    created_time = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_by = db.relationship('User', secondary=user_updates, primaryjoin=(user_updates.c.updater_id == id), secondaryjoin=(user_updates.c.updated_id == id), backref=db.backref('user_updates', lazy='dynamic'))
-    updated_time = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_by = db.relationship('User', secondary=user_updaters, primaryjoin=(user_updaters.c.updater_id == id), secondaryjoin=(user_updaters.c.updated_id == id), backref=db.backref('user_updaters', lazy='dynamic'))
 
     def set_password(self, password):
         self.user_pwd_hash = generate_password_hash(password)
