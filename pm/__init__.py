@@ -45,7 +45,8 @@ def register_webapp_commands(app):
     @click.option('--admin_code', prompt=True, help='管理员账号')
     @click.option('--admin_password', prompt=True, help='管理员密码', hide_input=True, confirmation_prompt=True)
     def init(admin_code, admin_password):
-        from pm.models import User
+        from pm.models import User, UserCreator, UserUpdater
+        from datetime import datetime
         click.echo('执行数据库初始化...')
         db.create_all()
         click.echo('数据库初始化完毕')
@@ -56,7 +57,6 @@ def register_webapp_commands(app):
         else:
             click.echo('执行创建管理员')
             user = User(
-                id=uuid.uuid4().hex,
                 user_id=admin_code.lower(),
                 user_name='Administrator',
                 svn_id='',
@@ -65,11 +65,12 @@ def register_webapp_commands(app):
             user.set_password(admin_password)
             db.session.add(user)
             db.session.commit()
-            #更新创建人员/更新人员信息
-            id = user.id
-        user = User.query.first()
-        user.created_by.append(user)
-        user.updated_by.append(user)
-        db.session.commit()
+            #创建人员/更新人员信息
+            timestamp = datetime.utcnow()
+            creator = UserCreator(creator_id=user.id, timestamp=timestamp)
+            updater = UserUpdater(updater_id=user.id, timestamp=timestamp)
+            db.session.add(creator)
+            db.session.add(updater)
+            db.session.commit()
         click.echo('管理员创建成功')
         click.echo('系统初始化完成')
