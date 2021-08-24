@@ -5,49 +5,17 @@ from datetime import datetime
 from pm.plugins import db
 import uuid
 '''
-#用户创建者自关系表
-user_creators = db.Table('user_creators',
-    db.Column('creator_id', db.String(32), db.ForeignKey('user.id')),   #创建者ID
-    db.Column('created_id', db.String(32), db.ForeignKey('user.id')),   #被创建者ID
-    db.Column('created_time', db.DateTime, default=datetime.utcnow)     #创建时间
-)
-#用户更新者自关系表
-user_updaters = db.Table('user_updaters',
-    db.Column('updater_id', db.String(32), db.ForeignKey('user.id')),   #更新者ID
-    db.Column('updated_id', db.String(32), db.ForeignKey('user.id')),   #被更新者ID
-    db.Column('updated_time', db.DateTime, default=datetime.utcnow)     #更新时间
-)
-'''
-'''
-    使用模型表建立用户自关联关系
-    1. 可以获取创建时间
-    2. 对象映射清晰，易于查询
+ 基础模型
 '''
 class BaseModel():
     id = db.Column(db.String(32), default=uuid.uuid4().hex, primary_key=True)
     timestamp_utc = db.Column(db.DateTime, default=datetime.utcnow)     #标准时间
     timestamp_loc = db.Column(db.DateTime, default=datetime.now)        #本地时间
 '''
-    角色菜单关联表(多对多)
+    使用模型表建立用户自关联关系
+    1. 可以获取创建时间
+    2. 对象映射清晰，易于查询
 '''
-roles_menus = db.Table('roles_menus',
-    db.Column('role_id', db.String(32), db.ForeignKey('sys_role.id')),
-    db.Column('menu_id', db.String(32), db.ForeignKey('sys_menu.id'))
-)
-'''
-    系统角色
-'''
-class SysRole(BaseModel, db.Model):
-    name = db.Column(db.String(64), unique=True)                #角色名称
-    users = db.relationship('SysUser', back_populates='role')   #用户
-    menus = db.relationship('SysMenu', secondary='roles_menus', back_populates='roles')
-'''
-    系统菜单
-'''
-class SysMenu(BaseModel, db.Model):
-    name = db.Column(db.String(64))         #菜单名
-    url = db.Column(db.String(24))          #URL地址
-    roles = db.relationship('SysRole', secondary='roles_menus', back_populates='menus')
 class SysUserCreator(BaseModel, db.Model):
     creator_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
     creator = db.relationship('SysUser', foreign_keys=[creator_id], back_populates='creator', lazy='joined')
@@ -69,12 +37,34 @@ class SysUser(BaseModel, db.Model, UserMixin):
     updater = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updater_id], back_populates='updater', lazy='dynamic', cascade='all')  #修改者
     role_id = db.Column(db.String(32), db.ForeignKey('sys_role.id'))    #系统角色ID
     role = db.relationship('SysRole', back_populates='users')           #系统角色
+    logs = db.relationship('SysLog', back_populates='user')             #操作日志
 
     def set_password(self, password):
         self.user_pwd_hash = generate_password_hash(password)
 
     def validate_password(self, password):
         return check_password_hash(self.user_pwd_hash, password)
+'''
+    角色菜单关联表(多对多)
+'''
+roles_menus = db.Table('roles_menus',
+    db.Column('role_id', db.String(32), db.ForeignKey('sys_role.id')),
+    db.Column('menu_id', db.String(32), db.ForeignKey('sys_menu.id'))
+)
+'''
+    系统角色
+'''
+class SysRole(BaseModel, db.Model):
+    name = db.Column(db.String(64), unique=True)                #角色名称
+    users = db.relationship('SysUser', back_populates='role')   #用户
+    menus = db.relationship('SysMenu', secondary='roles_menus', back_populates='roles')
+'''
+    系统菜单
+'''
+class SysMenu(BaseModel, db.Model):
+    name = db.Column(db.String(64))         #菜单名
+    url = db.Column(db.String(24))          #URL地址
+    roles = db.relationship('SysRole', secondary='roles_menus', back_populates='menus')
 '''
     系统下拉字典表
 '''
@@ -90,3 +80,11 @@ class SysEnum(BaseModel, db.Model):
     view = db.Column(db.String(128))        #显示值
     dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))
     dict = db.relationship('SysDict', back_populates='enums')
+'''
+    系统日志表
+'''
+class SysLog(BaseModel, db.Model):
+    url = db.Column(db.String(24))      #菜单url
+    operate = db.Column(db.String(64))  #操作内容
+    user_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
+    user = db.relationship('SysUser', back_populates='logs')
