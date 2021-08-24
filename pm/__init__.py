@@ -1,5 +1,5 @@
 from flask import Flask
-import click, uuid
+import click
 from pm.configs import configurations
 from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone
 def create_app(config=None):
@@ -45,30 +45,36 @@ def register_webapp_commands(app):
     @click.option('--admin_code', prompt=True, help='管理员账号')
     @click.option('--admin_password', prompt=True, help='管理员密码', hide_input=True, confirmation_prompt=True)
     def init(admin_code, admin_password):
-        from pm.models import User, UserCreator, UserUpdater
+        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole
         from datetime import datetime
         click.echo('执行数据库初始化...')
         db.create_all()
         click.echo('数据库初始化完毕')
+        click.echo('创建管理员角色')
+        role = SysRole(name='Administrator')
+        db.session.add(role)
+        db.session.commit()
         click.echo('创建管理员')
-        user = User.query.first()
+        user = SysUser.query.first()
         if user:
             click.echo('管理员已存在，跳过创建。')
         else:
             click.echo('执行创建管理员')
-            user = User(
+            user = SysUser(
                 user_id=admin_code.lower(),
                 user_name='Administrator',
                 svn_id='',
-                svn_pwd=''
+                svn_pwd='',
+                role_id=role.id
             )
             user.set_password(admin_password)
             db.session.add(user)
             db.session.commit()
             #创建人员/更新人员信息
-            timestamp = datetime.utcnow()
-            creator = UserCreator(creator_id=user.id, timestamp=timestamp)
-            updater = UserUpdater(updater_id=user.id, timestamp=timestamp)
+            timestamp_utc = datetime.utcnow()
+            timestamp_loc = datetime.now()
+            creator = SysUserCreator(creator_id=user.id, timestamp_utc=timestamp_utc, timestamp_loc=timestamp_loc)
+            updater = SysUserUpdater(updater_id=user.id, timestamp_utc=timestamp_utc, timestamp_loc=timestamp_loc)
             db.session.add(creator)
             db.session.add(updater)
             db.session.commit()
