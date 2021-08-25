@@ -17,11 +17,15 @@ class BaseModel():
     2. 对象映射清晰，易于查询
 '''
 class SysUserCreator(BaseModel, db.Model):
-    creator_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
-    creator = db.relationship('SysUser', foreign_keys=[creator_id], back_populates='creator', lazy='joined')
+    created_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
+    created = db.relationship('SysUser', foreign_keys=[created_id], back_populates='created', lazy='joined')            # 被创建者
+    created_by_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
+    created_by = db.relationship('SysUser', foreign_keys=[created_by_id], back_populates='created_by', lazy='joined')   # 创建者
 class SysUserUpdater(BaseModel, db.Model):
-    updater_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
-    updater = db.relationship('SysUser', foreign_keys=[updater_id], back_populates='updater', lazy='joined')
+    updated_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
+    updated = db.relationship('SysUser', foreign_keys=[updated_id], back_populates='updated', lazy='joined')            # 被更新者
+    updated_by_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
+    updated_by = db.relationship('SysUser', foreign_keys=[updated_by_id], back_populates='updated_by', lazy='joined')   # 更新者
 '''
     系统用户
 '''
@@ -33,20 +37,40 @@ class SysUser(BaseModel, db.Model, UserMixin):
     svn_pwd = db.Column(db.String(24))              # svn密码
     #created_by = db.relationship('SysUser', secondary=user_creators, primaryjoin=(user_creators.c.creator_id == id), secondaryjoin=(user_creators.c.created_id == id), backref=db.backref('user_creators', lazy='dynamic'))
     #updated_by = db.relationship('SysUser', secondary=user_updaters, primaryjoin=(user_updaters.c.updater_id == id), secondaryjoin=(user_updaters.c.updated_id == id), backref=db.backref('user_updaters', lazy='dynamic'))
-    creator = db.relationship('SysUserCreator', foreign_keys=[SysUserCreator.creator_id], back_populates='creator', lazy='dynamic', cascade='all')  # 创建者
-    updater = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updater_id], back_populates='updater', lazy='dynamic', cascade='all')  # 修改者
+    created = db.relationship('SysUserCreator', foreign_keys=[SysUserCreator.created_id], back_populates='created', lazy='dynamic', cascade='all')              # 被创建者
+    created_by = db.relationship('SysUserCreator', foreign_keys=[SysUserCreator.created_by_id], back_populates='created_by', lazy='dynamic', cascade='all')     # 创建者
+    updated = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updated_id], back_populates='updated', lazy='dynamic', cascade='all')              # 被修改者
+    updated_by = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updated_by_id], back_populates='updated_by', lazy='dynamic', cascade='all')     # 修改者
     role_id = db.Column(db.String(32), db.ForeignKey('sys_role.id'))    # 系统角色ID
     role = db.relationship('SysRole', back_populates='users')           # 系统角色
     dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))    # 所属部门ID
     dept = db.relationship('BizDept', back_populates='users')           # 所属部门
     logs = db.relationship('SysLog', back_populates='user')             # 操作日志
 
-
     def set_password(self, password):
         self.user_pwd_hash = generate_password_hash(password)
 
     def validate_password(self, password):
         return check_password_hash(self.user_pwd_hash, password)
+
+    #设置创建者
+    def set_created_by(self, user):
+        creator = SysUserCreator(created=self, created_by=user)
+        db.session.add(creator)
+        db.session.commit()
+    #获取创建者(只有一条记录)
+    @property
+    def get_created_by(self):
+        return self.created_by.filter_by(created_id=self.id).first().created_by.user_name
+    #设置更新者
+    def set_updated_by(self, user):
+        updater = SysUserUpdater(updated=self, updated_by=user)
+        db.session.add(updater)
+        db.session.commit()
+    #获取更新者(零或多条记录，可能没有被更新过或者被多次更新过)
+    @property
+    def get_updated_by(self):
+        return self.updated_by.filter_by(updated_id=self.id).order_by(SysUserUpdater.timestamp_utc.desc()).all()
 '''
     角色菜单关联表(多对多)
 '''

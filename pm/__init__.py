@@ -70,13 +70,11 @@ def register_webapp_commands(app):
             user.set_password(admin_password)
             db.session.add(user)
             db.session.commit()
-            #创建人员/更新人员信息
-            timestamp_utc = datetime.utcnow()
-            timestamp_loc = datetime.now()
-            creator = SysUserCreator(creator_id=user.id, timestamp_utc=timestamp_utc, timestamp_loc=timestamp_loc)
-            updater = SysUserUpdater(updater_id=user.id, timestamp_utc=timestamp_utc, timestamp_loc=timestamp_loc)
-            db.session.add(creator)
-            db.session.add(updater)
-            db.session.commit()
+            '''
+                设置创建人员/更新人员信息
+                注：此处设置了创建人员和更新人员仅仅为了测试，正常情况只设置创建人员即可
+            '''
+            user.set_created_by(user)
+            user.set_updated_by(user)
         click.echo('管理员创建成功')
         click.echo('系统初始化完成')
