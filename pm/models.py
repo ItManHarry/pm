@@ -60,8 +60,12 @@ class SysUser(BaseModel, db.Model, UserMixin):
         db.session.commit()
     #获取创建者(只有一条记录)
     @property
-    def get_created_by(self):
-        return self.created_by.filter_by(created_id=self.id).first().created_by.user_name
+    def who_created(self):
+        '''
+        返回SysUser对象
+        :return:
+        '''
+        return self.created_by.filter_by(created_id=self.id).first().created_by
     #设置更新者
     def set_updated_by(self, user):
         updater = SysUserUpdater(updated=self, updated_by=user)
@@ -69,7 +73,11 @@ class SysUser(BaseModel, db.Model, UserMixin):
         db.session.commit()
     #获取更新者(零或多条记录，可能没有被更新过或者被多次更新过)
     @property
-    def get_updated_by(self):
+    def who_updated(self):
+        '''
+        返回SysUser列表，按照时间降序排序
+        :return:
+        '''
         return self.updated_by.filter_by(updated_id=self.id).order_by(SysUserUpdater.timestamp_utc.desc()).all()
 '''
     角色菜单关联表(多对多)
@@ -116,11 +124,13 @@ class SysLog(BaseModel, db.Model):
     user_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
     user = db.relationship('SysUser', back_populates='logs')
 '''
-    子部门
+    部门层级关系
 '''
-class BizSubDept(BaseModel, db.Model):
-    dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
-    dept = db.relationship('BizDept', foreign_keys=[dept_id], back_populates='sub_dept', lazy='joined')
+class BizDeptRef(BaseModel, db.Model):
+    parent_dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
+    parent_dept = db.relationship('BizDept', foreign_keys=[parent_dept_id], back_populates='parent_dept', lazy='joined') # 父部门
+    child_dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
+    child_dept = db.relationship('BizDept', foreign_keys=[child_dept_id], back_populates='child_dept', lazy='joined')   # 子部门
 '''
     部门
 '''
@@ -128,4 +138,40 @@ class BizDept(BaseModel, db.Model):
     code = db.Column(db.String(32), unique=True)                # 部门代码
     name = db.Column(db.String(128), unique=True)               # 部门名称
     users = db.relationship('SysUser', back_populates='dept')   # 部门人员
-    sub_dept = db.relationship('BizSubDept', foreign_keys=[BizSubDept.dept_id], back_populates='dept', lazy='dynamic', cascade='all')  # 子部门
+    parent_dept = db.relationship('BizDeptRef', foreign_keys=[BizDeptRef.parent_dept_id], back_populates='parent_dept', lazy='dynamic', cascade='all')  # 父部门
+    child_dept = db.relationship('BizDeptRef', foreign_keys=[BizDeptRef.child_dept_id], back_populates='child_dept', lazy='dynamic', cascade='all')     # 子部门
+    # 设置父部门
+    def set_parent_dept(self, dept):
+        '''
+        逻辑：首先判断是否已经维护父部门，如果存在则执行删除后新增
+        :param dept:
+        :return:
+        '''
+        ref = BizDeptRef.query.filter_by(child_dept_id=self.id).first()
+        if ref:
+            db.session.delete(ref)
+            db.session.commit()
+        parent = BizDeptRef(child_dept=self, parent_dept=dept)
+        db.session.add(parent)
+        db.session.commit()
+    @property
+    def my_parent_dept(self):
+        dept = BizDeptRef.query.filter_by(child_dept_id=self.id).first()
+        return dept.parent_dept if dept else None
+    #设置子部门
+    def set_child_dept(self, dept):
+        '''
+        逻辑：首先解除子部门原有的部门关系，然后再添加到当前部门下
+        :param dept:
+        :return:
+        '''
+        ref = BizDeptRef.query.filter_by(child_dept_id=dept.id).first()
+        if ref:
+            db.session.delete(ref)
+            db.session.commit()
+        child = BizDeptRef(child_dept=dept, parent_dept=self)
+        db.session.add(child)
+        db.session.commit()
+    @property
+    def my_child_dept(self):
+        return BizDeptRef.query.filter_by(parent_dept_id=self.id).order_by(BizDeptRef.timestamp_loc.desc()).all()
