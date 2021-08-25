@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_login import login_required
 import click
 from pm.configs import configurations
 from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
@@ -26,6 +27,7 @@ def register_webapp_plugins(app):
     login_manager.init_app(app)
 def register_webapp_global_path(app):
     @app.route('/')
+    @login_required
     def index():
         return '<h1>Program Management</h1>'
 def register_webapp_global_context(app):

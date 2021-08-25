@@ -28,3 +28,7 @@ def login():
         else:
             flash('用户不存在！')
     return render_template('auth/login.html', form=form)
+@bp_auth.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('.login'))
