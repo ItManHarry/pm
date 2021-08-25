@@ -1,0 +1,48 @@
+{% extends 'base.html'%}
+{% block title %}系统登录{% endblock %}
+{% block main %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-4 offset-4">
+            {% if get_flashed_messages() %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {% for message in get_flashed_messages() %}
+                    <small>{{ message }}</small>
+                {% endfor %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4 offset-4">
+            <form method="post">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    {{form.user_id.label}}
+                    {{form.user_id(class='form-control',id='username')}}
+                    {% for message in form.user_id.errors %}
+                        <small class="text-danger">
+                            {{ message }}
+                        </small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{form.user_pwd.label}}
+                    {{form.user_pwd(class='form-control',id='password')}}
+                    {% for message in form.user_pwd.errors %}
+                        <small class="text-danger">
+                            {{ message }}
+                        </small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{form.submit(class='btn btn-outline-info btn-block')}}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

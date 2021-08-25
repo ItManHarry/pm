@@ -29,7 +29,7 @@ def is_safe_url(target):
     通用返回方法
     默认返回博客首页
 '''
-def redirect_back(default='main.index', **kwargs):
+def redirect_back(default='index', **kwargs):
     target = request.args.get('next')
     if target and is_safe_url(target):
         return redirect(target)

@@ -33,6 +33,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
     user_id = db.Column(db.String(16), unique=True) # 用户代码
     user_name = db.Column(db.String(24))            # 用户姓名
     user_pwd_hash = db.Column(db.String(128))       # 用户密码(加密后)
+    email = db.Column(db.String(128))               # 邮箱
     svn_id = db.Column(db.String(24))               # svn账号
     svn_pwd = db.Column(db.String(24))              # svn密码
     #created_by = db.relationship('SysUser', secondary=user_creators, primaryjoin=(user_creators.c.creator_id == id), secondaryjoin=(user_creators.c.created_id == id), backref=db.backref('user_creators', lazy='dynamic'))
@@ -82,7 +83,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
 '''
     角色菜单关联表(多对多)
 '''
-roles_menus = db.Table('roles_menus',
+sys_roles_menus = db.Table('sys_roles_menus',
     db.Column('role_id', db.String(32), db.ForeignKey('sys_role.id')),
     db.Column('menu_id', db.String(32), db.ForeignKey('sys_menu.id'))
 )
@@ -92,14 +93,14 @@ roles_menus = db.Table('roles_menus',
 class SysRole(BaseModel, db.Model):
     name = db.Column(db.String(64), unique=True)                # 角色名称
     users = db.relationship('SysUser', back_populates='role')   # 用户
-    menus = db.relationship('SysMenu', secondary='roles_menus', back_populates='roles')
+    menus = db.relationship('SysMenu', secondary='sys_roles_menus', back_populates='roles')
 '''
     系统菜单
 '''
 class SysMenu(BaseModel, db.Model):
     name = db.Column(db.String(64))         # 菜单名
     url = db.Column(db.String(24))          # URL地址
-    roles = db.relationship('SysRole', secondary='roles_menus', back_populates='menus')
+    roles = db.relationship('SysRole', secondary='sys_roles_menus', back_populates='menus')
 '''
     下拉字典
 '''

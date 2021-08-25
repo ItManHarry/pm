@@ -1,0 +1,15 @@
+{# 使用宏函数加载静态资源 #}
+{% macro static_file(type, file_or_url, local=True) %}
+    {% if local %}
+        {% set file_or_url = url_for('static', filename = file_or_url) %}
+    {% endif %}
+    {% if type == 'css' %}
+        <link rel="stylesheet" type="text/css" href="{{ file_or_url }}">
+    {% endif %}
+    {% if type == 'icon' %}
+        <link rel="icon" type="image/x-icon" href="{{ file_or_url }}">
+    {% endif %}
+    {% if type == 'js' %}
+        <script type="text/javascript" src="{{ file_or_url }}"></script>
+    {% endif %}
+{% endmacro%}

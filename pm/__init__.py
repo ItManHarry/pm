@@ -1,7 +1,7 @@
 from flask import Flask
 import click
 from pm.configs import configurations
-from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone
+from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
 def create_app(config=None):
     if config == None:
         config = 'dev_config'
@@ -23,6 +23,7 @@ def register_webapp_plugins(app):
     migrate.init_app(app)
     csrf.init_app(app)
     dropzone.init_app(app)
+    login_manager.init_app(app)
 def register_webapp_global_path(app):
     @app.route('/')
     def index():
@@ -35,7 +36,8 @@ def register_webapp_global_context(app):
 def register_webapp_errors(app):
     pass
 def register_webapp_views(app):
-    pass
+    from pm.views.auth import bp_auth
+    app.register_blueprint(bp_auth, url_prefix='/auth')
 def register_webapp_shell(app):
     @app.shell_context_processor
     def config_shell_context():
