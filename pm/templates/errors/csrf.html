@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}CSRF验证失败{% endblock %}
+{% block main %}
+<div class = "container-fluid" style="margin-top:100px;">
+    <div class = "row">
+        <div class = "col text-center">
+            <h3><i class="fas fa-road">&nbsp;&nbsp;</i>会话过期或失效,请返回上一页重试！！！ . <i class="fas fa-road"></i>&nbsp;&nbsp;</h3>
+            <a href = "{{ url_for('main.index') }}"><i class="fas fa-arrow-left"></i>&nbsp;返回</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

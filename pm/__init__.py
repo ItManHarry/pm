@@ -1,4 +1,5 @@
-from flask import Flask, redirect, url_for, g, request
+from flask import Flask, redirect, url_for, render_template
+from flask_wtf.csrf import CSRFError
 import click
 from pm.configs import configurations
 from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
@@ -37,7 +38,21 @@ def register_webapp_global_context(app):
     def config_template_context():
         return dict(get_time=get_time, format_time=format_time)
 def register_webapp_errors(app):
-    pass
+    @app.errorhandler(400)
+    def request_invalid(e):
+        return render_template('errors/400.html'), 400
+    @app.errorhandler(403)
+    def request_invalid(e):
+        return render_template('errors/403.html'), 403
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('errors/404.html'), 404
+    @app.errorhandler(500)
+    def inner_error(e):
+        return render_template('errors/500.html'), 500
+    @app.errorhandler(CSRFError)
+    def csrf_error(e):
+        return render_template('errors/csrf.html')
 def register_webapp_views(app):
     from pm.views.auth import bp_auth
     from pm.views.main import bp_main
