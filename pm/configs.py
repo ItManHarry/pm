@@ -4,6 +4,7 @@ test_db = os.getenv('TEST_DB')
 pro_db = os.getenv('PRO_DB')
 class GlobalConfig():
     SECRET_KEY = os.getenv('SECRET_KEY', '123456789qazxswedcvfr!@#@452631')
+    ITEM_COUNT_PER_PAGE = 10
 class DevelopConfig(GlobalConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('DEVELOP_DATABASE_URL', dev_db)
