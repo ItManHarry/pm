@@ -11,6 +11,7 @@ class BaseModel():
     id = db.Column(db.String(32), default=uuid.uuid4().hex, primary_key=True)
     timestamp_utc = db.Column(db.DateTime, default=datetime.utcnow)     # 标准时间
     timestamp_loc = db.Column(db.DateTime, default=datetime.now)        # 本地时间
+    operator_id = db.Column(db.String(32))                              # 操作人员
 '''
     使用模型表建立用户自关联关系
     1. 可以获取创建时间
@@ -33,6 +34,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
     user_id = db.Column(db.String(16), unique=True) # 用户代码
     user_name = db.Column(db.String(24))            # 用户姓名
     user_pwd_hash = db.Column(db.String(128))       # 用户密码(加密后)
+    active = db.Column(db.Boolean, default=True)    # 激活状态(默认激活在用)
     email = db.Column(db.String(128))               # 邮箱
     svn_id = db.Column(db.String(24))               # svn账号
     svn_pwd = db.Column(db.String(24))              # svn密码
@@ -95,11 +97,20 @@ class SysRole(BaseModel, db.Model):
     users = db.relationship('SysUser', back_populates='role')   # 用户
     menus = db.relationship('SysMenu', secondary='sys_roles_menus', back_populates='roles')
 '''
+    系统模块
+'''
+class SysModule(BaseModel, db.Model):
+    name = db.Column(db.String(24), unique=True)                # 模块名称
+    menus = db.relationship('SysMenu', back_populates='module') # 和菜单建立一对多关联关系
+'''
     系统菜单
 '''
 class SysMenu(BaseModel, db.Model):
     name = db.Column(db.String(64))         # 菜单名
     url = db.Column(db.String(24))          # URL地址
+    desc = db.Column(db.String(128))        # 菜单描述
+    module_id = db.Column(db.String(32), db.ForeignKey('sys_module.id'))
+    module = db.relationship('SysModule', back_populates='menus')
     roles = db.relationship('SysRole', secondary='sys_roles_menus', back_populates='menus')
 '''
     下拉字典
@@ -120,8 +131,8 @@ class SysEnum(BaseModel, db.Model):
     系统操作日志
 '''
 class SysLog(BaseModel, db.Model):
-    url = db.Column(db.String(24))      # 菜单url
-    operate = db.Column(db.String(64))  # 操作内容
+    url = db.Column(db.String(24))          # 菜单url
+    operation = db.Column(db.String(64))    # 操作内容
     user_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
     user = db.relationship('SysUser', back_populates='logs')
 '''

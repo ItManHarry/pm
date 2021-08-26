@@ -1,1 +1,26 @@
-<h2>Program Management</h2>
+{% from 'bootstrap/nav.html' import render_nav_item with context %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#"><i class="far fa-lg fa-file-archive"></i>&nbsp;&nbsp;<small>PM</small></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarScroll">
+    <ul class="navbar-nav mr-auto my-2 my-lg-0 navbar-nav-scroll" style="max-height: 100px;">
+      <li class="nav-item">
+        <a class="nav-link {%if session.get('nav') == 'pro'%}active{%endif%}" href="#">项目管理</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {%if session.get('nav') == 'issue'%}active{%endif%}" href="#">ISSUE管理</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {%if session.get('nav') == 'sys'%}active{%endif%}" href="{{url_for('sys.index')}}">系统管理</a>
+      </li>
+    </ul>
+    <div class="d-flex">
+        {% if current_user.is_authenticated %}
+            <button class="btn btn-link" disabled><i class="far fa-user"></i>&nbsp;&nbsp;{{current_user.user_name}}</button>&nbsp;&nbsp;
+            <a class="btn btn-outline-success" href="{{url_for('auth.logout')}}"><i class="fas fa-sign-out-alt"></i></a>
+        {% endif %}
+    </div>
+  </div>
+</nav>

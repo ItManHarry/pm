@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 from pm.forms.auth import LoginForm
 from pm.plugins import db
 from pm.models import SysUser, SysLog
@@ -11,6 +11,8 @@ def login():
     系统登录
     :return:
     '''
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user_id = form.user_id.data
@@ -19,7 +21,7 @@ def login():
         if user:
             if user.validate_password(user_pwd):
                 login_user(user, True)
-                log = SysLog(url='auth.login', operate='Login into system', user=user)
+                log = SysLog(url='auth.login', operation='Login into system', user=user, operator_id=user.id)
                 db.session.add(log)
                 db.session.commit()
                 return redirect_back()

@@ -1,5 +1,4 @@
-from flask import Flask
-from flask_login import login_required
+from flask import Flask, redirect, url_for, g, request
 import click
 from pm.configs import configurations
 from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
@@ -27,9 +26,11 @@ def register_webapp_plugins(app):
     login_manager.init_app(app)
 def register_webapp_global_path(app):
     @app.route('/')
-    @login_required
     def index():
-        return '<h1>Program Management</h1>'
+        return redirect(url_for('auth.login'))
+    @app.before_request
+    def request_intercept():
+        pass
 def register_webapp_global_context(app):
     from pm.utils import get_time, format_time
     @app.context_processor
@@ -39,7 +40,15 @@ def register_webapp_errors(app):
     pass
 def register_webapp_views(app):
     from pm.views.auth import bp_auth
+    from pm.views.main import bp_main
+    from pm.views.system import bp_sys
+    from pm.views.sys.user import bp_user
+    from pm.views.sys.org import bp_org
     app.register_blueprint(bp_auth, url_prefix='/auth')
+    app.register_blueprint(bp_main, url_prefix='/main')
+    app.register_blueprint(bp_sys,  url_prefix='/sys')
+    app.register_blueprint(bp_user, url_prefix='/user')
+    app.register_blueprint(bp_org,  url_prefix='/org')
 def register_webapp_shell(app):
     @app.shell_context_processor
     def config_shell_context():

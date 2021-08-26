@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}用户管理{% endblock %}
+{% block main %}
+<div class="container-fluid" style="margin-top:20px;">
+    <div class="row">
+        <div class="col">
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;<i class="fas fa-grip-lines-vertical"></i>&nbsp;&nbsp;部门管理 {{g.nav}}</small>
+        </div>
+    </div>
+    <hr>
+    <form method="post">
+      <div class="row">
+        <div class="col-3 offset-4 text-right">
+            <input type="text" class="form-control" placeholder="部门代码">
+        </div>
+        <div class="col-3 text-right">
+            <input type="text" class="form-control" placeholder="部门名称">
+        </div>
+        <div class="col-2 text-right">
+            <button class="btn btn-outline-info"><i class="fas fa-search"></i>&nbsp;&nbsp;查找</button>&nbsp;&nbsp;
+            <a class="btn btn-outline-primary" href="#"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</a>
+        </div>
+      </div>
+    </form><br>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+            <th scope="col">部门代码</th>
+            <th scope="col">部门名称</th>
+            <th scope="col">上级部门代码</th>
+            <th scope="col">上级部门名称</th>
+            <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+            <td>
+                <a href="#" class="btn btn-link"><i class="fas fa-edit"></i>&nbsp;编辑</a>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+</div>
+{% endblock %}
