@@ -8,7 +8,7 @@ import uuid
  基础模型
 '''
 class BaseModel():
-    id = db.Column(db.String(32), default=uuid.uuid4().hex, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     timestamp_utc = db.Column(db.DateTime, default=datetime.utcnow)     # 标准时间
     timestamp_loc = db.Column(db.DateTime, default=datetime.now)        # 本地时间
     operator_id = db.Column(db.String(32))                              # 操作人员
@@ -58,7 +58,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
 
     #设置创建者
     def set_created_by(self, user):
-        creator = SysUserCreator(created=self, created_by=user)
+        creator = SysUserCreator(id=uuid.uuid4().hex, created=self, created_by=user)
         db.session.add(creator)
         db.session.commit()
     #获取创建者(只有一条记录)
@@ -71,7 +71,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
         return self.created_by.filter_by(created_id=self.id).first().created_by
     #设置更新者
     def set_updated_by(self, user):
-        updater = SysUserUpdater(updated=self, updated_by=user)
+        updater = SysUserUpdater(id=uuid.uuid4().hex, updated=self, updated_by=user)
         db.session.add(updater)
         db.session.commit()
     #获取更新者(零或多条记录，可能没有被更新过或者被多次更新过)
@@ -163,7 +163,7 @@ class BizDept(BaseModel, db.Model):
         if ref:
             db.session.delete(ref)
             db.session.commit()
-        parent = BizDeptRef(child_dept=self, parent_dept=dept)
+        parent = BizDeptRef(id=uuid.uuid4().hex, child_dept=self, parent_dept=dept)
         db.session.add(parent)
         db.session.commit()
     @property
@@ -181,7 +181,7 @@ class BizDept(BaseModel, db.Model):
         if ref:
             db.session.delete(ref)
             db.session.commit()
-        child = BizDeptRef(child_dept=dept, parent_dept=self)
+        child = BizDeptRef(id=uuid.uuid4().hex, child_dept=dept, parent_dept=self)
         db.session.add(child)
         db.session.commit()
     @property

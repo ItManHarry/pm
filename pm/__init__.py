@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, render_template
 from flask_wtf.csrf import CSRFError
-import click
+import click, uuid
 from pm.configs import configurations
 from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
 def create_app(config=None):
@@ -79,7 +79,7 @@ def register_webapp_commands(app):
         db.create_all()
         click.echo('数据库初始化完毕')
         click.echo('创建管理员角色')
-        role = SysRole(name='Administrator')
+        role = SysRole(id=uuid.uuid4().hex, name='Administrator')
         db.session.add(role)
         db.session.commit()
         click.echo('创建管理员')
@@ -89,6 +89,7 @@ def register_webapp_commands(app):
         else:
             click.echo('执行创建管理员')
             user = SysUser(
+                id=uuid.uuid4().hex,
                 user_id=admin_code.lower(),
                 user_name='Administrator',
                 svn_id='',

@@ -4,6 +4,7 @@ from pm.forms.auth import LoginForm
 from pm.plugins import db
 from pm.models import SysUser, SysLog
 from pm.utils import redirect_back
+import uuid
 bp_auth = Blueprint('auth', __name__)
 @bp_auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -21,7 +22,7 @@ def login():
         if user:
             if user.validate_password(user_pwd):
                 login_user(user, True)
-                log = SysLog(url='auth.login', operation='Login into system', user=user, operator_id=user.id)
+                log = SysLog(id=uuid.uuid4().hex, url='auth.login', operation='Login into system', user=user, operator_id=user.id)
                 db.session.add(log)
                 db.session.commit()
                 return redirect_back()

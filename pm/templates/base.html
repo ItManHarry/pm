@@ -22,7 +22,7 @@
     <!-- 设置自动识别显示语言 -->
     {{ moment.locale(auto_detect=True) }}
     {# --------- 引入子页面自己的JavaScript文件 --------- #}
-    {% block script %}{% endblock %}
+    {% block scripts %}{% endblock %}
     {# --------- 编写子页面自己的css样式 --------- #}
     {% block style %}{% endblock %}
 </head>
@@ -30,5 +30,6 @@
 <header>{% block header %}{% include '_header.html' %}{% endblock %}</header>
 <main>{% block main %}<h1>Content Of the System</h1>{% endblock %}</main>
 <footer>{% block footer %}{% include '_footer.html' %}{% endblock %}</footer>
+<script>{% block script %}{% endblock %}</script>
 </body>
 </html>
