@@ -11,16 +11,16 @@
     <hr>
     <form method="post">
       <div class="row">
-        <div class="col-3 offset-4 text-right">
+        <div class="col-3 offset-5 text-right">
             {{form.csrf_token}}
             {{form.code(class='form-control', placeholder='部门代码')}}
         </div>
         <div class="col-3 text-right">
             {{form.name(class='form-control', placeholder='部门名称')}}
         </div>
-        <div class="col-2 text-right">
-            <button class="btn btn-outline-info" type="submit"><i class="fas fa-search"></i>&nbsp;&nbsp;查找</button>&nbsp;&nbsp;
-            <a class="btn btn-outline-primary" href="{{url_for('org.add')}}"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</a>
+        <div class="col-1 text-right">
+            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+            <a class="btn btn-link btn-sm" href="{{url_for('org.add')}}"><i class="fas fa-plus"></i></a>
         </div>
       </div>
     </form><br>
@@ -35,15 +35,15 @@
         </tr>
       </thead>
       <tbody>
-        {% if orgs %}
-            {% for org in orgs %}
+        {% if departments %}
+            {% for department in departments %}
                 <tr>
-                    <td>{{org.code}}</td>
-                    <td>{{org.name}}</td>
-                    <td>{{org.my_parent_dept.code if org.my_parent_dept else '/'}}</td>
-                    <td>{{org.my_parent_dept.name if org.my_parent_dept else '/'}}</td>
+                    <td>{{department.code}}</td>
+                    <td>{{department.name}}</td>
+                    <td>{{department.my_parent_dept.code if department.my_parent_dept else '/'}}</td>
+                    <td>{{department.my_parent_dept.name if department.my_parent_dept else '/'}}</td>
                     <td>
-                        <a href="#" class="btn btn-link btn-sm" title="编辑"><i class="fas fa-edit"></i></a>
+                        <a href="{{url_for('org.edit', id=department.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>
                     </td>
                 </tr>
             {%endfor%}

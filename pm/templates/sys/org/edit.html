@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination with context %}
-{% block title %}新增部门{% endblock %}
+{% block title %}修改部门{% endblock %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;部门管理&nbsp;&nbsp;/&nbsp;&nbsp;新增部门信息</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;部门管理&nbsp;&nbsp;/&nbsp;&nbsp;修改部门信息</small>
         </div>
     </div>
     <hr>
@@ -25,6 +25,7 @@
     </div>
     <form method="post">
         {{form.csrf_token}}
+        {{form.id}}
         <div class="form-row">
             <div class="form-group col-md-5 offset-md-1">
                 {{form.code.label}}
