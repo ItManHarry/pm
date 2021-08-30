@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination with context %}
+{% block title %}新增部门{% endblock %}
+{% block main %}
+<div class="container-fluid" style="margin-top:20px;">
+    <div class="row">
+        <div class="col">
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;部门管理&nbsp;&nbsp;/&nbsp;&nbsp;新增部门信息</small>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-10 offset-1 text-center text-info">
+            {% if get_flashed_messages() %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                  {% for message in get_flashed_messages() %}
+                    <small>{{ message }}</small>
+                  {% endfor %}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <form method="post">
+        {{form.csrf_token}}
+        <div class="form-row">
+            <div class="form-group col-md-5 offset-md-1">
+                {{form.code.label}}
+                {{form.code(class='form-control')}}
+                {% for message in form.code.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+            <div class="form-group col-md-5">
+                {{form.name.label}}
+                {{form.name(class='form-control')}}
+                {% for message in form.name.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 offset-md-1">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="selectParent" checked>
+                  <label class="custom-control-label" for="selectParent">上级部门</label>
+                </div><br>
+                {{form.has_parent(value=1)}}
+                {{form.parent(class='form-control')}}
+            </div>
+         </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 offset-md-1">
+                <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
+            </div>
+            <div class="form-group col-md-5 text-right">
+                <a class="btn btn-outline-secondary" href="{{url_for('org.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+            </div>
+         </div>
+    </form>
+</div>
+{% endblock %}
+{% block script %}
+    $(function(){
+        $('#selectParent').change(function(){
+            if($(this).is(':checked')){
+                $('#parent').removeAttr('disabled')
+                $('#has_parent').val(1)
+            }else{
+                $('#parent').attr('disabled', true)
+                $('#has_parent').val(0)
+            }
+        })
+    })
+{% endblock %}

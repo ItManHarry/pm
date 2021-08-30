@@ -47,8 +47,7 @@ class OrgForm(FlaskForm):
         else:
             old_name = BizDept.query.get(self.id.data).name
             names = []
-            all_departments = BizDept.query.all()
-            for department in all_departments:
+            for department in BizDept.query.all():
                 names.append(department.name)
             # 剔除未更新前的部门名称
             names.remove(old_name)

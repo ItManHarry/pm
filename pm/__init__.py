@@ -59,11 +59,13 @@ def register_webapp_views(app):
     from pm.views.system import bp_sys
     from pm.views.sys.user import bp_user
     from pm.views.sys.org import bp_org
+    from pm.views.sys.role import bp_role
     app.register_blueprint(bp_auth, url_prefix='/auth')
     app.register_blueprint(bp_main, url_prefix='/main')
     app.register_blueprint(bp_sys,  url_prefix='/sys')
     app.register_blueprint(bp_user, url_prefix='/user')
     app.register_blueprint(bp_org,  url_prefix='/org')
+    app.register_blueprint(bp_role, url_prefix='/role')
 def register_webapp_shell(app):
     @app.shell_context_processor
     def config_shell_context():

@@ -6,10 +6,13 @@ from flask_login import login_required, current_user
 from pm.models import BizDept
 from pm.plugins import db
 from pm.forms.sys.org import OrgSearchForm, OrgForm
+from pm.decorators import log_record
 import uuid
 bp_org = Blueprint('org', __name__)
+
 @bp_org.route('/index', methods=['GET', 'POST'])
 @login_required
+@log_record('查询部门清单')
 def index():
     code = ''
     name = ''
@@ -25,6 +28,7 @@ def index():
 
 @bp_org.route('/add', methods=['GET', 'POST'])
 @login_required
+@log_record('新增部门信息')
 def add():
     form = OrgForm()
     departments = BizDept.query.order_by(BizDept.code).all()
@@ -40,9 +44,13 @@ def add():
         if has_parent and form.parent.data is not None:
             department.set_parent_dept(BizDept.query.get(form.parent.data))
         flash('部门信息添加成功！')
+        # 操作日志
+
         return redirect(url_for('.add'))
     return render_template('sys/org/add.html', form=form)
 @bp_org.route('/eidt/<id>', methods=['GET', 'POST'])
+@login_required
+@log_record('修改部门信息')
 def edit(id):
     form = OrgForm()
     edit_department = BizDept.query.get_or_404(id)
@@ -79,6 +87,7 @@ def edit(id):
         return redirect(url_for('.edit', id=form.id.data))
     return render_template('sys/org/edit.html', form=form)
 @bp_org.route('/status/<id>/<int:status>', methods=['POST'])
+@log_record('更改部门状态')
 def status(id, status):
     department = BizDept.query.get_or_404(id)
     department.status = True if status == 1 else False

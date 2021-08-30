@@ -34,7 +34,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
     user_id = db.Column(db.String(16), unique=True) # 用户代码
     user_name = db.Column(db.String(24))            # 用户姓名
     user_pwd_hash = db.Column(db.String(128))       # 用户密码(加密后)
-    active = db.Column(db.Boolean, default=True)    # 激活状态(默认激活在用)
+    status = db.Column(db.Boolean, default=True)    # 用户状态(默认在用)
     email = db.Column(db.String(128))               # 邮箱
     svn_id = db.Column(db.String(24))               # svn账号
     svn_pwd = db.Column(db.String(24))              # svn密码
@@ -109,6 +109,7 @@ class SysMenu(BaseModel, db.Model):
     name = db.Column(db.String(64))         # 菜单名
     url = db.Column(db.String(24))          # URL地址
     desc = db.Column(db.String(128))        # 菜单描述
+    status = db.Column(db.Boolean, default=True)  # 菜单状态(是否在用,默认在用)
     module_id = db.Column(db.String(32), db.ForeignKey('sys_module.id'))
     module = db.relationship('SysModule', back_populates='menus')
     roles = db.relationship('SysRole', secondary='sys_roles_menus', back_populates='menus')
