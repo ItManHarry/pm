@@ -1,7 +1,7 @@
 '''
 系统部门信息管理
 '''
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from pm.models import BizDept
 from pm.plugins import db
@@ -78,3 +78,9 @@ def edit(id):
         flash('部门信息更新成功！')
         return redirect(url_for('.edit', id=form.id.data))
     return render_template('sys/org/edit.html', form=form)
+@bp_org.route('/status/<id>/<int:status>', methods=['POST'])
+def status(id, status):
+    department = BizDept.query.get_or_404(id)
+    department.status = True if status == 1 else False
+    db.session.commit()
+    return jsonify(code=1, message='状态更新成功!')

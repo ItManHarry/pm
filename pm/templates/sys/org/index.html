@@ -27,11 +27,12 @@
     <table class="table table-hover table-sm">
       <thead>
         <tr>
-            <th scope="col">部门代码</th>
-            <th scope="col">部门名称</th>
-            <th scope="col">上级部门代码</th>
-            <th scope="col">上级部门名称</th>
-            <th scope="col">Action</th>
+            <th scope="col" width="15%">部门代码</th>
+            <th scope="col" width="25%">部门名称</th>
+            <th scope="col" width="15%">上级部门代码</th>
+            <th scope="col" width="25%">上级部门名称</th>
+            <th scope="col" width="5%">状态</th>
+            <th scope="col" class="text-center" width="15%">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -42,8 +43,15 @@
                     <td>{{department.name}}</td>
                     <td>{{department.my_parent_dept.code if department.my_parent_dept else '/'}}</td>
                     <td>{{department.my_parent_dept.name if department.my_parent_dept else '/'}}</td>
-                    <td>
-                        <a href="{{url_for('org.edit', id=department.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>
+                    {%if department.status%}
+                    <td class="text-success">在用</td>
+                    {%else%}
+                    <td class="text-danger">停用</td>
+                    {%endif%}
+                    <td class="text-center">
+                        <a href="{{url_for('org.edit', id=department.id)}}" class="btn btn-link btn-sm text-info {%if not department.status%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                        <button class="btn btn-link btn-sm text-danger {%if not department.status%}disabled{%endif%}" title="停用" onclick="status('{{department.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
+                        <button class="btn btn-link btn-sm text-success {%if department.status%}disabled{%endif%}" title="启用" onclick="status('{{department.id}}', 1)"><i class="far fa-check-circle"></i></button>
                     </td>
                 </tr>
             {%endfor%}
@@ -56,4 +64,29 @@
     </table>
     {{render_pagination(pagination, align='right')}}
 </div>
+{% endblock %}
+{% block script %}
+    {{ super() }}
+    function status(id, status){
+        $.ajax({
+            type:'post',
+            url:'/org/status/'+id+'/'+status,
+            //data:JSON.stringify({code:$.trim($("#code").val()), name:$.trim($("#name").val()), password:$.trim($("#password").val())}),
+            contentType:'application/json;charset=UTF-8',
+            success:function(data){
+                if(data.code == 1)
+                    location.reload()
+            },
+            error:function(){
+                $.alert({
+                   type:'red',
+                   title:'系统提示',
+                   content: '系统错误,请联系管理员',
+                   onClose:function(){
+
+                   }
+               })
+            }
+        })
+    }
 {% endblock %}

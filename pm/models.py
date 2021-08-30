@@ -149,6 +149,7 @@ class BizDeptRef(BaseModel, db.Model):
 class BizDept(BaseModel, db.Model):
     code = db.Column(db.String(32), unique=True)                # 部门代码
     name = db.Column(db.String(128), unique=True)               # 部门名称
+    status = db.Column(db.Boolean, default=True)                # 部门状态(是否在用,默认在用)
     users = db.relationship('SysUser', back_populates='dept')   # 部门人员
     parent_dept = db.relationship('BizDeptRef', foreign_keys=[BizDeptRef.parent_dept_id], back_populates='parent_dept', lazy='dynamic', cascade='all')  # 父部门
     child_dept = db.relationship('BizDeptRef', foreign_keys=[BizDeptRef.child_dept_id], back_populates='child_dept', lazy='dynamic', cascade='all')     # 子部门
