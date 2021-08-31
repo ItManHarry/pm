@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination with context %}
-{% block title %}修改部门{% endblock %}
+{% block title %}修改角色{% endblock %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;部门管理&nbsp;&nbsp;/&nbsp;&nbsp;修改部门信息</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;角色管理&nbsp;&nbsp;/&nbsp;&nbsp;修改角色信息</small>
         </div>
     </div>
     <hr>
@@ -28,13 +28,6 @@
         {{form.id}}
         <div class="form-row">
             <div class="form-group col-md-5 offset-md-1">
-                {{form.code.label}}
-                {{form.code(class='form-control')}}
-                {% for message in form.code.errors %}
-                    <small class="text-danger">{{message}}</small>
-                {% endfor %}
-            </div>
-            <div class="form-group col-md-5">
                 {{form.name.label}}
                 {{form.name(class='form-control')}}
                 {% for message in form.name.errors %}
@@ -44,20 +37,10 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-5 offset-md-1">
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="selectParent" checked>
-                  <label class="custom-control-label" for="selectParent">上级部门</label>
-                </div><br>
-                {{form.has_parent(value=1)}}
-                {{form.parent(class='form-control')}}
-            </div>
-         </div>
-        <div class="form-row">
-            <div class="form-group col-md-5 offset-md-1">
                 <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
             </div>
             <div class="form-group col-md-5 text-right">
-                <a class="btn btn-outline-secondary" href="{{url_for('org.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                <a class="btn btn-outline-secondary" href="{{url_for('role.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
             </div>
          </div>
     </form>

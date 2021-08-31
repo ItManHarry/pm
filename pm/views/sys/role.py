@@ -1,11 +1,13 @@
 '''
 系统角色管理
 '''
-from flask import Blueprint, render_template, request, current_app
-from flask_login import login_required
-from pm.forms.sys.role import RoleSearchForm
+import uuid
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
+from flask_login import login_required, current_user
+from pm.forms.sys.role import RoleSearchForm, RoleForm
 from pm.models import SysRole
 from pm.decorators import log_record
+from pm.plugins import db
 bp_role = Blueprint('role', __name__)
 @bp_role.route('/index', methods=['GET', 'POST'])
 @login_required
@@ -24,9 +26,25 @@ def index():
 @login_required
 @log_record('新增系统角色')
 def add():
-    return render_template('sys/role/add.html')
+    form = RoleForm()
+    if form.validate_on_submit():
+        role = SysRole(id=uuid.uuid4().hex, name=form.name.data, operator_id=current_user.id)
+        db.session.add(role)
+        db.session.commit()
+        flash('角色添加成功！')
+    return render_template('sys/role/add.html', form=form)
 @bp_role.route('/eidt/<id>', methods=['GET', 'POST'])
 @login_required
 @log_record('修改系统角色')
 def edit(id):
-    return render_template('sys/role/edit.html')
+    form = RoleForm()
+    role = SysRole.query.get_or_404(id)
+    if request.method == 'GET':
+        form.name.data = role.name
+        form.id.data = role.id
+    if form.validate_on_submit():
+        role.name = form.name.data
+        db.session.commit()
+        flash('角色修改成功！')
+        return redirect(url_for('.edit', id=role.id))
+    return render_template('sys/role/edit.html', form=form)
