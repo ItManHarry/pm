@@ -1,103 +1,92 @@
 {% extends 'base.html' %}
 {% block title %}用户管理{% endblock %}
+{% from 'bootstrap/pagination.html' import render_pagination with context %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        {#
-        <div class="col-2">
-            {% include 'sys/_nav.html' %}
-        </div>
-        #}
-        <div class="col-12">
-            <div class="row">
-                <div class="col">
-                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;用户管理 {{g.nav}}</small>
-                </div>
-            </div>
-            <hr>
-            <form method="post">
-              <div class="row">
-                <div class="col-3 offset-4 text-right">
-                    <input type="text" class="form-control" placeholder="用户账号">
-                </div>
-                <div class="col-3 text-right">
-                    <input type="text" class="form-control" placeholder="用户姓名">
-                </div>
-                <div class="col-2 text-right">
-                    <button class="btn btn-outline-info"><i class="fas fa-search"></i>&nbsp;&nbsp;查找</button>&nbsp;&nbsp;
-                    <a class="btn btn-outline-primary" href="#"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</a>
-                </div>
-              </div>
-            </form><br>
-            <div class="row">
-                <div class="col">
-                    <table class="table table-hover">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
-                </div>
-            </div>
+        <div class="col">
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;用户管理 {{g.nav}}</small>
         </div>
     </div>
+    <hr>
+    <form method="post">
+      <div class="row">
+        <div class="col-3 offset-5 text-right">
+            {{form.csrf_token}}
+            {{form.code(class='form-control', placeholder='用户代码')}}
+        </div>
+        <div class="col-3 text-right">
+            {{form.name(class='form-control', placeholder='用户姓名')}}
+        </div>
+        <div class="col-1 text-right">
+            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+            <a class="btn btn-link btn-sm" href="{{url_for('user.add')}}"><i class="fas fa-plus"></i></a>
+        </div>
+      </div>
+    </form><br>
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+            <th scope="col" width="20%">用户代码</th>
+            <th scope="col" width="20%">用户名称</th>
+            <th scope="col" width="15%">部门</th>
+            <th scope="col" width="25%">角色</th>
+            <th scope="col" width="5%">状态</th>
+            <th scope="col" class="text-center" width="15%">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if users %}
+            {% for user in users %}
+                <tr>
+                    <td>{{user.user_id}}</td>
+                    <td>{{user.user_name}}</td>
+                    <td>{{user.dept.name}}</td>
+                    <td>{{user.role.name}}</td>
+                    {%if user.status%}
+                    <td class="text-success">在用</td>
+                    {%else%}
+                    <td class="text-danger">停用</td>
+                    {%endif%}
+                    <td class="text-center">
+                        <a href="{{url_for('org.edit', id=user.id)}}" class="btn btn-link btn-sm text-info {%if not user.status%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                        <button class="btn btn-link btn-sm text-danger {%if not user.status%}disabled{%endif%}" title="停用" onclick="status('{{user.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
+                        <button class="btn btn-link btn-sm text-success {%if user.status%}disabled{%endif%}" title="启用" onclick="status('{{user.id}}', 1)"><i class="far fa-check-circle"></i></button>
+                    </td>
+                </tr>
+            {%endfor%}
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
+            </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    {{render_pagination(pagination, align='right')}}
 </div>
+{% endblock %}
+{% block script %}
+    {{ super() }}
+    function status(id, status){
+        $.ajax({
+            type:'post',
+            url:'/user/status/'+id+'/'+status,
+            //data:JSON.stringify({code:$.trim($("#code").val()), name:$.trim($("#name").val()), password:$.trim($("#password").val())}),
+            contentType:'application/json;charset=UTF-8',
+            success:function(data){
+                if(data.code == 1)
+                    location.reload()
+            },
+            error:function(){
+                $.alert({
+                   type:'red',
+                   title:'系统提示',
+                   content: '系统错误,请联系管理员',
+                   onClose:function(){
+
+                   }
+               })
+            }
+        })
+    }
 {% endblock %}

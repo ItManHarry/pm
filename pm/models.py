@@ -58,7 +58,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
 
     #设置创建者
     def set_created_by(self, user):
-        creator = SysUserCreator(id=uuid.uuid4().hex, created=self, created_by=user)
+        creator = SysUserCreator(id=uuid.uuid4().hex, created=self, created_by=user, operator_id=user.id)
         db.session.add(creator)
         db.session.commit()
     #获取创建者(只有一条记录)
@@ -71,7 +71,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
         return self.created_by.filter_by(created_id=self.id).first().created_by
     #设置更新者
     def set_updated_by(self, user):
-        updater = SysUserUpdater(id=uuid.uuid4().hex, updated=self, updated_by=user)
+        updater = SysUserUpdater(id=uuid.uuid4().hex, updated=self, updated_by=user, operator_id=user.id)
         db.session.add(updater)
         db.session.commit()
     #获取更新者(零或多条记录，可能没有被更新过或者被多次更新过)

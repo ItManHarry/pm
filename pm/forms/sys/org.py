@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, HiddenField
-from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
+from wtforms.validators import DataRequired
 from wtforms import ValidationError, validators
 from pm.models import BizDept
 class OrgSearchForm(FlaskForm):

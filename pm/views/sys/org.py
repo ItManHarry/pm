@@ -44,8 +44,6 @@ def add():
         if has_parent and form.parent.data is not None:
             department.set_parent_dept(BizDept.query.get(form.parent.data))
         flash('部门信息添加成功！')
-        # 操作日志
-
         return redirect(url_for('.add'))
     return render_template('sys/org/add.html', form=form)
 @bp_org.route('/eidt/<id>', methods=['GET', 'POST'])
