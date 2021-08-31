@@ -77,6 +77,7 @@ def edit(id):
     if form.validate_on_submit():
         edit_department.code = form.code.data
         edit_department.name = form.name.data
+        edit_department.operator_id = current_user.id
         db.session.commit()
         has_parent = form.has_parent.data
         if has_parent and form.parent.data is not None:

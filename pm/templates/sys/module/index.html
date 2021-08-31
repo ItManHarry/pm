@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination with context %}
-{% block title %}角色管理{% endblock %}
+{% block title %}模块管理{% endblock %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;角色管理</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;模块管理</small>
         </div>
     </div>
     <hr>
@@ -13,29 +13,29 @@
       <div class="row">
         <div class="col-3 offset-8 text-right">
             {{form.csrf_token}}
-            {{form.name(class='form-control', placeholder='角色名称')}}
+            {{form.name(class='form-control', placeholder='模块名称')}}
         </div>
         <div class="col-1 text-right">
             <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-            <a class="btn btn-link btn-sm" href="{{url_for('role.add')}}"><i class="fas fa-plus"></i></a>
+            <a class="btn btn-link btn-sm" href="{{url_for('module.add')}}"><i class="fas fa-plus"></i></a>
         </div>
       </div>
     </form><br>
     <table class="table table-hover table-sm">
       <thead>
         <tr>
-            <th scope="col" width="85%">角色名称</th>
+            <th scope="col" width="85%">模块名称</th>
             <th scope="col" class="text-center" width="15%">Action</th>
         </tr>
       </thead>
       <tbody>
-        {% if roles %}
-            {% for role in roles %}
+        {% if modules %}
+            {% for module in modules %}
                 <tr>
-                    <td>{{role.name}}</td>
+                    <td>{{module.name}}</td>
                     <td class="text-center">
-                        <a href="{{url_for('role.edit', id=role.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <a href="{{url_for('role.edit', id=role.id)}}" class="btn btn-link btn-sm text-success" title="菜单权限"><i class="fas fa-list"></i></a>
+                        <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                        <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-success" title="菜单清单"><i class="fas fa-list"></i></a>
                     </td>
                 </tr>
             {%endfor%}

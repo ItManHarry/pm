@@ -44,6 +44,7 @@ def edit(id):
         form.id.data = role.id
     if form.validate_on_submit():
         role.name = form.name.data
+        role.operator_id = current_user.id
         db.session.commit()
         flash('角色修改成功！')
         return redirect(url_for('.edit', id=role.id))

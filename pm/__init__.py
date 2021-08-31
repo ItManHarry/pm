@@ -60,12 +60,14 @@ def register_webapp_views(app):
     from pm.views.sys.user import bp_user
     from pm.views.sys.org import bp_org
     from pm.views.sys.role import bp_role
+    from pm.views.sys.module import bp_module
     app.register_blueprint(bp_auth, url_prefix='/auth')
     app.register_blueprint(bp_main, url_prefix='/main')
     app.register_blueprint(bp_sys,  url_prefix='/sys')
     app.register_blueprint(bp_user, url_prefix='/user')
     app.register_blueprint(bp_org,  url_prefix='/org')
     app.register_blueprint(bp_role, url_prefix='/role')
+    app.register_blueprint(bp_module, url_prefix='/module')
 def register_webapp_shell(app):
     @app.shell_context_processor
     def config_shell_context():
@@ -75,8 +77,7 @@ def register_webapp_commands(app):
     @click.option('--admin_code', prompt=True, help='管理员账号')
     @click.option('--admin_password', prompt=True, help='管理员密码', hide_input=True, confirmation_prompt=True)
     def init(admin_code, admin_password):
-        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole
-        from datetime import datetime
+        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole, SysModule
         click.echo('执行数据库初始化...')
         db.create_all()
         click.echo('数据库初始化完毕')
@@ -108,4 +109,11 @@ def register_webapp_commands(app):
             user.set_created_by(user)
             user.set_updated_by(user)
         click.echo('管理员创建成功')
+        click.echo('初始化系统模块')
+        modules = ['项目管理', 'ISSUE管理', '系统管理']
+        for module_name in modules:
+            module = SysModule(id=uuid.uuid4().hex, name=module_name, operator_id=user.id)
+            db.session.add(module)
+            db.session.commit()
+        click.echo('系统模块初始化完成')
         click.echo('系统初始化完成')
