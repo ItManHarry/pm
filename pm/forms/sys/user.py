@@ -10,7 +10,7 @@ class UserForm(FlaskForm):
     id = HiddenField()
     code = StringField('用户代码', validators=[DataRequired('请输入用户代码！')])
     name = StringField('用户姓名', validators=[DataRequired('请输入用户姓名！')])
-    password = PasswordField('密码', validators=[DataRequired('请输入密码!!!'), Length(8, 128, '长度要介于8~128!!!'), EqualTo('password_confirm', message='密码不一致!!!'), Regexp('^[a-zA-Z0-9]*$', message='账号只能包含[a-z,A-Z,0-9]!!!')])
+    password = PasswordField('密码', validators=[DataRequired('请输入密码!!!'), Length(8, 128, '长度要介于8~128!!!'), EqualTo('password_confirm', message='密码不一致!!!'), Regexp('^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])).*$', message='密码必须包含大小写字母和数字!!!')])
     password_confirm = PasswordField('确认密码', validators=[DataRequired('请确认密码!!!')])
     email = StringField('邮箱', validators=[DataRequired('请输入邮箱!!!'), Length(1, 64, '长度要介于1~64!!!'), Email('邮箱格式不正确!!!')])
     svn_id = StringField('SVN账号', [validators.optional()])
