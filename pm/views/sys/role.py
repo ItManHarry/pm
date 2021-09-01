@@ -32,6 +32,7 @@ def add():
         db.session.add(role)
         db.session.commit()
         flash('角色添加成功！')
+        return redirect(url_for('.add'))
     return render_template('sys/role/add.html', form=form)
 @bp_role.route('/eidt/<id>', methods=['GET', 'POST'])
 @login_required
