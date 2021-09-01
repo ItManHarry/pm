@@ -5,7 +5,7 @@
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;部门管理&nbsp;&nbsp;/&nbsp;&nbsp;修改部门信息</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index')}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('user.index')}}" class="text-secondary">用户管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改用户</small>
         </div>
     </div>
     <hr>
@@ -44,12 +44,37 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-5 offset-md-1">
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="selectParent" checked>
-                  <label class="custom-control-label" for="selectParent">上级部门</label>
-                </div><br>
-                {{form.has_parent(value=1)}}
-                {{form.parent(class='form-control')}}
+                {{form.dept.label}}
+                {{form.dept(class='form-control')}}
+                {% for message in form.dept.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+            <div class="form-group col-md-5">
+                {{form.role.label}}
+                {{form.role(class='form-control')}}
+                {% for message in form.role.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+         </div>
+         <div class="form-row">
+            <div class="form-group col-md-10 offset-md-1">
+                {{form.email.label}}
+                {{form.email(class='form-control')}}
+                {% for message in form.email.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+         </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 offset-md-1">
+                {{form.svn_id.label}}
+                {{form.svn_id(class='form-control')}}
+            </div>
+            <div class="form-group col-md-5">
+                {{form.svn_pwd.label}}
+                {{form.svn_pwd(class='form-control')}}
             </div>
          </div>
         <div class="form-row">
@@ -57,9 +82,9 @@
                 <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
             </div>
             <div class="form-group col-md-5 text-right">
-                <a class="btn btn-outline-secondary" href="{{url_for('org.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                <a class="btn btn-outline-secondary" href="{{url_for('user.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
             </div>
-         </div>
+        </div>
     </form>
 </div>
 {% endblock %}

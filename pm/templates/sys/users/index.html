@@ -5,7 +5,7 @@
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;用户管理 {{g.nav}}</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index')}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">用户管理</span></small>
         </div>
     </div>
     <hr>
@@ -49,9 +49,10 @@
                     <td class="text-danger">停用</td>
                     {%endif%}
                     <td class="text-center">
-                        <a href="{{url_for('org.edit', id=user.id)}}" class="btn btn-link btn-sm text-info {%if not user.status%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-link btn-sm text-danger {%if not user.status%}disabled{%endif%}" title="停用" onclick="status('{{user.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
-                        <button class="btn btn-link btn-sm text-success {%if user.status%}disabled{%endif%}" title="启用" onclick="status('{{user.id}}', 1)"><i class="far fa-check-circle"></i></button>
+                        <a href="{{url_for('user.edit', id=user.id)}}" class="btn btn-link btn-sm text-info {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                        <button class="btn btn-link btn-sm text-warning {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="重置密码" onclick="reset_password('{{user.id}}')"><i class="fas fa-key"></i></button>&nbsp;
+                        <button class="btn btn-link btn-sm text-danger {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="停用" onclick="status('{{user.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
+                        <button class="btn btn-link btn-sm text-success {%if user.status or user.user_id == 'admin'%}disabled{%endif%}" title="启用" onclick="status('{{user.id}}', 1)"><i class="far fa-check-circle"></i></button>
                     </td>
                 </tr>
             {%endfor%}
@@ -88,5 +89,44 @@
                })
             }
         })
+    }
+    function reset_password(id){
+        $.confirm({
+            type:'red',
+            title: '密码重置',
+            content: '确认将该用户密码重置为(Pm12345678)?',
+            buttons: {
+                yes: function () {
+                    $.ajax({
+                        type:'post',
+                        url:'/user/reset_password/'+id,
+                        //data:JSON.stringify({code:$.trim($("#code").val()), name:$.trim($("#name").val()), password:$.trim($("#password").val())}),
+                        contentType:'application/json;charset=UTF-8',
+                        success:function(data){
+                            if(data.code == 1)
+                                $.alert({
+                                   type:'green',
+                                   title:'系统提示',
+                                   content: data.message,
+                                   onClose:function(){}
+                               })
+                        },
+                        error:function(){
+                            $.alert({
+                               type:'red',
+                               title:'系统提示',
+                               content: '系统错误,请联系管理员',
+                               onClose:function(){
+
+                               }
+                           })
+                        }
+                    })
+                },
+                no: function () {
+
+                }
+            }
+        });
     }
 {% endblock %}

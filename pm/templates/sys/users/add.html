@@ -5,7 +5,7 @@
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;用户管理&nbsp;&nbsp;/&nbsp;&nbsp;新增用户信息</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index')}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('user.index')}}" class="text-secondary disabled">用户管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">新增用户</small>
         </div>
     </div>
     <hr>
@@ -99,7 +99,7 @@
             <div class="form-group col-md-5 text-right">
                 <a class="btn btn-outline-secondary" href="{{url_for('user.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
             </div>
-         </div>
+        </div>
     </form>
 </div>
 {% endblock %}

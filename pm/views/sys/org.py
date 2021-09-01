@@ -57,10 +57,8 @@ def edit(id):
         注:上级部门下拉列表需剔除当前部门及子部门
     '''
     self_and_children = [edit_department.id]
-    child_departments = edit_department.my_child_dept
-    if child_departments:
-        for child in child_departments:
-            self_and_children.append(child.child_dept_id)
+    get_child_dept(edit_department, self_and_children)  # 递归获取子部门及子子部门
+    print('Self and child department ids : ', self_and_children)
     departments = BizDept.query.order_by(BizDept.code).all()
     department_list = []
     for department in departments:
@@ -85,10 +83,20 @@ def edit(id):
         flash('部门信息更新成功！')
         return redirect(url_for('.edit', id=form.id.data))
     return render_template('sys/org/edit.html', form=form)
+#递归获取子部门(多级部门)
+def get_child_dept(parent, children):
+    child_departments = parent.my_child_dept
+    if child_departments:
+        for child in child_departments:
+            children.append(child.child_dept_id)
+            get_child_dept(BizDept.query.get(child.child_dept_id), children)
+    else:
+        return children
 @bp_org.route('/status/<id>/<int:status>', methods=['POST'])
 @log_record('更改部门状态')
 def status(id, status):
     department = BizDept.query.get_or_404(id)
     department.status = True if status == 1 else False
+    department.operator_id = current_user.id
     db.session.commit()
     return jsonify(code=1, message='状态更新成功!')

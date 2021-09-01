@@ -20,14 +20,17 @@ def login():
         user_pwd = form.user_pwd.data
         user = SysUser.query.filter_by(user_id=user_id.lower()).first()
         if user:
-            if user.validate_password(user_pwd):
-                login_user(user, True)
-                log = SysLog(id=uuid.uuid4().hex, url='auth.login', operation='Login into system', user=user, operator_id=user.id)
-                db.session.add(log)
-                db.session.commit()
-                return redirect_back()
+            if user.status:
+                if user.validate_password(user_pwd):
+                    login_user(user, True)
+                    log = SysLog(id=uuid.uuid4().hex, url='auth.login', operation='Login into system', user=user, operator_id=user.id)
+                    db.session.add(log)
+                    db.session.commit()
+                    return redirect_back()
+                else:
+                    flash('密码错误！')
             else:
-                flash('密码错误！')
+                flash('用户已停用！')
         else:
             flash('用户不存在！')
     return render_template('auth/login.html', form=form)
