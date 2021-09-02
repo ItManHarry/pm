@@ -2,10 +2,10 @@
 系统角色管理
 '''
 import uuid
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from pm.forms.sys.role import RoleSearchForm, RoleForm
-from pm.models import SysRole
+from pm.models import SysRole, SysMenu
 from pm.decorators import log_record
 from pm.plugins import db
 bp_role = Blueprint('role', __name__)
@@ -50,3 +50,33 @@ def edit(id):
         flash('角色修改成功！')
         return redirect(url_for('.edit', id=role.id))
     return render_template('sys/role/edit.html', form=form)
+@bp_role.route('/menus/<id>', methods=['POST'])
+@login_required
+def menus(id):
+    all_menus = []
+    for menu in SysMenu.query.all():
+        all_menus.append((menu.id, menu.module.name+' / '+menu.name))
+    #print('All menus : ', all_menus)
+    role = SysRole.query.get_or_404(id)
+    authed_menus = []
+    for menu in role.menus:
+        authed_menus.append(menu.id)
+    print('Authed menus : ', authed_menus)
+    return jsonify(all_menus=all_menus, authed_menus=authed_menus)
+@bp_role.route('/auth', methods=['POST'])
+@login_required
+def auth():
+    data = request.get_json()
+    role_id = data['role_id']
+    menu_ids = data['menu_ids']
+    print(role_id)
+    role = SysRole.query.get_or_404(role_id)
+    # 首先移除已授权菜单
+    for menu in role.menus:
+        role.menus.remove(menu)
+        db.session.commit()
+    # 添加新授权的菜单
+    for menu_id in menu_ids:
+        role.menus.append(SysMenu.query.get(menu_id))
+    db.session.commit()
+    return jsonify(code=1, message='授权成功！')
