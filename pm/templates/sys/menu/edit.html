@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination with context %}
-{% block title %}修改角色{% endblock %}
+{% block title %}修改菜单{% endblock %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index')}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('role.index')}}" class="text-secondary">角色管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改角色</small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index')}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('menu.index')}}" class="text-secondary">菜单管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改菜单</small>
         </div>
     </div>
     <hr>
@@ -34,13 +34,41 @@
                     <small class="text-danger">{{message}}</small>
                 {% endfor %}
             </div>
+            <div class="form-group col-md-5">
+                {{form.url.label}}
+                {{form.url(class='form-control')}}
+                {% for message in form.url.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 offset-md-1">
+                {{form.module.label}}
+                {{form.module(class='form-control')}}
+                {% for message in form.module.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
+            <div class="form-group col-md-5">
+                &nbsp;
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-10 offset-md-1">
+                {{form.desc.label}}
+                {{form.desc(class='form-control', rows=3)}}
+                {% for message in form.desc.errors %}
+                    <small class="text-danger">{{message}}</small>
+                {% endfor %}
+            </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-5 offset-md-1">
                 <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
             </div>
             <div class="form-group col-md-5 text-right">
-                <a class="btn btn-outline-secondary" href="{{url_for('role.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                <a class="btn btn-outline-secondary" href="{{url_for('menu.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
             </div>
          </div>
     </form>
@@ -48,14 +76,6 @@
 {% endblock %}
 {% block script %}
     $(function(){
-        $('#selectParent').change(function(){
-            if($(this).is(':checked')){
-                $('#parent').removeAttr('disabled')
-                $('#has_parent').val(1)
-            }else{
-                $('#parent').attr('disabled', true)
-                $('#has_parent').val(0)
-            }
-        })
+
     })
 {% endblock %}

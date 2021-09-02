@@ -65,7 +65,7 @@
     function status(id, status){
         $.ajax({
             type:'post',
-            url:'/org/status/'+id+'/'+status,
+            url:'/menu/status/'+id+'/'+status,
             //data:JSON.stringify({code:$.trim($("#code").val()), name:$.trim($("#name").val()), password:$.trim($("#password").val())}),
             contentType:'application/json;charset=UTF-8',
             success:function(data){

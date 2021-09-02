@@ -1,7 +1,7 @@
 '''
 系统菜单管理
 '''
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from pm.models import SysMenu, SysModule
 from pm.plugins import db
@@ -47,7 +47,34 @@ def add():
 @login_required
 @log_record('修改系统菜单')
 def edit(id):
-    return 'Edit Menu'
+    form = MenuForm()
+    menu = SysMenu.query.get_or_404(id)
+    form.module.choices = get_modules()
+    if request.method == 'GET':
+        form.id.data = menu.id
+        form.name.data = menu.name
+        form.url.data = menu.url
+        form.desc.data = menu.desc
+        form.module.data = menu.module_id
+    if form.validate_on_submit():
+        menu.name = form.name.data
+        menu.url = form.url.data
+        menu.desc = form.desc.data
+        menu.module_id = form.module.data
+        menu.operator_id = current_user.id
+        db.session.commit()
+        flash('菜单修改成功！')
+        return redirect(url_for('.edit', id=form.id.data))
+    return render_template('sys/menu/edit.html', form=form)
+@bp_menu.route('/status/<id>/<int:status>', methods=['POST'])
+@login_required
+@log_record('启用/停用系统菜单')
+def status(id, status):
+    menu = SysMenu.query.get_or_404(id)
+    menu.status = True if status == 1 else False
+    menu.operator_id = current_user.id
+    db.session.commit()
+    return jsonify(code=1, message='菜单状态修改成功！')
 def get_modules():
     modules = []
     for module in SysModule.query.order_by(SysModule.name.desc()).all():
