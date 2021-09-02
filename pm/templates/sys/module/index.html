@@ -35,7 +35,7 @@
                     <td>{{module.name}}</td>
                     <td class="text-center">
                         <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-success" title="菜单清单"><i class="fas fa-list"></i></a>
+                        <button class="btn btn-link btn-sm text-success" title="菜单清单" onclick="get_menus('{{module.id}}')"><i class="fas fa-list"></i></button>
                     </td>
                 </tr>
             {%endfor%}
@@ -47,19 +47,47 @@
       </tbody>
     </table>
     {{render_pagination(pagination, align='right')}}
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">&nbsp;</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group" id="menus">
+              <li class="list-group-item">An item</li>
+              <li class="list-group-item">A second item</li>
+              <li class="list-group-item">A third item</li>
+              <li class="list-group-item">A fourth item</li>
+              <li class="list-group-item">And a fifth one</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 {% endblock %}
 {% block script %}
     {{ super() }}
-    function status(id, status){
+    function get_menus(id){
         $.ajax({
             type:'post',
-            url:'/org/status/'+id+'/'+status,
-            //data:JSON.stringify({code:$.trim($("#code").val()), name:$.trim($("#name").val()), password:$.trim($("#password").val())}),
+            url:'/module/menus/'+id,
             contentType:'application/json;charset=UTF-8',
             success:function(data){
-                if(data.code == 1)
-                    location.reload()
+                $('#menus').empty()
+                if(data.menus.length == 0){
+                    $('#menus').append("<li class='list-group-item'>没有菜单！</li>")
+                }else{
+                    for(var i = 0; i < data.menus.length; i++){
+                        $('#menus').append("<li class='list-group-item'><i class='fas fa-list'></i>&nbsp;&nbsp;"+data.menus[i]+"</li>")
+                    }
+                }
+                $('#myModal').modal('show')
             },
             error:function(){
                 $.alert({

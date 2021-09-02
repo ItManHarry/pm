@@ -2,7 +2,7 @@
 系统模块管理
 '''
 import uuid
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from pm.forms.sys.module import ModuleSearchForm, ModuleForm
 from pm.models import SysModule
@@ -49,3 +49,12 @@ def edit(id):
         flash('模块修改成功！')
         return redirect(url_for('.edit', id=module.id))
     return render_template('sys/module/edit.html', form=form)
+@bp_module.route('/menus/<id>', methods=['POST'])
+@login_required
+@log_record('查看模块下的菜单')
+def menus(id):
+    module = SysModule.query.get_or_404(id)
+    ms = []
+    for menu in module.menus:
+        ms.append(menu.name)
+    return jsonify(menus=ms)
