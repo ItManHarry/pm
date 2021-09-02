@@ -84,13 +84,17 @@ def register_webapp_commands(app):
         db.create_all()
         click.echo('数据库初始化完毕')
         click.echo('创建管理员角色')
-        role = SysRole(id=uuid.uuid4().hex, name='Administrator')
-        db.session.add(role)
-        db.session.commit()
+        role = SysRole.query.first()
+        if role:
+            click.echo('管理员角色已存在，跳过创建')
+        else:
+            role = SysRole(id=uuid.uuid4().hex, name='Administrator')
+            db.session.add(role)
+            db.session.commit()
         click.echo('创建管理员')
         user = SysUser.query.first()
         if user:
-            click.echo('管理员已存在，跳过创建。')
+            click.echo('管理员已存在，跳过创建')
         else:
             click.echo('执行创建管理员')
             user = SysUser(
@@ -112,10 +116,14 @@ def register_webapp_commands(app):
             user.set_updated_by(user)
         click.echo('管理员创建成功')
         click.echo('初始化系统模块')
-        modules = ['项目管理', 'ISSUE管理', '系统管理']
-        for module_name in modules:
-            module = SysModule(id=uuid.uuid4().hex, name=module_name, operator_id=user.id)
-            db.session.add(module)
-            db.session.commit()
+        modules = SysModule.query.all()
+        if len(modules) > 0:
+            click.echo('系统模块已创建，跳过')
+        else:
+            modules = ['项目管理', 'ISSUE管理', '系统管理']
+            for module_name in modules:
+                module = SysModule(id=uuid.uuid4().hex, name=module_name, operator_id=user.id)
+                db.session.add(module)
+                db.session.commit()
         click.echo('系统模块初始化完成')
         click.echo('系统初始化完成')

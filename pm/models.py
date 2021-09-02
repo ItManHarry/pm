@@ -119,7 +119,7 @@ class SysMenu(BaseModel, db.Model):
 class SysDict(BaseModel, db.Model):
     code = db.Column(db.String(24), unique=True)    # 字典代码
     name = db.Column(db.String(24), unique=True)    # 字典名称
-    enums = db.relationship('SysEnum', back_populates='dict', cascade='all')
+    enums = db.relationship('SysEnum', back_populates='dictionary', cascade='all')
 '''
     下拉字典枚举值
 '''
@@ -127,7 +127,7 @@ class SysEnum(BaseModel, db.Model):
     value = db.Column(db.String(24))        # 枚举值
     view = db.Column(db.String(128))        # 显示值
     dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))
-    dict = db.relationship('SysDict', back_populates='enums')
+    dictionary = db.relationship('SysDict', back_populates='enums')
 '''
     系统操作日志
 '''
