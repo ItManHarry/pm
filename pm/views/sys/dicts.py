@@ -3,7 +3,7 @@
 '''
 from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from pm.models import SysDict
+from pm.models import SysDict, SysEnum
 from pm.plugins import db
 from pm.forms.sys.dicts import DictForm, DictSearchForm
 from pm.decorators import log_record
@@ -55,3 +55,47 @@ def edit(id):
         flash('字典信息更新成功！')
         return redirect(url_for('.edit', id=form.id.data))
     return render_template('sys/dict/edit.html', form=form)
+@bp_dict.route('/enums/<dict_id>', methods=['POST'])
+@login_required
+@log_record('获取字典枚举信息')
+def enums(dict_id):
+    dictionary = SysDict.query.get_or_404(dict_id)
+    enums = []
+    for enum in dictionary.enums:
+        enums.append((enum.id, enum.display))
+    return jsonify(enums=enums)
+@bp_dict.route('/enum_add', methods=['POST'])
+@login_required
+@log_record('修改字典枚举信息')
+def enum_add():
+    data = request.get_json()
+    dict_id = data['dict_id']
+    dictionary = SysDict.query.get_or_404(dict_id)
+    # 先移除已关联的枚举值
+    for enum in dictionary.enums:
+        dictionary.enums.remove(enum)
+        db.session.commit()
+    # 移除的枚举执行删除
+    removed = data['removed']
+    print('Removed : ', removed)
+    for enum_id in removed:
+        enum = SysEnum.query.get(enum_id)
+        if enum:
+            db.session.delete(enum)
+            db.session.commit()
+    # 关联枚举值
+    enums = data['p_enums']
+    for enum in enums:
+        print('Enum id : ', enum['id'], ', display : ', enum['display'])
+        enumeration = SysEnum.query.get(str(enum['id']))
+        if enumeration:
+            enumeration.display = enum['display']
+            enumeration.operator_id = current_user.id
+            db.session.commit()
+        else:
+            enumeration = SysEnum(id=uuid.uuid4().hex, display=enum['display'], operator_id=current_user.id)
+            db.session.add(enumeration)
+            db.session.commit()
+        dictionary.enums.append(enumeration)
+        db.session.commit()
+    return jsonify(code=1, message='枚举维护成功!')

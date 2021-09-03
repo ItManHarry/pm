@@ -124,8 +124,7 @@ class SysDict(BaseModel, db.Model):
     下拉字典枚举值
 '''
 class SysEnum(BaseModel, db.Model):
-    value = db.Column(db.String(24))        # 枚举值
-    view = db.Column(db.String(128))        # 显示值
+    display = db.Column(db.String(128))        # 显示值
     dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))
     dictionary = db.relationship('SysDict', back_populates='enums')
 '''
