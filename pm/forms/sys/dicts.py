@@ -13,7 +13,7 @@ class DictForm(FlaskForm):
 
     def validate_code(self, field):
         if self.id.data == '':
-            if SysDict.query.filter_by(code=field.data.lower()).first():
+            if SysDict.query.filter_by(code=field.data.upper()).first():
                 raise ValidationError('字典代码已存在!')
         else:
             old_code = SysDict.query.get(self.id.data).code
@@ -24,7 +24,7 @@ class DictForm(FlaskForm):
             # 剔除未更新前的字典代码
             codes.remove(old_code)
             # Check新的字典代码是否已经存在
-            if field.data.lower() in codes:
+            if field.data.upper() in codes:
                 raise ValidationError('字典代码已存在!')
     def validate_name(self, field):
         if self.id.data == '':
