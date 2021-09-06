@@ -24,7 +24,9 @@
     <table class="table table-hover table-sm">
       <thead>
         <tr>
-            <th scope="col" width="85%">模块名称</th>
+            <th scope="col" width="30%">模块代码</th>
+            <th scope="col" width="30%">模块名称</th>
+            <th scope="col" width="25%">默认链接</th>
             <th scope="col" class="text-center" width="15%">Action</th>
         </tr>
       </thead>
@@ -32,7 +34,9 @@
         {% if modules %}
             {% for module in modules %}
                 <tr>
+                    <td>{{module.code}}</td>
                     <td>{{module.name}}</td>
+                    <td>{{module.default_url}}</td>
                     <td class="text-center">
                         <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
                         <button class="btn btn-link btn-sm text-success" title="菜单清单" onclick="get_menus('{{module.id}}')"><i class="fas fa-list"></i></button>

@@ -28,7 +28,12 @@ def index():
 def add():
     form = ModuleForm()
     if form.validate_on_submit():
-        module = SysModule(id=uuid.uuid4().hex, name=form.name.data, operator_id=current_user.id)
+        module = SysModule(
+            id=uuid.uuid4().hex,
+            code = form.code.data,
+            name=form.name.data,
+            default_url=form.default_url.data,
+            operator_id=current_user.id)
         db.session.add(module)
         db.session.commit()
         flash('模块添加成功！')
@@ -41,9 +46,13 @@ def edit(id):
     module = SysModule.query.get_or_404(id)
     if request.method == 'GET':
         form.name.data = module.name
+        form.code.data = module.code
         form.id.data = module.id
+        form.default_url.data = module.default_url
     if form.validate_on_submit():
         module.name = form.name.data
+        module.code = form.code.data
+        module.default_url = form.default_url.data
         module.operator_id = current_user.id
         db.session.commit()
         flash('模块修改成功！')
