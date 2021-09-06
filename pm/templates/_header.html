@@ -6,15 +6,17 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarScroll">
     <ul class="navbar-nav mr-auto my-2 my-lg-0 navbar-nav-scroll" style="max-height: 100px;">
-      <li class="nav-item">
-        <a class="nav-link {%if session.get('nav') == 'pro'%}active{%endif%}" href="#">项目管理</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {%if session.get('nav') == 'issue'%}active{%endif%}" href="#">ISSUE管理</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {%if session.get('nav') == 'sys'%}active{%endif%}" href="{{url_for('sys.index')}}">系统管理</a>
-      </li>
+      {% for module in session.get('modules') %}
+        <li class="nav-item">
+          <li class="nav-item">
+            {% if session.get('nav') == module[3]%}
+            <a class="nav-link active" href="{{url_for(module[0], module_id=module[1])}}">{{module[2]}}</a>
+            {% else %}
+            <a class="nav-link" href="{{url_for(module[0], module_id=module[1])}}">{{module[2]}}</a>
+            {% endif %}
+          </li>
+        </li>
+      {% endfor %}
     </ul>
     <div class="d-flex">
         {% if current_user.is_authenticated %}

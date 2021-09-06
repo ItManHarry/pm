@@ -100,7 +100,9 @@ class SysRole(BaseModel, db.Model):
     系统模块
 '''
 class SysModule(BaseModel, db.Model):
+    code = db.Column(db.String(12), unique=True)                # 模块代码(用以导航状态)
     name = db.Column(db.String(24), unique=True)                # 模块名称
+    default_url = db.Column(db.String(24))                      # 默认链接URL地址
     menus = db.relationship('SysMenu', back_populates='module') # 和菜单建立一对多关联关系
 '''
     系统菜单

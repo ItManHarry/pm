@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, current_user
 from pm.forms.auth import LoginForm
 from pm.plugins import db
@@ -26,6 +26,17 @@ def login():
                     log = SysLog(id=uuid.uuid4().hex, url='auth.login', operation='Login into system', user=user, operator_id=user.id)
                     db.session.add(log)
                     db.session.commit()
+                    # 获取系统分配的模块权限
+                    menus = user.role.menus
+                    tmp = []
+                    modules = []
+                    for menu in menus:
+                        module = menu.module
+                        if module not in tmp:
+                            tmp.append(module)
+                            modules.append((module.default_url, module.id, module.name, module.code))
+                    session['modules'] = modules
+                    print('Modules : ', session.get('modules'))
                     return redirect_back()
                 else:
                     flash('密码错误！')
