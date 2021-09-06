@@ -9,86 +9,22 @@
     </div>
     <hr>
     <div class="row">
+    {% for menu in menus %}
+        {%if loop.index%3 == 0 %}<br><br>{%endif%}
         <div class="col-4">
             <div class="card text-center">
               <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-users"></i>&nbsp;&nbsp;用户管理</h5>
+                <h5 class="card-title"><i class="fas fa-users"></i>&nbsp;&nbsp;{{menu.name}}</h5>
               </div>
               <div class="card-body">
-                <p class="card-text">管理系统用户(新增/修改/停用等).</p>
+                <p class="card-text">{{menu.desc}}</p>
               </div>
               <div class="card-footer">
-                <a href="{{url_for('user.index')}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
+                <a href="{{url_for(menu.url)}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
               </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="card text-center">
-              <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-sitemap"></i>&nbsp;&nbsp;组织管理</h5>
-              </div>
-              <div class="card-body">
-                <p class="card-text">管理部门组织信息(新增/修改/停用等).</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{url_for('org.index')}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
-              </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="card text-center">
-              <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-gavel"></i>&nbsp;&nbsp;角色管理</h5>
-              </div>
-              <div class="card-body">
-                <p class="card-text">管理系统角色(新增/修改/停用等).</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{url_for('role.index')}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
-              </div>
-            </div>
-        </div>
-    </div><br>
-    <div class="row">
-        <div class="col-4">
-            <div class="card text-center">
-              <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;模块管理</h5>
-              </div>
-              <div class="card-body">
-                <p class="card-text">管理系统模块(新增/修改/停用等).</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{url_for('module.index')}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
-              </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="card text-center">
-              <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-list"></i>&nbsp;&nbsp;菜单管理</h5>
-              </div>
-              <div class="card-body">
-                <p class="card-text">管理系统菜单(新增/修改/停用等).</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{url_for('menu.index')}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
-              </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="card text-center">
-              <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-book"></i>&nbsp;&nbsp;字典管理</h5>
-              </div>
-              <div class="card-body">
-                <p class="card-text">管理系统字典及枚举数据(新增/修改/停用等).</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{url_for('dict.index')}}" class="btn btn-outline-info">Go&nbsp;&nbsp;<i class="fas fa-long-arrow-alt-right"></i></a>
-              </div>
-            </div>
-        </div>
+    {% endfor %}
     </div>
 </div>
 {% endblock %}

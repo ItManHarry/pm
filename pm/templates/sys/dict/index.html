@@ -5,7 +5,7 @@
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
         <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index')}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">字典管理</span></small>
+            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;<a href="{{url_for('sys.index', module_id=session.get('module_id'))}}" class="text-secondary">系统管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">字典管理</span></small>
         </div>
     </div>
     <hr>
