@@ -10,11 +10,10 @@
     <hr>
     <div class="row">
     {% for menu in menus %}
-        {%if loop.index%3 == 0 %}<br><br>{%endif%}
         <div class="col-4">
             <div class="card text-center">
               <div class="card-header">
-                <h5 class="card-title"><i class="fas fa-users"></i>&nbsp;&nbsp;{{menu.name}}</h5>
+                <h5 class="card-title"><i class="{{menu.icon}}"></i>&nbsp;&nbsp;{{menu.name}}</h5>
               </div>
               <div class="card-body">
                 <p class="card-text">{{menu.desc}}</p>

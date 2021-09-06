@@ -11,6 +11,7 @@ class MenuForm(FlaskForm):
     url = StringField('菜单URL', validators=[DataRequired('请输入菜单URL地址！')])
     desc = TextAreaField('菜单说明', validators=[DataRequired('请输入菜单说明！')])
     module = SelectField('所属模块', validators=[DataRequired('请选择所属模块！')], choices=[])
+    icon = StringField('菜单图标', [validators.optional()])
 
     def validate_name(self, field):
         if self.id.data == '':

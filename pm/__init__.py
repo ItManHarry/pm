@@ -85,7 +85,7 @@ def register_webapp_commands(app):
     @click.option('--admin_code', prompt=True, help='管理员账号')
     @click.option('--admin_password', prompt=True, help='管理员密码', hide_input=True, confirmation_prompt=True)
     def init(admin_code, admin_password):
-        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole, SysModule
+        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole, SysModule, SysMenu
         click.echo('执行数据库初始化...')
         db.create_all()
         click.echo('数据库初始化完毕')
@@ -126,10 +126,39 @@ def register_webapp_commands(app):
         if len(modules) > 0:
             click.echo('系统模块已创建，跳过')
         else:
-            modules = ['项目管理', 'ISSUE管理', '系统管理']
-            for module_name in modules:
-                module = SysModule(id=uuid.uuid4().hex, name=module_name, operator_id=user.id)
+            modules = [('pro', '项目管理', 'pro.index'), ('iss', 'ISSUE管理', 'iss.index'), ('sys', '系统管理', 'sys.index')]
+            for module_info in modules:
+                module = SysModule(id=uuid.uuid4().hex, code=module_info[0], name=module_info[1], default_url=module_info[2], operator_id=user.id)
                 db.session.add(module)
                 db.session.commit()
         click.echo('系统模块初始化完成')
+        click.echo('初始化系统菜单')
+        # 菜单名称, URL地址, 菜单描述, 菜单图标, 模块所属
+        menus = [
+            ('字典管理', 'dict.index', '管理系统下拉选项，包括新增、修改等', 'fas fa-book', 'sys'),
+            ('模块管理', 'module.index', '管理系统模块(新增/修改等)', 'fas fa-project-diagram', 'sys'),
+            ('用户管理', 'user.index', '管理系统用户(添加、修改、启用/停用等)', 'fas fa-users', 'sys'),
+            ('组织管理', 'org.index', '管理部门组织信息(新增/修改/停用等)', 'fas fa-sitemap', 'sys'),
+            ('菜单管理', 'menu.index', '管理系统菜单(新增/修改/停用等)', 'fas fa-list', 'sys'),
+            ('角色管理', 'role.index', '管理系统角色(新增/修改等)', 'fas fa-gavel', 'sys'),
+        ]
+        if SysMenu.query.all():
+            click.echo('系统菜单已创建，跳过')
+        else:
+            for menu_info in menus:
+                menu = SysMenu(
+                    id=uuid.uuid4().hex,
+                    name=menu_info[0],
+                    url=menu_info[1],
+                    desc=menu_info[2],
+                    icon=menu_info[3],
+                    module=SysModule.query.filter_by(code=menu_info[4]).first(),
+                    operator_id=user.id
+                )
+                db.session.add(menu)
+                db.session.commit()
+                # 设定角色
+                role.menus.append(menu)
+                db.session.commit()
+            click.echo('菜单初始化完成')
         click.echo('系统初始化完成')

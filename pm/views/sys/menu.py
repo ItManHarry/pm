@@ -35,6 +35,7 @@ def add():
             url=form.url.data,
             desc=form.desc.data,
             module_id=form.module.data,
+            icon=form.icon.data,
             operator_id=current_user.id
         )
         db.session.add(menu)
@@ -55,11 +56,13 @@ def edit(id):
         form.name.data = menu.name
         form.url.data = menu.url
         form.desc.data = menu.desc
+        form.icon.data = menu.icon
         form.module.data = menu.module_id
     if form.validate_on_submit():
         menu.name = form.name.data
         menu.url = form.url.data
         menu.desc = form.desc.data
+        menu.icon = form.icon.data
         menu.module_id = form.module.data
         menu.operator_id = current_user.id
         db.session.commit()

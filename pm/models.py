@@ -108,10 +108,11 @@ class SysModule(BaseModel, db.Model):
     系统菜单
 '''
 class SysMenu(BaseModel, db.Model):
-    name = db.Column(db.String(64))         # 菜单名
-    url = db.Column(db.String(24))          # URL地址
-    desc = db.Column(db.String(128))        # 菜单描述
-    status = db.Column(db.Boolean, default=True)  # 菜单状态(是否在用,默认在用)
+    name = db.Column(db.String(64))                 # 菜单名
+    url = db.Column(db.String(24))                  # URL地址
+    desc = db.Column(db.String(128))                # 菜单描述
+    status = db.Column(db.Boolean, default=True)    # 菜单状态(是否在用,默认在用)
+    icon = db.Column(db.String(24))                 # 图标
     module_id = db.Column(db.String(32), db.ForeignKey('sys_module.id'))
     module = db.relationship('SysModule', back_populates='menus')
     roles = db.relationship('SysRole', secondary='sys_roles_menus', back_populates='menus')

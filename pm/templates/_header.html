@@ -20,7 +20,7 @@
     </ul>
     <div class="d-flex">
         {% if current_user.is_authenticated %}
-            <h4 class="text-secondary"><i class="far fa-user"></i>&nbsp;{{current_user.user_name}}</h4>&nbsp;&nbsp;&nbsp;&nbsp;
+            <h5 class="text-secondary"><i class="far fa-user"></i>&nbsp;{{current_user.user_name}}</h5>&nbsp;&nbsp;&nbsp;&nbsp;
             <a class="btn btn-outline-success" href="{{url_for('auth.logout')}}"><i class="fas fa-sign-out-alt"></i></a>
         {% endif %}
     </div>
