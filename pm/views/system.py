@@ -16,5 +16,6 @@ def index(module_id):
     for menu in authed_menus:
         if menu.module_id == module.id:
             menus.append((menu.url, menu.icon, menu.name))
+    print('menus are : ', menus)
     session['menus'] = menus
     return redirect(url_for(module.default_url, module_id=module_id))

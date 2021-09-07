@@ -48,7 +48,9 @@ class SysUser(BaseModel, db.Model, UserMixin):
     role = db.relationship('SysRole', back_populates='users')           # 系统角色
     dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))    # 所属部门ID
     dept = db.relationship('BizDept', back_populates='users')           # 所属部门
+    programs = db.relationship('BizProgram', back_populates='owner')    # 管理项目清单
     logs = db.relationship('SysLog', back_populates='user')             # 操作日志
+
 
     def set_password(self, password):
         self.user_pwd_hash = generate_password_hash(password)
@@ -191,3 +193,15 @@ class BizDept(BaseModel, db.Model):
     @property
     def my_child_dept(self):
         return BizDeptRef.query.filter_by(parent_dept_id=self.id).order_by(BizDeptRef.timestamp_loc.desc()).all()
+'''
+项目主信息
+'''
+class BizProgram(BaseModel, db.Model):
+    no = db.Column(db.String(24), unique=True)      # 项目编号
+    name = db.Column(db.String(128))                # 项目名称
+    desc = db.Column(db.Text())                     # 项目描述
+    pr = db.Column(db.String(24))                   # PR编号
+    contract = db.Column(db.String(24))             # 合同编号
+    svn = db.Column(db.String(128))                 # SVN地址
+    owner_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))   # 项目负责人ID
+    owner = db.relationship('SysUser', back_populates='programs')       # 项目负责人

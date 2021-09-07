@@ -1,6 +1,6 @@
 <div class="btn-group dropleft float-right">
     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="fas fa-list"></i>
+    <i class="fas fa-list"></i>{{session.get('menus')|length}}
     </button>
     <div class="dropdown-menu">
         {% for menu in session.get('menus') %}
