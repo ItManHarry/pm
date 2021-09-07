@@ -128,7 +128,13 @@ def register_webapp_commands(app):
         else:
             modules = [('pro', '项目管理', 'pro.index'), ('iss', 'ISSUE管理', 'iss.index'), ('sys', '系统管理', 'sys.index')]
             for module_info in modules:
-                module = SysModule(id=uuid.uuid4().hex, code=module_info[0], name=module_info[1], default_url=module_info[2], operator_id=user.id)
+                module = SysModule(
+                    id=uuid.uuid4().hex,
+                    code=module_info[0],
+                    name=module_info[1],
+                    default_url=module_info[2],
+                    operator_id=user.id
+                )
                 db.session.add(module)
                 db.session.commit()
         click.echo('系统模块初始化完成')

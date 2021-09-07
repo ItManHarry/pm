@@ -10,9 +10,9 @@
         <li class="nav-item">
           <li class="nav-item">
             {% if session.get('nav') == module[3]%}
-            <a class="nav-link active" href="{{url_for(module[0], module_id=module[1])}}">{{module[2]}}</a>
+            <a class="nav-link active" href="{{url_for('sys.index', module_id=module[1])}}">{{module[2]}}</a>
             {% else %}
-            <a class="nav-link" href="{{url_for(module[0], module_id=module[1])}}">{{module[2]}}</a>
+            <a class="nav-link" href="{{url_for('sys.index', module_id=module[1])}}">{{module[2]}}</a>
             {% endif %}
           </li>
         </li>

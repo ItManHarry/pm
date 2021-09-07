@@ -12,8 +12,8 @@ def login():
     系统登录
     :return:
     '''
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+    #if current_user.is_authenticated:
+        #return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user_id = form.user_id.data

@@ -1,0 +1,11 @@
+<div class="btn-group dropleft float-right">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fas fa-list"></i>
+    </button>
+    <div class="dropdown-menu">
+        {% for menu in session.get('menus') %}
+        <a class="dropdown-item" href="{{url_for(menu[0])}}"><i class="{{menu[1]}}"></i>&nbsp;&nbsp;{{menu[2]}}</a>
+        <div class="dropdown-divider"></div>
+        {% endfor %}
+    </div>
+</div>
