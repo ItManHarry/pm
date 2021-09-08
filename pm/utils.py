@@ -17,6 +17,9 @@ def utc_to_locale(utc_date):
 #获取当前时间
 def get_time():
     return 'Now is : %s' %time.strftime('%Y年%m月%d日')
+# 获取日期
+def get_date():
+    return time.strftime('%Y%m%d')
 #格式化日期
 def format_time(timestamp):
     return utc_to_locale(timestamp).strftime('%Y-%m-%d %H:%M:%S')

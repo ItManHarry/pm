@@ -199,9 +199,9 @@ class BizDept(BaseModel, db.Model):
 class BizProgram(BaseModel, db.Model):
     no = db.Column(db.String(24), unique=True)      # 项目编号
     name = db.Column(db.String(128))                # 项目名称
-    desc = db.Column(db.Text())                     # 项目描述
     pr = db.Column(db.String(24))                   # PR编号
     contract = db.Column(db.String(24))             # 合同编号
+    desc = db.Column(db.Text())                     # 项目描述
     svn = db.Column(db.String(128))                 # SVN地址
     owner_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))   # 项目负责人ID
     owner = db.relationship('SysUser', back_populates='programs')       # 项目负责人

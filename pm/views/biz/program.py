@@ -1,11 +1,13 @@
-from flask import Blueprint, render_template, session, url_for, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash
 from flask_login import login_required, current_user
 from pm.forms.biz.program import ProgramForm, ProgramSearchForm
 from pm.models import BizProgram
 from pm.plugins import db
 from pm.decorators import log_record
+from pm.utils import get_date
+import uuid, random
 bp_pro = Blueprint('pro', __name__)
-@bp_pro.route('/index')
+@bp_pro.route('/index', methods=['GET', 'POST'])
 @login_required
 @log_record('查看项目清单')
 def index():
@@ -20,3 +22,25 @@ def index():
     pagination = BizProgram.query.with_parent(current_user).filter(BizProgram.no.like('%' + no + '%'), BizProgram.name.like('%' + name + '%')).order_by(BizProgram.timestamp_loc).paginate(page, per_page)
     programs = pagination.items
     return render_template('biz/program/index.html', form=form, programs=programs, pagination=pagination)
+@bp_pro.route('/add', methods=['GET', 'POST'])
+@login_required
+@log_record('新增项目')
+def add():
+    form = ProgramForm()
+    if form.validate_on_submit():
+        program = BizProgram(
+            id=uuid.uuid4().hex,
+            no='PRO' + get_date() + str(random.randint(1000, 9999)),
+            name=form.name.data,
+            pr=form.pr.data,
+            contract=form.contract.data,
+            desc=form.desc.data,
+            svn=form.svn.data,
+            owner=current_user,
+            operator_id=current_user.id
+        )
+        db.session.add(program)
+        db.session.commit()
+        flash('项目添加成功！')
+        return redirect(url_for('.add'))
+    return render_template('biz/program/add.html', form=form)

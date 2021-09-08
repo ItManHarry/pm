@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-2 text-right">
                     <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-                    <a class="btn btn-link" href="{{url_for('user.add')}}"><i class="fas fa-plus"></i></a>
+                    <a class="btn btn-link" href="{{url_for('pro.add')}}"><i class="fas fa-plus"></i></a>
                 </div>
               </div>
             </form><br>
@@ -31,11 +31,11 @@
               <thead>
                 <tr>
                     <th scope="col" width="15%">项目编号</th>
-                    <th scope="col" width="10%">项目名称</th>
-                    <th scope="col" width="10%">PR编号</th>
+                    <th scope="col" width="20%">项目名称</th>
+                    <th scope="col" width="15%">PR编号</th>
                     <th scope="col" width="15%">合同编号</th>
                     <th scope="col" width="15%">项目描述</th>
-                    <th scope="col" width="15%">SVN地址</th>
+                    <!--th scope="col" width="15%">SVN地址</th-->
                     <th scope="col" class="text-center" width="20%">Action</th>
                 </tr>
               </thead>
@@ -48,7 +48,7 @@
                             <td>{{program.pr}}</td>
                             <td>{{program.contract}}</td>
                             <td>{{program.desc}}</td>
-                            <td>{{program.svn}}</td>
+                            <!--td>{{program.svn}}</td-->
                             <td class="text-center">
                                 <a href="{{url_for('user.edit', id=program.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
                                 {#
