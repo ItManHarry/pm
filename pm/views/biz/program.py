@@ -44,3 +44,28 @@ def add():
         flash('项目添加成功！')
         return redirect(url_for('.add'))
     return render_template('biz/program/add.html', form=form)
+@bp_pro.route('/edit/<id>', methods=['GET', 'POST'])
+@login_required
+@log_record('修改项目信息')
+def edit(id):
+    form = ProgramForm()
+    program = BizProgram.query.get_or_404(id)
+    if request.method == 'GET':
+        form.id.data = program.id
+        form.no.data = program.no
+        form.name.data = program.name
+        form.pr.data = program.pr
+        form.contract.data = program.contract
+        form.svn.data = program.svn
+        form.desc.data = program.desc
+    if form.validate_on_submit():
+        program.name = form.name.data
+        program.pr = form.pr.data
+        program.contract = form.contract.data
+        program.svn = form.svn.data
+        program.desc = form.desc.data
+        program.operator_id = current_user.id
+        db.session.commit()
+        flash('项目信息更新成功！')
+        return redirect(url_for('.edit', id=form.id.data))
+    return render_template('biz/program/edit.html', form=form)
