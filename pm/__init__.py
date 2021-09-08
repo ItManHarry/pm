@@ -126,7 +126,12 @@ def register_webapp_commands(app):
         if len(modules) > 0:
             click.echo('系统模块已创建，跳过')
         else:
-            modules = [('pro', '项目管理', 'pro.index'), ('iss', 'ISSUE管理', 'iss.index'), ('sys', '系统管理', 'sys.index')]
+            modules = [
+                ('pro', '项目管理', 'pro.index'),
+                ('iss', 'ISSUE管理', 'iss.index'),
+                ('sys', '系统管理', 'module.index'),
+                ('org', '人事组织', 'user.index')
+            ]
             for module_info in modules:
                 module = SysModule(
                     id=uuid.uuid4().hex,
@@ -143,10 +148,11 @@ def register_webapp_commands(app):
         menus = [
             ('字典管理', 'dict.index', '管理系统下拉选项，包括新增、修改等', 'fas fa-book', 'sys'),
             ('模块管理', 'module.index', '管理系统模块(新增/修改等)', 'fas fa-project-diagram', 'sys'),
-            ('用户管理', 'user.index', '管理系统用户(添加、修改、启用/停用等)', 'fas fa-users', 'sys'),
-            ('组织管理', 'org.index', '管理部门组织信息(新增/修改/停用等)', 'fas fa-sitemap', 'sys'),
             ('菜单管理', 'menu.index', '管理系统菜单(新增/修改/停用等)', 'fas fa-list', 'sys'),
             ('角色管理', 'role.index', '管理系统角色(新增/修改等)', 'fas fa-gavel', 'sys'),
+            ('用户管理', 'user.index', '管理系统用户(添加、修改、启用/停用等)', 'fas fa-users', 'org'),
+            ('组织管理', 'org.index', '管理部门组织信息(新增/修改/停用等)', 'fas fa-sitemap', 'org'),
+            ('我的项目', 'pro.index', '当前用户管理自己负责的项目信息', 'fas fa-newspaper', 'pro'),
         ]
         if SysMenu.query.all():
             click.echo('系统菜单已创建，跳过')
