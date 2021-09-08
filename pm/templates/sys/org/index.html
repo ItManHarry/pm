@@ -4,66 +4,70 @@
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;人事组织&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">部门管理</span></small>
-            {% include('_menus.html') %}
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;人事组织&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">部门管理</span></small>
+                </div>
+            </div>
+            <hr>
+            <form method="post">
+              <div class="row">
+                <div class="col-3 offset-4 text-right">
+                    {{form.csrf_token}}
+                    {{form.code(class='form-control', placeholder='部门代码')}}
+                </div>
+                <div class="col-3 text-right">
+                    {{form.name(class='form-control', placeholder='部门名称')}}
+                </div>
+                <div class="col-2 text-right">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                    <a class="btn btn-link" href="{{url_for('org.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            </form><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="15%">部门代码</th>
+                    <th scope="col" width="25%">部门名称</th>
+                    <th scope="col" width="15%">上级部门代码</th>
+                    <th scope="col" width="25%">上级部门名称</th>
+                    <th scope="col" width="5%">状态</th>
+                    <th scope="col" class="text-center" width="15%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if departments %}
+                    {% for department in departments %}
+                        <tr>
+                            <td>{{department.code}}</td>
+                            <td>{{department.name}}</td>
+                            <td>{{department.my_parent_dept.code if department.my_parent_dept else '/'}}</td>
+                            <td>{{department.my_parent_dept.name if department.my_parent_dept else '/'}}</td>
+                            {%if department.status%}
+                            <td class="text-success">在用</td>
+                            {%else%}
+                            <td class="text-danger">停用</td>
+                            {%endif%}
+                            <td class="text-center">
+                                <a href="{{url_for('org.edit', id=department.id)}}" class="btn btn-link btn-sm text-info {%if not department.status%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <button class="btn btn-link btn-sm text-danger {%if not department.status%}disabled{%endif%}" title="停用" onclick="status('{{department.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
+                                <button class="btn btn-link btn-sm text-success {%if department.status%}disabled{%endif%}" title="启用" onclick="status('{{department.id}}', 1)"><i class="far fa-check-circle"></i></button>
+                            </td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
-    <hr>
-    <form method="post">
-      <div class="row">
-        <div class="col-3 offset-5 text-right">
-            {{form.csrf_token}}
-            {{form.code(class='form-control', placeholder='部门代码')}}
-        </div>
-        <div class="col-3 text-right">
-            {{form.name(class='form-control', placeholder='部门名称')}}
-        </div>
-        <div class="col-1 text-right">
-            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-            <a class="btn btn-link btn-sm" href="{{url_for('org.add')}}"><i class="fas fa-plus"></i></a>
-        </div>
-      </div>
-    </form><br>
-    <table class="table table-hover table-sm">
-      <thead>
-        <tr>
-            <th scope="col" width="15%">部门代码</th>
-            <th scope="col" width="25%">部门名称</th>
-            <th scope="col" width="15%">上级部门代码</th>
-            <th scope="col" width="25%">上级部门名称</th>
-            <th scope="col" width="5%">状态</th>
-            <th scope="col" class="text-center" width="15%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if departments %}
-            {% for department in departments %}
-                <tr>
-                    <td>{{department.code}}</td>
-                    <td>{{department.name}}</td>
-                    <td>{{department.my_parent_dept.code if department.my_parent_dept else '/'}}</td>
-                    <td>{{department.my_parent_dept.name if department.my_parent_dept else '/'}}</td>
-                    {%if department.status%}
-                    <td class="text-success">在用</td>
-                    {%else%}
-                    <td class="text-danger">停用</td>
-                    {%endif%}
-                    <td class="text-center">
-                        <a href="{{url_for('org.edit', id=department.id)}}" class="btn btn-link btn-sm text-info {%if not department.status%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-link btn-sm text-danger {%if not department.status%}disabled{%endif%}" title="停用" onclick="status('{{department.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
-                        <button class="btn btn-link btn-sm text-success {%if department.status%}disabled{%endif%}" title="启用" onclick="status('{{department.id}}', 1)"><i class="far fa-check-circle"></i></button>
-                    </td>
-                </tr>
-            {%endfor%}
-        {% else %}
-            <tr>
-                <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
-            </tr>
-        {% endif %}
-      </tbody>
-    </table>
-    {{render_pagination(pagination, align='right')}}
 </div>
 {% endblock %}
 {% block script %}

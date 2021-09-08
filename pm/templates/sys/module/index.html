@@ -4,54 +4,58 @@
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">模块管理</span></small>
-            {% include('_menus.html') %}
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">模块管理</span></small>
+                </div>
+            </div>
+            <hr>
+            <form method="post">
+              <div class="row">
+                <div class="col-3 offset-7 text-right">
+                    {{form.csrf_token}}
+                    {{form.name(class='form-control', placeholder='模块名称')}}
+                </div>
+                <div class="col-2 text-right">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                    <a class="btn btn-link" href="{{url_for('module.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            </form><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="30%">模块代码</th>
+                    <th scope="col" width="30%">模块名称</th>
+                    <th scope="col" width="25%">默认链接</th>
+                    <th scope="col" class="text-center" width="15%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if modules %}
+                    {% for module in modules %}
+                        <tr>
+                            <td>{{module.code}}</td>
+                            <td>{{module.name}}</td>
+                            <td>{{module.default_url}}</td>
+                            <td class="text-center">
+                                <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <button class="btn btn-link btn-sm text-success" title="菜单清单" onclick="get_menus('{{module.id}}')"><i class="fas fa-list"></i></button>
+                            </td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
-    <hr>
-    <form method="post">
-      <div class="row">
-        <div class="col-3 offset-8 text-right">
-            {{form.csrf_token}}
-            {{form.name(class='form-control', placeholder='模块名称')}}
-        </div>
-        <div class="col-1 text-right">
-            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-            <a class="btn btn-link btn-sm" href="{{url_for('module.add')}}"><i class="fas fa-plus"></i></a>
-        </div>
-      </div>
-    </form><br>
-    <table class="table table-hover table-sm">
-      <thead>
-        <tr>
-            <th scope="col" width="30%">模块代码</th>
-            <th scope="col" width="30%">模块名称</th>
-            <th scope="col" width="25%">默认链接</th>
-            <th scope="col" class="text-center" width="15%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if modules %}
-            {% for module in modules %}
-                <tr>
-                    <td>{{module.code}}</td>
-                    <td>{{module.name}}</td>
-                    <td>{{module.default_url}}</td>
-                    <td class="text-center">
-                        <a href="{{url_for('module.edit', id=module.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-link btn-sm text-success" title="菜单清单" onclick="get_menus('{{module.id}}')"><i class="fas fa-list"></i></button>
-                    </td>
-                </tr>
-            {%endfor%}
-        {% else %}
-            <tr>
-                <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
-            </tr>
-        {% endif %}
-      </tbody>
-    </table>
-    {{render_pagination(pagination, align='right')}}
     <!-- Modal -->
     <div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

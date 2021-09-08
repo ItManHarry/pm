@@ -4,55 +4,59 @@
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">字典管理</span></small>
-            {% include('_menus.html') %}
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">字典管理</span></small>
+                </div>
+            </div>
+            <hr>
+            <form method="post">
+              <div class="row">
+                <div class="col-3 offset-4 text-right">
+                    {{form.csrf_token}}
+                    {{form.code(class='form-control', placeholder='字典代码')}}
+                </div>
+                <div class="col-3 text-right">
+                    {{form.name(class='form-control', placeholder='字典名称')}}
+                </div>
+                <div class="col-2 text-right">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                    <a class="btn btn-link" href="{{url_for('dict.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            </form><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="40%">字典代码</th>
+                    <th scope="col" width="40%">字典名称</th>
+                    <th scope="col" class="text-center" width="20%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if dictionaries %}
+                    {% for dictionary in dictionaries %}
+                        <tr>
+                            <td>{{dictionary.code}}</td>
+                            <td>{{dictionary.name}}</td>
+                            <td class="text-center">
+                                <a href="{{url_for('dict.edit', id=dictionary.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <button class="btn btn-link btn-sm text-success" title="枚举清单" onclick="get_enums('{{dictionary.id}}')"><i class="fas fa-list"></i></button>
+                            </td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
-    <hr>
-    <form method="post">
-      <div class="row">
-        <div class="col-3 offset-5 text-right">
-            {{form.csrf_token}}
-            {{form.code(class='form-control', placeholder='字典代码')}}
-        </div>
-        <div class="col-3 text-right">
-            {{form.name(class='form-control', placeholder='字典名称')}}
-        </div>
-        <div class="col-1 text-right">
-            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-            <a class="btn btn-link btn-sm" href="{{url_for('dict.add')}}"><i class="fas fa-plus"></i></a>
-        </div>
-      </div>
-    </form><br>
-    <table class="table table-hover table-sm">
-      <thead>
-        <tr>
-            <th scope="col" width="40%">字典代码</th>
-            <th scope="col" width="40%">字典名称</th>
-            <th scope="col" class="text-center" width="20%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if dictionaries %}
-            {% for dictionary in dictionaries %}
-                <tr>
-                    <td>{{dictionary.code}}</td>
-                    <td>{{dictionary.name}}</td>                   
-                    <td class="text-center">
-                        <a href="{{url_for('dict.edit', id=dictionary.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-link btn-sm text-success" title="枚举清单" onclick="get_enums('{{dictionary.id}}')"><i class="fas fa-list"></i></button>
-                    </td>
-                </tr>
-            {%endfor%}
-        {% else %}
-            <tr>
-                <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
-            </tr>
-        {% endif %}
-      </tbody>
-    </table>
-    {{render_pagination(pagination, align='right')}}
     <!-- Modal -->
     <div class="modal fade" id="enumModal" tabindex="-1" role="dialog" aria-labelledby="enumModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

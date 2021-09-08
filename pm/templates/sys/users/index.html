@@ -4,67 +4,71 @@
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;人事组织&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">用户管理</span></small>
-            {% include('_menus.html') %}
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;人事组织&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">用户管理</span></small>
+                </div>
+            </div>
+            <hr>
+            <form method="post">
+              <div class="row">
+                <div class="col-3 offset-4 text-right">
+                    {{form.csrf_token}}
+                    {{form.code(class='form-control', placeholder='用户代码')}}
+                </div>
+                <div class="col-3 text-right">
+                    {{form.name(class='form-control', placeholder='用户姓名')}}
+                </div>
+                <div class="col-2 text-right">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                    <a class="btn btn-link" href="{{url_for('user.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            </form><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="20%">用户代码</th>
+                    <th scope="col" width="20%">用户名称</th>
+                    <th scope="col" width="20%">部门</th>
+                    <th scope="col" width="15%">角色</th>
+                    <th scope="col" width="5%">状态</th>
+                    <th scope="col" class="text-center" width="20%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if users %}
+                    {% for user in users %}
+                        <tr>
+                            <td>{{user.user_id}}</td>
+                            <td>{{user.user_name}}</td>
+                            <td>{{user.dept.name}}</td>
+                            <td>{{user.role.name}}</td>
+                            {%if user.status%}
+                            <td class="text-success">在用</td>
+                            {%else%}
+                            <td class="text-danger">停用</td>
+                            {%endif%}
+                            <td class="text-center">
+                                <a href="{{url_for('user.edit', id=user.id)}}" class="btn btn-link btn-sm text-info {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <button class="btn btn-link btn-sm text-warning {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="重置密码" onclick="reset_password('{{user.id}}')"><i class="fas fa-key"></i></button>&nbsp;
+                                <button class="btn btn-link btn-sm text-danger {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="停用" onclick="status('{{user.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
+                                <button class="btn btn-link btn-sm text-success {%if user.status or user.user_id == 'admin'%}disabled{%endif%}" title="启用" onclick="status('{{user.id}}', 1)"><i class="far fa-check-circle"></i></button>
+                            </td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
-    <hr>
-    <form method="post">
-      <div class="row">
-        <div class="col-3 offset-5 text-right">
-            {{form.csrf_token}}
-            {{form.code(class='form-control', placeholder='用户代码')}}
-        </div>
-        <div class="col-3 text-right">
-            {{form.name(class='form-control', placeholder='用户姓名')}}
-        </div>
-        <div class="col-1 text-right">
-            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-            <a class="btn btn-link btn-sm" href="{{url_for('user.add')}}"><i class="fas fa-plus"></i></a>
-        </div>
-      </div>
-    </form><br>
-    <table class="table table-hover table-sm">
-      <thead>
-        <tr>
-            <th scope="col" width="20%">用户代码</th>
-            <th scope="col" width="20%">用户名称</th>
-            <th scope="col" width="15%">部门</th>
-            <th scope="col" width="25%">角色</th>
-            <th scope="col" width="5%">状态</th>
-            <th scope="col" class="text-center" width="15%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if users %}
-            {% for user in users %}
-                <tr>
-                    <td>{{user.user_id}}</td>
-                    <td>{{user.user_name}}</td>
-                    <td>{{user.dept.name}}</td>
-                    <td>{{user.role.name}}</td>
-                    {%if user.status%}
-                    <td class="text-success">在用</td>
-                    {%else%}
-                    <td class="text-danger">停用</td>
-                    {%endif%}
-                    <td class="text-center">
-                        <a href="{{url_for('user.edit', id=user.id)}}" class="btn btn-link btn-sm text-info {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-link btn-sm text-warning {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="重置密码" onclick="reset_password('{{user.id}}')"><i class="fas fa-key"></i></button>&nbsp;
-                        <button class="btn btn-link btn-sm text-danger {%if not user.status or user.user_id == 'admin'%}disabled{%endif%}" title="停用" onclick="status('{{user.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
-                        <button class="btn btn-link btn-sm text-success {%if user.status or user.user_id == 'admin'%}disabled{%endif%}" title="启用" onclick="status('{{user.id}}', 1)"><i class="far fa-check-circle"></i></button>
-                    </td>
-                </tr>
-            {%endfor%}
-        {% else %}
-            <tr>
-                <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
-            </tr>
-        {% endif %}
-      </tbody>
-    </table>
-    {{render_pagination(pagination, align='right')}}
 </div>
 {% endblock %}
 {% block script %}

@@ -4,63 +4,67 @@
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">菜单管理</span></small>
-            {% include('_menus.html') %}
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">菜单管理</span></small>
+                </div>
+            </div>
+            <hr>
+            <form method="post">
+              <div class="row">
+                <div class="col-3 offset-7 text-right">
+                    {{form.csrf_token}}
+                    {{form.name(class='form-control', placeholder='菜单名称')}}
+                </div>
+                <div class="col-2 text-right">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                    <a class="btn btn-link" href="{{url_for('menu.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            </form><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="15%">所属模块</th>
+                    <th scope="col" width="15%">菜单名称</th>
+                    <th scope="col" width="15%">菜单URL</th>
+                    <th scope="col" width="35%">菜单说明</th>
+                    <th scope="col" width="5%">状态</th>
+                    <th scope="col" class="text-center" width="15%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if menus %}
+                    {% for menu in menus %}
+                        <tr>
+                            <td>{{menu.module.name}}</td>
+                            <td>{{menu.name}}</td>
+                            <td>{{menu.url}}</td>
+                            <td>{{menu.desc|truncate(length=20 ,killwords=False,end='...')}}</td>
+                            {%if menu.status%}
+                            <td class="text-success">在用</td>
+                            {%else%}
+                            <td class="text-danger">停用</td>
+                            {%endif%}
+                            <td class="text-center">
+                                <a href="{{url_for('menu.edit', id=menu.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <button class="btn btn-link btn-sm text-danger {%if not menu.status%}disabled{%endif%}" title="停用" onclick="status('{{menu.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
+                                <button class="btn btn-link btn-sm text-success {%if menu.status%}disabled{%endif%}" title="启用" onclick="status('{{menu.id}}', 1)"><i class="far fa-check-circle"></i></button>
+                            </td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
-    <hr>
-    <form method="post">
-      <div class="row">
-        <div class="col-3 offset-8 text-right">
-            {{form.csrf_token}}
-            {{form.name(class='form-control', placeholder='菜单名称')}}
-        </div>
-        <div class="col-1 text-right">
-            <button class="btn btn-link btn-sm" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-            <a class="btn btn-link btn-sm" href="{{url_for('menu.add')}}"><i class="fas fa-plus"></i></a>
-        </div>
-      </div>
-    </form><br>
-    <table class="table table-hover table-sm">
-      <thead>
-        <tr>
-            <th scope="col" width="15%">所属模块</th>
-            <th scope="col" width="15%">菜单名称</th>
-            <th scope="col" width="15%">菜单URL</th>
-            <th scope="col" width="35%">菜单说明</th>
-            <th scope="col" width="5%">状态</th>
-            <th scope="col" class="text-center" width="15%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if menus %}
-            {% for menu in menus %}
-                <tr>
-                    <td>{{menu.module.name}}</td>
-                    <td>{{menu.name}}</td>
-                    <td>{{menu.url}}</td>
-                    <td>{{menu.desc|truncate(length=20 ,killwords=False,end='...')}}</td>
-                    {%if menu.status%}
-                    <td class="text-success">在用</td>
-                    {%else%}
-                    <td class="text-danger">停用</td>
-                    {%endif%}
-                    <td class="text-center">
-                        <a href="{{url_for('menu.edit', id=menu.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-link btn-sm text-danger {%if not menu.status%}disabled{%endif%}" title="停用" onclick="status('{{menu.id}}', 0)"><i class="far fa-times-circle"></i></button>&nbsp;
-                        <button class="btn btn-link btn-sm text-success {%if menu.status%}disabled{%endif%}" title="启用" onclick="status('{{menu.id}}', 1)"><i class="far fa-check-circle"></i></button>
-                    </td>
-                </tr>
-            {%endfor%}
-        {% else %}
-            <tr>
-                <td colspan="5" class="text-center"><small>没有记录!!!</small></td>
-            </tr>
-        {% endif %}
-      </tbody>
-    </table>
-    {{render_pagination(pagination, align='right')}}
 </div>
 {% endblock %}
 {% block script %}

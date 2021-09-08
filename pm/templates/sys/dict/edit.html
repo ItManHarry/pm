@@ -4,54 +4,59 @@
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
     <div class="row">
-        <div class="col">
-            <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('dict.index')}}" class="text-secondary">字典管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改字典</small>
-            {% include('_menus.html') %}
-        </div>
-    </div>
-    <hr>
-    <div class="row">
-        <div class="col-10 offset-1 text-center text-info">
-            {% if get_flashed_messages() %}
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
-                  {% for message in get_flashed_messages() %}
-                    <small>{{ message }}</small>
-                  {% endfor %}
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;系统管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('dict.index')}}" class="text-secondary">字典管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改字典</small>
                 </div>
-            {% endif %}
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-10 offset-1 text-center text-info">
+                    {% if get_flashed_messages() %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                          {% for message in get_flashed_messages() %}
+                            <small>{{ message }}</small>
+                          {% endfor %}
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <form method="post">
+                {{form.csrf_token}}
+                {{form.id}}
+                <div class="form-row">
+                    <div class="form-group col-md-5 offset-md-1">
+                        {{form.code.label}}
+                        {{form.code(class='form-control')}}
+                        {% for message in form.code.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-md-5">
+                        {{form.name.label}}
+                        {{form.name(class='form-control')}}
+                        {% for message in form.name.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-5 offset-md-1">
+                        <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
+                    </div>
+                    <div class="form-group col-md-5 text-right">
+                        <a class="btn btn-outline-secondary" href="{{url_for('dict.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                    </div>
+                 </div>
+            </form>
         </div>
     </div>
-    <form method="post">
-        {{form.csrf_token}}
-        {{form.id}}
-        <div class="form-row">
-            <div class="form-group col-md-5 offset-md-1">
-                {{form.code.label}}
-                {{form.code(class='form-control')}}
-                {% for message in form.code.errors %}
-                    <small class="text-danger">{{message}}</small>
-                {% endfor %}
-            </div>
-            <div class="form-group col-md-5">
-                {{form.name.label}}
-                {{form.name(class='form-control')}}
-                {% for message in form.name.errors %}
-                    <small class="text-danger">{{message}}</small>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-5 offset-md-1">
-                <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
-            </div>
-            <div class="form-group col-md-5 text-right">
-                <a class="btn btn-outline-secondary" href="{{url_for('dict.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
-            </div>
-         </div>
-    </form>
+
 </div>
 {% endblock %}
 {% block script %}
