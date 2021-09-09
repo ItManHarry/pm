@@ -11,7 +11,7 @@
 </div>
 #}
 {% if session.get('menus')%}
-<div class="list-group">
+<div class="list-group list-group-flush">
     {% for menu in session.get('menus')%}
         <a href="{{url_for(menu[0])}}" class="list-group-item list-group-item-action"><i class="{{menu[1]}}"></i>&nbsp;&nbsp;{{menu[2]}}</a>
     {% endfor %}

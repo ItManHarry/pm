@@ -44,12 +44,13 @@ class SysUser(BaseModel, db.Model, UserMixin):
     created_by = db.relationship('SysUserCreator', foreign_keys=[SysUserCreator.created_by_id], back_populates='created_by', lazy='dynamic', cascade='all')     # 创建者
     updated = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updated_id], back_populates='updated', lazy='dynamic', cascade='all')              # 被修改者
     updated_by = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updated_by_id], back_populates='updated_by', lazy='dynamic', cascade='all')     # 修改者
-    role_id = db.Column(db.String(32), db.ForeignKey('sys_role.id'))    # 系统角色ID
-    role = db.relationship('SysRole', back_populates='users')           # 系统角色
-    dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))    # 所属部门ID
-    dept = db.relationship('BizDept', back_populates='users')           # 所属部门
-    programs = db.relationship('BizProgram', back_populates='owner')    # 管理项目清单
-    logs = db.relationship('SysLog', back_populates='user')             # 操作日志
+    role_id = db.Column(db.String(32), db.ForeignKey('sys_role.id'))                # 系统角色ID
+    role = db.relationship('SysRole', back_populates='users')                       # 系统角色
+    dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))                # 所属部门ID
+    dept = db.relationship('BizDept', back_populates='users')                       # 所属部门
+    programs = db.relationship('BizProgram', back_populates='owner')                # 负责项目清单
+    program_members = db.relationship('BizProgramMember', back_populates='member')  # 项目成员
+    logs = db.relationship('SysLog', back_populates='user')                         # 操作日志
 
 
     def set_password(self, password):
@@ -87,7 +88,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
 '''
     角色菜单关联表(多对多)
 '''
-sys_roles_menus = db.Table('sys_roles_menus',
+rel_role_menu = db.Table('rel_role_menu',
     db.Column('role_id', db.String(32), db.ForeignKey('sys_role.id')),
     db.Column('menu_id', db.String(32), db.ForeignKey('sys_menu.id'))
 )
@@ -97,7 +98,7 @@ sys_roles_menus = db.Table('sys_roles_menus',
 class SysRole(BaseModel, db.Model):
     name = db.Column(db.String(64), unique=True)                # 角色名称
     users = db.relationship('SysUser', back_populates='role')   # 用户
-    menus = db.relationship('SysMenu', secondary='sys_roles_menus', back_populates='roles')
+    menus = db.relationship('SysMenu', secondary='rel_role_menu', back_populates='roles')
 '''
     系统模块
 '''
@@ -117,7 +118,7 @@ class SysMenu(BaseModel, db.Model):
     icon = db.Column(db.String(24))                 # 图标
     module_id = db.Column(db.String(32), db.ForeignKey('sys_module.id'))
     module = db.relationship('SysModule', back_populates='menus')
-    roles = db.relationship('SysRole', secondary='sys_roles_menus', back_populates='menus')
+    roles = db.relationship('SysRole', secondary='rel_role_menu', back_populates='menus')
 '''
     下拉字典
 '''
@@ -129,9 +130,10 @@ class SysDict(BaseModel, db.Model):
     下拉字典枚举值
 '''
 class SysEnum(BaseModel, db.Model):
-    display = db.Column(db.String(128))        # 显示值
-    dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))
-    dictionary = db.relationship('SysDict', back_populates='enums')
+    display = db.Column(db.String(128))                                                         # 显示值
+    dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))                            # 所属字典ID
+    dictionary = db.relationship('SysDict', back_populates='enums')                             # 所属字典
+    program_member_role = db.relationship('BizProgramMember', back_populates='pro_role')        # 关联项目成员表(项目成员类型)
 '''
     系统操作日志
 '''
@@ -194,6 +196,13 @@ class BizDept(BaseModel, db.Model):
     def my_child_dept(self):
         return BizDeptRef.query.filter_by(parent_dept_id=self.id).order_by(BizDeptRef.timestamp_loc.desc()).all()
 '''
+    项目和项目成员关联表(多对多)
+'''
+rel_program_member = db.Table('rel_program_member',
+    db.Column('program_id', db.String(32), db.ForeignKey('biz_program.id')),
+    db.Column('member_id',  db.String(32), db.ForeignKey('biz_program_member.id'))
+)
+'''
 项目主信息
 '''
 class BizProgram(BaseModel, db.Model):
@@ -205,3 +214,13 @@ class BizProgram(BaseModel, db.Model):
     svn = db.Column(db.String(128))                 # SVN地址
     owner_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))   # 项目负责人ID
     owner = db.relationship('SysUser', back_populates='programs')       # 项目负责人
+    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')   # 项目成员
+'''
+项目成员信息
+'''
+class BizProgramMember(BaseModel, db.Model):
+    pro_role_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                    # 关联枚举表(字典ID:D002)
+    pro_role = db.relationship('SysEnum', back_populates='program_member_role')                             # 关联枚举
+    member_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                      # 用户ID
+    member = db.relationship('SysUser', back_populates='program_members')                                   # 关联用户
+    programs = db.relationship('BizProgram', secondary='rel_program_member', back_populates='members')     # 所属项目
