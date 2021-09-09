@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination with context %}
-{% block title %}修改部门{% endblock %}
+{% block title %}修改项目信息{% endblock %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
-     <div class="row">
+    <div class="row">
         <div class="col-2">{% include('_menus.html') %}</div>
         <div class="col-10">
-           <div class="row">
+            <div class="row">
                 <div class="col">
-                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;人事组织&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('user.index')}}" class="text-secondary">用户管理</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改用户</small>
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;项目管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('pro.index')}}" class="text-secondary">我的项目</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">修改项目信息</small>
                 </div>
             </div>
             <hr>
@@ -31,11 +31,8 @@
                 {{form.id}}
                 <div class="form-row">
                     <div class="form-group col-md-5 offset-md-1">
-                        {{form.code.label}}
-                        {{form.code(class='form-control')}}
-                        {% for message in form.code.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
+                        {{form.no.label}}
+                        {{form.no(class='form-control', disabled=True, placeholder='项目编号系统自动生成')}}
                     </div>
                     <div class="form-group col-md-5">
                         {{form.name.label}}
@@ -47,37 +44,24 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-5 offset-md-1">
-                        {{form.dept.label}}
-                        {{form.dept(class='form-control')}}
-                        {% for message in form.dept.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
+                        {{form.pr.label}}
+                        {{form.pr(class='form-control')}}
                     </div>
                     <div class="form-group col-md-5">
-                        {{form.role.label}}
-                        {{form.role(class='form-control')}}
-                        {% for message in form.role.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
+                        {{form.contract.label}}
+                        {{form.contract(class='form-control')}}
                     </div>
-                 </div>
-                 <div class="form-row">
+                </div>
+                <div class="form-row">
                     <div class="form-group col-md-10 offset-md-1">
-                        {{form.email.label}}
-                        {{form.email(class='form-control')}}
-                        {% for message in form.email.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
+                        {{form.svn.label}}
+                        {{form.svn(class='form-control')}}
                     </div>
                  </div>
                 <div class="form-row">
-                    <div class="form-group col-md-5 offset-md-1">
-                        {{form.svn_id.label}}
-                        {{form.svn_id(class='form-control')}}
-                    </div>
-                    <div class="form-group col-md-5">
-                        {{form.svn_pwd.label}}
-                        {{form.svn_pwd(class='form-control')}}
+                    <div class="form-group col-md-10 offset-md-1">
+                        {{form.desc.label}}
+                        {{form.desc(class='form-control', rows=3)}}
                     </div>
                  </div>
                 <div class="form-row">
@@ -85,24 +69,16 @@
                         <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
                     </div>
                     <div class="form-group col-md-5 text-right">
-                        <a class="btn btn-outline-secondary" href="{{url_for('user.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                        <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
                     </div>
                 </div>
             </form>
         </div>
-     </div>
+    </div>
 </div>
 {% endblock %}
 {% block script %}
     $(function(){
-        $('#selectParent').change(function(){
-            if($(this).is(':checked')){
-                $('#parent').removeAttr('disabled')
-                $('#has_parent').val(1)
-            }else{
-                $('#parent').attr('disabled', true)
-                $('#has_parent').val(0)
-            }
-        })
+
     })
 {% endblock %}
