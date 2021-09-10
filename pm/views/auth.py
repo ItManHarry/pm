@@ -44,7 +44,7 @@ def login():
                 flash('用户已停用！')
         else:
             flash('用户不存在！')
-    return render_template('auth/login.html', form=form)
+    return render_template('auth/sign_in.html', form=form)
 @bp_auth.route('/logout')
 def logout():
     logout_user()
