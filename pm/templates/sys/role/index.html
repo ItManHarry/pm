@@ -38,7 +38,7 @@
                             <td>{{role.name}}</td>
                             <td class="text-center">
                                 <a href="{{url_for('role.edit', id=role.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
-                                <button class="btn btn-link btn-sm text-success" title="菜单权限" onclick="get_menus('{{role.id}}')"><i class="fas fa-list"></i></button>
+                                <button class="btn btn-link btn-sm text-success" title="菜单权限" onclick="get_menus('{{role.name}}', '{{role.id}}')"><i class="fas fa-list"></i></button>
                             </td>
                         </tr>
                     {%endfor%}
@@ -57,7 +57,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">&nbsp;</h5>
+            <h5 class="modal-title" id="modalTitle">&nbsp;</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -77,7 +77,8 @@
 {% block script %}
     {{ super() }}
     var role_id = ''
-    function get_menus(id){
+    function get_menus(name, id){
+        $('#modalTitle').text(name)
         role_id = id
         $.ajax({
             type:'post',
