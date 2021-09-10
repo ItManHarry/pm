@@ -62,7 +62,7 @@ def enums(dict_id):
     dictionary = SysDict.query.get_or_404(dict_id)
     enums = []
     for enum in dictionary.enums:
-        enums.append((enum.id, enum.display))
+        enums.append((enum.id, enum.display, enum.key if enum.key else ''))
     return jsonify(enums=enums)
 @bp_dict.route('/enum_add', methods=['POST'])
 @login_required
@@ -86,14 +86,15 @@ def enum_add():
     # 关联枚举值
     enums = data['p_enums']
     for enum in enums:
-        print('Enum id : ', enum['id'], ', display : ', enum['display'])
+        print('Enum id : ', enum['id'], ', key : ', enum['key'], ', display : ', enum['display'])
         enumeration = SysEnum.query.get(str(enum['id']))
         if enumeration:
+            enumeration.key = enum['key']
             enumeration.display = enum['display']
             enumeration.operator_id = current_user.id
             db.session.commit()
         else:
-            enumeration = SysEnum(id=uuid.uuid4().hex, display=enum['display'], operator_id=current_user.id)
+            enumeration = SysEnum(id=uuid.uuid4().hex, key=enum['key'], display=enum['display'], operator_id=current_user.id)
             db.session.add(enumeration)
             db.session.commit()
         dictionary.enums.append(enumeration)

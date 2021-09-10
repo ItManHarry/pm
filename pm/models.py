@@ -130,6 +130,7 @@ class SysDict(BaseModel, db.Model):
     下拉字典枚举值
 '''
 class SysEnum(BaseModel, db.Model):
+    key = db.Column(db.String(8))                                                               # 枚举key
     display = db.Column(db.String(128))                                                         # 显示值
     dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))                            # 所属字典ID
     dictionary = db.relationship('SysDict', back_populates='enums')                             # 所属字典
