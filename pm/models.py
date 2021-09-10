@@ -146,7 +146,7 @@ class SysLog(BaseModel, db.Model):
 '''
     部门层级关系
 '''
-class BizDeptRef(BaseModel, db.Model):
+class BizDeptRel(BaseModel, db.Model):
     parent_dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
     parent_dept = db.relationship('BizDept', foreign_keys=[parent_dept_id], back_populates='parent_dept', lazy='joined') # 父部门
     child_dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
@@ -159,8 +159,8 @@ class BizDept(BaseModel, db.Model):
     name = db.Column(db.String(128), unique=True)               # 部门名称
     status = db.Column(db.Boolean, default=True)                # 部门状态(是否在用,默认在用)
     users = db.relationship('SysUser', back_populates='dept')   # 部门人员
-    parent_dept = db.relationship('BizDeptRef', foreign_keys=[BizDeptRef.parent_dept_id], back_populates='parent_dept', lazy='dynamic', cascade='all')  # 父部门
-    child_dept = db.relationship('BizDeptRef', foreign_keys=[BizDeptRef.child_dept_id], back_populates='child_dept', lazy='dynamic', cascade='all')     # 子部门
+    parent_dept = db.relationship('BizDeptRel', foreign_keys=[BizDeptRel.parent_dept_id], back_populates='parent_dept', lazy='dynamic', cascade='all')  # 父部门
+    child_dept = db.relationship('BizDeptRel', foreign_keys=[BizDeptRel.child_dept_id], back_populates='child_dept', lazy='dynamic', cascade='all')     # 子部门
     # 设置父部门
     def set_parent_dept(self, dept):
         '''
@@ -168,16 +168,16 @@ class BizDept(BaseModel, db.Model):
         :param dept:
         :return:
         '''
-        ref = BizDeptRef.query.filter_by(child_dept_id=self.id).first()
+        ref = BizDeptRel.query.filter_by(child_dept_id=self.id).first()
         if ref:
             db.session.delete(ref)
             db.session.commit()
-        parent = BizDeptRef(id=uuid.uuid4().hex, child_dept=self, parent_dept=dept)
+        parent = BizDeptRel(id=uuid.uuid4().hex, child_dept=self, parent_dept=dept)
         db.session.add(parent)
         db.session.commit()
     @property
     def my_parent_dept(self):
-        dept = BizDeptRef.query.filter_by(child_dept_id=self.id).first()
+        dept = BizDeptRel.query.filter_by(child_dept_id=self.id).first()
         return dept.parent_dept if dept else None
     #设置子部门
     def set_child_dept(self, dept):
@@ -186,16 +186,16 @@ class BizDept(BaseModel, db.Model):
         :param dept:
         :return:
         '''
-        ref = BizDeptRef.query.filter_by(child_dept_id=dept.id).first()
+        ref = BizDeptRel.query.filter_by(child_dept_id=dept.id).first()
         if ref:
             db.session.delete(ref)
             db.session.commit()
-        child = BizDeptRef(id=uuid.uuid4().hex, child_dept=dept, parent_dept=self)
+        child = BizDeptRel(id=uuid.uuid4().hex, child_dept=dept, parent_dept=self)
         db.session.add(child)
         db.session.commit()
     @property
     def my_child_dept(self):
-        return BizDeptRef.query.filter_by(parent_dept_id=self.id).order_by(BizDeptRef.timestamp_loc.desc()).all()
+        return BizDeptRel.query.filter_by(parent_dept_id=self.id).order_by(BizDeptRel.timestamp_loc.desc()).all()
 '''
     项目和项目成员关联表(多对多)
 '''
