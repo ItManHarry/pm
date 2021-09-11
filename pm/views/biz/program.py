@@ -69,3 +69,8 @@ def edit(id):
         flash('项目信息更新成功！')
         return redirect(url_for('.edit', id=form.id.data))
     return render_template('biz/program/edit.html', form=form)
+@bp_pro.route('/members/<id>', methods=['GET', 'POST'])
+@login_required
+@log_record('管理项目成员')
+def members(id):
+    return render_template('biz/program/members.html', id=id)

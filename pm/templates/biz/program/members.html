@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}项目成员管理{% endblock %}
+{% block link %}
+    {{static_file('css', 'multiselect/style.css')}}
+{% endblock %}
+{% block scripts %}
+    {{static_file('js', 'multiselect/multiselect.min.js')}}
+{% endblock %}
+{% block main %}
+<div class="container-fluid" style="margin-top:20px;">
+    <div class="row">
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;项目管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('pro.index')}}" class="text-secondary">我的项目</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">项目成员</small>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-5">
+                    <select name="from" class="js-multiselect form-control" size="8" multiple="multiple">
+                        <option value="1">Item 1</option>
+                        <option value="2">Item 5</option>
+                        <option value="2">Item 2</option>
+                        <option value="2">Item 4</option>
+                        <option value="3">Item 3</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <button type="button" id="js_right_All_1" class="btn btn-block"><i class="fas fa-angle-double-right"></i></button>
+                    <button type="button" id="js_right_Selected_1" class="btn btn-block"><i class="fas fa-chevron-right"></i></button>
+                    <button type="button" id="js_left_Selected_1" class="btn btn-block"><i class="fas fa-chevron-left"></i></button>
+                    <button type="button" id="js_left_All_1" class="btn btn-block"><i class="fas fa-angle-double-left"></i></button>
+                </div>
+                <div class="col-5">
+                    <select name="to" id="js_multiselect_to_1" class="form-control" size="8" multiple="multiple"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    {{ super() }}
+{% endblock %}
