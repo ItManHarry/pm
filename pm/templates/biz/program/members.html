@@ -28,13 +28,13 @@
                     </select>
                 </div>
                 <div class="col-2">
-                    <button type="button" id="js_right_All_1" class="btn btn-block"><i class="fas fa-angle-double-right"></i></button>
-                    <button type="button" id="js_right_Selected_1" class="btn btn-block"><i class="fas fa-chevron-right"></i></button>
-                    <button type="button" id="js_left_Selected_1" class="btn btn-block"><i class="fas fa-chevron-left"></i></button>
-                    <button type="button" id="js_left_All_1" class="btn btn-block"><i class="fas fa-angle-double-left"></i></button>
+                    <button type="button" id="to_right_all" class="btn btn-block"><i class="fas fa-angle-double-right"></i></button>
+                    <button type="button" id="to_right" class="btn btn-block"><i class="fas fa-chevron-right"></i></button>
+                    <button type="button" id="to_left" class="btn btn-block"><i class="fas fa-chevron-left"></i></button>
+                    <button type="button" id="to_left_all" class="btn btn-block"><i class="fas fa-angle-double-left"></i></button>
                 </div>
                 <div class="col-5">
-                    <select name="to" id="js_multiselect_to_1" class="form-control" size="8" multiple="multiple"></select>
+                    <select name="to" id="selected" class="form-control" size="8" multiple="multiple"></select>
                 </div>
             </div>
         </div>
@@ -43,4 +43,13 @@
 {% endblock %}
 {% block script %}
     {{ super() }}
+    $(function(){
+        $('.js-multiselect').multiselect({
+            right:'#selected',
+            rightAll:'#to_right_all',
+            rightSelected:'#to_right',
+            leftSelected:'#to_left',
+            leftAll:'#to_left_all'
+        })
+    })
 {% endblock %}
