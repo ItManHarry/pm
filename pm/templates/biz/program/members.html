@@ -19,7 +19,8 @@
             <hr>
             <div class="row">
                 <div class="col-5">
-                    <select name="from" class="js-multiselect form-control" size="8" multiple="multiple">
+                    <label for="from">选择成员</label>
+                    <select name="from" id="from" class="js-multiselect form-control" size="16" multiple="multiple">
                         <option value="1">Item 1</option>
                         <option value="2">Item 5</option>
                         <option value="2">Item 2</option>
@@ -28,13 +29,15 @@
                     </select>
                 </div>
                 <div class="col-2">
+                    <br><br><br><br>
                     <button type="button" id="to_right_all" class="btn btn-block"><i class="fas fa-angle-double-right"></i></button>
                     <button type="button" id="to_right" class="btn btn-block"><i class="fas fa-chevron-right"></i></button>
                     <button type="button" id="to_left" class="btn btn-block"><i class="fas fa-chevron-left"></i></button>
                     <button type="button" id="to_left_all" class="btn btn-block"><i class="fas fa-angle-double-left"></i></button>
                 </div>
                 <div class="col-5">
-                    <select name="to" id="selected" class="form-control" size="8" multiple="multiple"></select>
+                    <label for="selected">已选成员</label>
+                    <select name="to" id="selected" class="form-control" size="16" multiple="multiple"></select>
                 </div>
             </div>
         </div>
