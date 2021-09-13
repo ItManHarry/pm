@@ -13,25 +13,27 @@
         <div class="col-10">
             <div class="row">
                 <div class="col">
-                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;项目管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('pro.index')}}" class="text-secondary">我的项目</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">项目成员</small>
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;项目管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('pro.index')}}" class="text-secondary">我的项目</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">{{program.name}}</small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">项目成员</small>
                 </div>
             </div>
             <hr>
             <div class="row">
                 <div class="col">
-                    <form method="post">
+                    <form method="post" id="member_form">
                         {{form.csrf_token}}
-                        {{form.id}}
+                        {{form.pro_id}}
+                        {{form.selected_ids}}
+                        {{form.sign(value='role')}}
                         <div class="row">
                             <div class="col-3">
                                 {{form.pro_roles.label}}
-                                {{form.pro_roles(class='form-control')}}
+                                {{form.pro_roles(class='form-control', onchange='change_role()')}}
                             </div>
                         </div><br>
                         <div class="row">
                             <div class="col-5">
                                 {{form.for_select.label}}
-                                {{form.for_select(class='js-multiselect form-control', size=12, multiple='multiple')}}
+                                {{form.for_select(class='form-control', size=10, multiple='multiple')}}
                             </div>
                             <div class="col-2">
                                 <br><br><br>
@@ -42,21 +44,23 @@
                             </div>
                             <div class="col-5">
                                 {{form.selected.label}}
-                                {{form.selected(class='js-multiselect form-control', size=12, multiple='multiple')}}
-                                {% for message in form.selected.errors %}
-                                    <small class="text-danger">{{message}}</small>
-                                {% endfor %}
+                                {{form.selected(class='form-control', size=10, multiple='multiple')}}
                             </div>
                         </div><br>
                         <div class="row">
-                            <div class="col-5">
-                                <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
+                            <div class="col-10">
+                                <small class="text-danger" id="check_result">&nbsp;</small>
                             </div>
-                            <div class="col-md-7 text-right">
-                                <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
-                            </div>
-                        </div>
+                        </div><br>
                     </form>
+                    <div class="row">
+                        <div class="col-5">
+                            <button onclick="do_save()" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
+                        </div>
+                        <div class="col-md-7 text-right">
+                            <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,12 +70,45 @@
 {% block script %}
     {{ super() }}
     $(function(){
-        $('.js-multiselect').multiselect({
-            right:'#selected',
-            rightAll:'#to_right_all',
-            rightSelected:'#to_right',
-            leftSelected:'#to_left',
-            leftAll:'#to_left_all'
+        $('#to_right_all').click(function(){
+            var selected = []
+            $('#selected option').each(function(){
+                selected.push($(this).val())
+            })
+            $('#for_select option').each(function(){
+                //$(this).remove()
+                //$('#selected').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>")
+                $('#selected').append($(this))
+            })
+            /*$('#selected').each(function(){
+                selected.push($(this).val())
+            })
+            alert('Selected : ' + selected)*/
+        })
+        $('#to_left_all').click(function(){
+            var for_select = []
+            $('#for_select option').each(function(){
+                for_select.push($(this).val())
+            })
+            $('#selected option').each(function(){
+                if($.inArray($(this).val(), for_select) < 0)
+                    $('#for_select').append($(this))
+            })
         })
     })
+    //更改角色
+    function change_role(){
+        $('#sign').val('role')
+        $('#member_form').submit()
+    }
+    //执行保存
+    function do_save(){
+        $('#sign').val('save')
+        var selected_ids = []
+        $('#selected option').each(function(){
+            selected_ids.push($(this).val())
+        })
+        $('#selected_ids').val(selected_ids.join(','))
+        $('#member_form').submit()
+    }
 {% endblock %}
