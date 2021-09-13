@@ -22,8 +22,6 @@
                     <form method="post" id="member_form">
                         {{form.csrf_token}}
                         {{form.pro_id}}
-                        {{form.selected_ids}}
-                        {{form.sign(value='role')}}
                         <div class="row">
                             <div class="col-3">
                                 {{form.pro_roles.label}}
@@ -98,8 +96,7 @@
     })
     //更改角色
     function change_role(){
-        $('#sign').val('role')
-        $('#member_form').submit()
+       alert('change role')
     }
     //执行保存
     function do_save(){

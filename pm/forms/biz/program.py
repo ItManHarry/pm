@@ -33,6 +33,4 @@ class ProgramMemberForm(FlaskForm):
     pro_id = HiddenField()                                                                              # 项目ID
     pro_roles = SelectField('成员角色', [validators.optional()], choices=[])                             # 项目人员角色
     for_select = SelectField('选择成员', [validators.optional()], choices=[])                            # 待选人员
-    selected = SelectField('已选成员',   [validators.optional()], choices=[])                               # 已选人员
-    selected_ids = HiddenField()                                                                        # 已选人员ID(字符串) 用以实际保存
-    sign = HiddenField()                                                                                # 标识执行保存还是更换角色
+    selected = SelectField('已选成员',   [validators.optional()], choices=[])                            # 已选人员
