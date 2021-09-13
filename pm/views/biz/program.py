@@ -101,7 +101,7 @@ def members(pro_id):
         selected.append((pro_member.member.id, pro_member.member.name))
     form.selected.choices = selected
     # 可选成员
-    all_users = SysUser.query.all()
+    all_users = SysUser.query.with_parent(BizDept.query.get(dept_id)).all()
     for_select = []
     for user in all_users:
         if user.user_id != 'admin' and user.user_id not in selected_ids: # 除去管理员及已添加人员
