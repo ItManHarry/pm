@@ -18,26 +18,45 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-5">
-                    <label for="from">选择成员</label>
-                    <select name="from" id="from" class="js-multiselect form-control" size="16" multiple="multiple">
-                        <option value="1">Item 1</option>
-                        <option value="2">Item 5</option>
-                        <option value="2">Item 2</option>
-                        <option value="2">Item 4</option>
-                        <option value="3">Item 3</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <br><br><br><br>
-                    <button type="button" id="to_right_all" class="btn btn-block"><i class="fas fa-angle-double-right"></i></button>
-                    <button type="button" id="to_right" class="btn btn-block"><i class="fas fa-chevron-right"></i></button>
-                    <button type="button" id="to_left" class="btn btn-block"><i class="fas fa-chevron-left"></i></button>
-                    <button type="button" id="to_left_all" class="btn btn-block"><i class="fas fa-angle-double-left"></i></button>
-                </div>
-                <div class="col-5">
-                    <label for="selected">已选成员</label>
-                    <select name="to" id="selected" class="form-control" size="16" multiple="multiple"></select>
+                <div class="col">
+                    <form method="post">
+                        {{form.csrf_token}}
+                        {{form.id}}
+                        <div class="row">
+                            <div class="col-3">
+                                {{form.pro_roles.label}}
+                                {{form.pro_roles(class='form-control')}}
+                            </div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-5">
+                                {{form.for_select.label}}
+                                {{form.for_select(class='js-multiselect form-control', size=12, multiple='multiple')}}
+                            </div>
+                            <div class="col-2">
+                                <br><br><br>
+                                <button type="button" id="to_right_all" class="btn btn-block"><i class="fas fa-angle-double-right"></i></button>
+                                <button type="button" id="to_right" class="btn btn-block"><i class="fas fa-chevron-right"></i></button>
+                                <button type="button" id="to_left" class="btn btn-block"><i class="fas fa-chevron-left"></i></button>
+                                <button type="button" id="to_left_all" class="btn btn-block"><i class="fas fa-angle-double-left"></i></button>
+                            </div>
+                            <div class="col-5">
+                                {{form.selected.label}}
+                                {{form.selected(class='js-multiselect form-control', size=12, multiple='multiple')}}
+                                {% for message in form.selected.errors %}
+                                    <small class="text-danger">{{message}}</small>
+                                {% endfor %}
+                            </div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-5">
+                                <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
+                            </div>
+                            <div class="col-md-7 text-right">
+                                <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

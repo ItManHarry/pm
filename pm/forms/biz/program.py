@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, HiddenField
+from wtforms import StringField, TextAreaField, HiddenField, SelectField
 from wtforms.validators import DataRequired
 from wtforms import ValidationError, validators
 from pm.models import BizProgram
@@ -29,3 +29,8 @@ class ProgramForm(FlaskForm):
             # Check新的部门名称是否已经存在
             if field.data in names:
                 raise ValidationError('项目名称已存在!')
+class ProgramMemberForm(FlaskForm):
+    pro_id = HiddenField()                                                                              # 项目ID
+    pro_roles = SelectField('成员角色', validators=[DataRequired('请选择成员角色！')], choices=[])          # 项目人员角色
+    for_select = SelectField('选择成员', [validators.optional()], choices=[])                            # 待选人员
+    selected = SelectField('已选成员', validators=[DataRequired('请选择成员！')], choices=[])              # 已选人员

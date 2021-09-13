@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash
 from flask_login import login_required, current_user
-from pm.forms.biz.program import ProgramForm, ProgramSearchForm
-from pm.models import BizProgram
+from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm
+from pm.models import BizProgram, SysDict, SysUser, BizProgramMember
 from pm.plugins import db
 from pm.decorators import log_record
 from pm.utils import get_date
@@ -73,4 +73,28 @@ def edit(id):
 @login_required
 @log_record('管理项目成员')
 def members(id):
-    return render_template('biz/program/members.html', id=id)
+    form = ProgramMemberForm()
+    form.pro_id.data = id
+    program = BizProgram.query.get_or_404(id)
+    dictionary = SysDict.query.filter_by(code='D002').first()
+    enums = dictionary.enums
+    pro_roles = []
+    for enum in enums:
+        pro_roles.append((enum.id, enum.display))
+    print('Program roles : ', pro_roles)
+    form.pro_roles.choices = pro_roles
+    # 已选成员
+    pro_members = program.members
+    selected = []
+    for pro_member in pro_members:
+        selected.append((pro_member.member.id, pro_member.member.name))
+    print('selected members : ', selected)
+    form.selected.choices = selected
+    # 可选成员
+    all_users = SysUser.query.all()
+    for_select = []
+    for user in all_users:
+        for_select.append((user.id, user.user_name))
+    print('For select users : ', for_select)
+    form.for_select.choices = for_select
+    return render_template('biz/program/members.html', form=form)
