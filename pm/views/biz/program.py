@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash
 from flask_login import login_required, current_user
 from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm
-from pm.models import BizProgram, SysDict, SysUser, BizProgramMember
+from pm.models import BizProgram, SysDict, SysUser, BizProgramMember, BizDept
 from pm.plugins import db
 from pm.decorators import log_record
 from pm.utils import get_date
@@ -76,6 +76,13 @@ def members(pro_id):
     form = ProgramMemberForm()
     form.pro_id.data = pro_id
     program = BizProgram.query.get_or_404(pro_id)
+    # 部门信息
+    all_dept = BizDept.query.order_by(BizDept.code).all()
+    departments = []
+    for dept in all_dept:
+        departments.append((dept.id, dept.name))
+    dept_id = departments[0][0]
+    form.user_dept.choices = departments
     # 项目成员角色字典
     dictionary = SysDict.query.filter_by(code='D002').first()
     enums = dictionary.enums

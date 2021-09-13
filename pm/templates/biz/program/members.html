@@ -24,6 +24,10 @@
                         {{form.pro_id}}
                         <div class="row">
                             <div class="col-3">
+                                {{form.user_dept.label}}
+                                {{form.user_dept(class='form-control', onchange='change_dept()')}}
+                            </div>
+                            <div class="col-3 offset-4">
                                 {{form.pro_roles.label}}
                                 {{form.pro_roles(class='form-control', onchange='change_role()')}}
                             </div>
