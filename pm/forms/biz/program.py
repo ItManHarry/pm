@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, HiddenField, SelectField
+from wtforms import StringField, TextAreaField, HiddenField, SelectField, IntegerField, FloatField, BooleanField
 from wtforms.validators import DataRequired
 from wtforms import ValidationError, validators
 from pm.models import BizProgram
@@ -37,3 +37,15 @@ class ProgramMemberForm(FlaskForm):
     selected = SelectField('已选成员',   [validators.optional()], choices=[])                            # 已选人员
 class ProgramStatusForm(FlaskForm):
     pro_id = HiddenField()
+    enterprise = StringField('法人', validators=[DataRequired('请填写法人！')])
+    client = StringField('客户公司', validators=[DataRequired('请填写客户公司！')])
+    client_dept = StringField('客户公司主管部门', validators=[DataRequired('请填写客户公司主管部门！')])
+    charge_dept = StringField('公司负责部门', validators=[DataRequired('请填写公司负责部门！')])
+    new = BooleanField('是否新项目')
+    clazz_id = SelectField('项目分类', validators=[DataRequired('请选择项目分类！')], choices=[])
+    state_id = SelectField('项目状态', validators=[DataRequired('请选择项目状态！')], choices=[])
+    odds = IntegerField('执行可能性', validators=[DataRequired('请填写执行可能性！')])
+    con_start = StringField('合同开始日期', validators=[DataRequired('请填写合同开始日期！')])
+    con_end = StringField('合同结束日期', validators=[DataRequired('请填写合同结束日期！')])
+    process_id = SelectField('进行现况', validators=[DataRequired('请选择项目进行现况！')], choices=[])
+    budget = FloatField('事业预算', validators=[DataRequired('请填写事业预算')])

@@ -182,4 +182,8 @@ def add_members():
 def status(pro_id):
     program = BizProgram.query.get_or_404(pro_id)
     form = ProgramStatusForm()
+    form.pro_id.data = pro_id
+    if form.validate_on_submit():
+        flash('状态维护完成！')
+        return redirect(url_for('.status', pro_id=form.pro_id.data))
     return render_template('biz/program/status.html', form=form, program=program)

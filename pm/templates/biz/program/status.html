@@ -20,11 +20,104 @@
             <form method="post" id="member_form">
                 {{form.csrf_token}}
                 {{form.pro_id}}
+                <div class="form-row">
+                    <div class="form-group col-5 offset-1">
+                        {{form.enterprise.label}}
+                        {{form.enterprise(class='form-control')}}
+                        {% for message in form.enterprise.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-5">
+                        {{form.client.label}}
+                        {{form.client(class='form-control')}}
+                        {% for message in form.client.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-5 offset-1">
+                        {{form.client_dept.label}}
+                        {{form.client_dept(class='form-control')}}
+                        {% for message in form.client_dept.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-5">
+                        {{form.charge_dept.label}}
+                        {{form.charge_dept(class='form-control')}}
+                        {% for message in form.charge_dept.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-5 offset-1">
+                        {{form.new.label}}
+                        {{form.new(class='form-control')}}
+                    </div>
+                    <div class="form-group col-5">
+                        {{form.clazz_id.label}}
+                        {{form.clazz_id(class='form-control')}}
+                        {% for message in form.clazz_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-5 offset-1">
+                        {{form.state_id.label}}
+                        {{form.state_id(class='form-control')}}
+                        {% for message in form.state_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-5">
+                        {{form.odds.label}}
+                        {{form.odds(class='form-control')}}
+                        {% for message in form.odds.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-5 offset-1">
+                        {{form.con_start.label}}
+                        {{form.con_start(class='form-control')}}
+                        {% for message in form.con_start.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-5">
+                        {{form.con_end.label}}
+                        {{form.con_end(class='form-control')}}
+                        {% for message in form.con_end.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-5 offset-1">
+                        {{form.process_id.label}}
+                        {{form.process_id(class='form-control')}}
+                        {% for message in form.process_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-5">
+                        {{form.budget.label}}
+                        {{form.budget(class='form-control')}}
+                        {% for message in form.budget.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="row">
-                    <div class="col-5">
+                    <div class="col-5 offset-1">
                         <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
                     </div>
-                    <div class="col-md-7 text-right">
+                    <div class="col-5 text-right">
                         <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
                     </div>
                 </div>
