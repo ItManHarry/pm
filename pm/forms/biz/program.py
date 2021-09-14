@@ -35,3 +35,5 @@ class ProgramMemberForm(FlaskForm):
     user_dept = SelectField('部门所属', [validators.optional()], choices=[])                             # 人员组织
     for_select = SelectField('选择成员', [validators.optional()], choices=[])                            # 待选人员
     selected = SelectField('已选成员',   [validators.optional()], choices=[])                            # 已选人员
+class ProgramStatusForm(FlaskForm):
+    pro_id = HiddenField()

@@ -99,7 +99,7 @@ class SysRole(BaseModel, db.Model):
     users = db.relationship('SysUser', back_populates='role')   # 用户
     menus = db.relationship('SysMenu', secondary='rel_role_menu', back_populates='roles')
 '''
-    系统模块
+系统模块
 '''
 class SysModule(BaseModel, db.Model):
     code = db.Column(db.String(12), unique=True)                # 模块代码(用以导航状态)
@@ -220,8 +220,8 @@ class BizProgram(BaseModel, db.Model):
     svn = db.Column(db.String(128))                 # SVN地址
     owner_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))   # 项目负责人ID
     owner = db.relationship('SysUser', back_populates='programs')       # 项目负责人
-    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')   # 项目成员(一对多)
-    pro_status = db.relationship('BizProgramStatus', uselist=False)                                            # 项目状态(一对一)
+    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')    # 项目成员(一对多)
+    status = db.relationship('BizProgramStatus', uselist=False)                                                 # 项目状态(一对一)
 '''
 项目成员信息
 '''
@@ -236,7 +236,7 @@ class BizProgramMember(BaseModel, db.Model):
 '''
 class BizProgramStatus(BaseModel, db.Model):
     program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
-    program = db.relationship('BizProgram', back_populates='pro_status')                                        # 对应项目
+    program = db.relationship('BizProgram', back_populates='status')                                            # 对应项目
     enterprise = db.Column(db.String(128))                                                                      # 法人
     client = db.Column(db.String(128))                                                                          # 客户公司
     client_dept = db.Column(db.String(128))                                                                     # 客户公司主管部门

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify
 from flask_login import login_required, current_user
-from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm
+from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm, ProgramStatusForm
 from pm.models import BizProgram, SysDict, SysUser, BizProgramMember, BizDept
 from pm.plugins import db
 from pm.decorators import log_record
@@ -176,3 +176,10 @@ def add_members():
     # 提交保存关联
     db.session.commit()
     return jsonify(code=1, message='添加成功!')
+@bp_pro.route('/status/<pro_id>', methods=['GET', 'POST'])
+@login_required
+@log_record('维护项目状态')
+def status(pro_id):
+    program = BizProgram.query.get_or_404(pro_id)
+    form = ProgramStatusForm()
+    return render_template('biz/program/status.html', form=form, program=program)
