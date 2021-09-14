@@ -21,30 +21,52 @@
                 {{form.csrf_token}}
                 {{form.pro_id}}
                 <div class="form-row">
-                    <div class="form-group col-5 offset-1">
+                    <div class="form-group col-9 offset-1">
+                        <div class="form-check">
+                            {{form.new(class='form-check-input')}}
+                            {{form.new.label}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-3 offset-1">
                         {{form.enterprise.label}}
                         {{form.enterprise(class='form-control')}}
                         {% for message in form.enterprise.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
-                    <div class="form-group col-5">
+                    <div class="form-group col-3">
+                        {{form.budget.label}}
+                        {{form.budget(class='form-control')}}
+                        {% for message in form.budget.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-3">
+                        {{form.process_id.label}}
+                        {{form.process_id(class='form-control')}}
+                        {% for message in form.process_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                     <div class="form-group col-3 offset-1">
                         {{form.client.label}}
                         {{form.client(class='form-control')}}
                         {% for message in form.client.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-5 offset-1">
+                    <div class="form-group col-3">
                         {{form.client_dept.label}}
                         {{form.client_dept(class='form-control')}}
                         {% for message in form.client_dept.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
-                    <div class="form-group col-5">
+                    <div class="form-group col-3">
                         {{form.charge_dept.label}}
                         {{form.charge_dept(class='form-control')}}
                         {% for message in form.charge_dept.errors %}
@@ -53,27 +75,21 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-5 offset-1">
-                        {{form.new.label}}
-                        {{form.new(class='form-control')}}
-                    </div>
-                    <div class="form-group col-5">
+                    <div class="form-group col-3 offset-1">
                         {{form.clazz_id.label}}
                         {{form.clazz_id(class='form-control')}}
                         {% for message in form.clazz_id.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-5 offset-1">
+                    <div class="form-group col-3">
                         {{form.state_id.label}}
                         {{form.state_id(class='form-control')}}
                         {% for message in form.state_id.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
-                    <div class="form-group col-5">
+                    <div class="form-group col-3">
                         {{form.odds.label}}
                         {{form.odds(class='form-control')}}
                         {% for message in form.odds.errors %}
@@ -82,33 +98,17 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-5 offset-1">
+                    <div class="form-group col-3 offset-1">
                         {{form.con_start.label}}
                         {{form.con_start(class='form-control')}}
                         {% for message in form.con_start.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
-                    <div class="form-group col-5">
+                    <div class="form-group col-3">
                         {{form.con_end.label}}
                         {{form.con_end(class='form-control')}}
                         {% for message in form.con_end.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-5 offset-1">
-                        {{form.process_id.label}}
-                        {{form.process_id(class='form-control')}}
-                        {% for message in form.process_id.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
-                    </div>
-                    <div class="form-group col-5">
-                        {{form.budget.label}}
-                        {{form.budget(class='form-control')}}
-                        {% for message in form.budget.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
