@@ -1,11 +1,10 @@
-from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from pm.plugins import db
 import uuid
 '''
- 基础模型
+基础模型
 '''
 class BaseModel():
     id = db.Column(db.String(32), primary_key=True)
@@ -13,9 +12,9 @@ class BaseModel():
     timestamp_loc = db.Column(db.DateTime, default=datetime.now)        # 本地时间
     operator_id = db.Column(db.String(32))                              # 操作人员
 '''
-    使用模型表建立用户自关联关系
-    1. 可以获取创建时间
-    2. 对象映射清晰，易于查询
+使用模型表建立用户自关联关系
+1. 可以获取创建时间
+2. 对象映射清晰，易于查询
 '''
 class SysUserCreator(BaseModel, db.Model):
     created_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
@@ -28,7 +27,7 @@ class SysUserUpdater(BaseModel, db.Model):
     updated_by_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
     updated_by = db.relationship('SysUser', foreign_keys=[updated_by_id], back_populates='updated_by', lazy='joined')   # 更新者
 '''
-    系统用户
+系统用户
 '''
 class SysUser(BaseModel, db.Model, UserMixin):
     user_id = db.Column(db.String(16), unique=True) # 用户代码
@@ -86,14 +85,14 @@ class SysUser(BaseModel, db.Model, UserMixin):
         '''
         return self.updated_by.filter_by(updated_id=self.id).order_by(SysUserUpdater.timestamp_utc.desc()).all()
 '''
-    角色菜单关联表(多对多)
+角色菜单关联表(多对多)
 '''
 rel_role_menu = db.Table('rel_role_menu',
     db.Column('role_id', db.String(32), db.ForeignKey('sys_role.id')),
     db.Column('menu_id', db.String(32), db.ForeignKey('sys_menu.id'))
 )
 '''
-    系统角色
+系统角色
 '''
 class SysRole(BaseModel, db.Model):
     name = db.Column(db.String(64), unique=True)                # 角色名称
@@ -108,7 +107,7 @@ class SysModule(BaseModel, db.Model):
     default_url = db.Column(db.String(24))                      # 默认链接URL地址
     menus = db.relationship('SysMenu', back_populates='module') # 和菜单建立一对多关联关系
 '''
-    系统菜单
+系统菜单
 '''
 class SysMenu(BaseModel, db.Model):
     name = db.Column(db.String(64))                 # 菜单名
@@ -120,14 +119,14 @@ class SysMenu(BaseModel, db.Model):
     module = db.relationship('SysModule', back_populates='menus')
     roles = db.relationship('SysRole', secondary='rel_role_menu', back_populates='menus')
 '''
-    下拉字典
+下拉字典
 '''
 class SysDict(BaseModel, db.Model):
     code = db.Column(db.String(24), unique=True)    # 字典代码
     name = db.Column(db.String(24), unique=True)    # 字典名称
     enums = db.relationship('SysEnum', back_populates='dictionary', cascade='all')
 '''
-    下拉字典枚举值
+下拉字典枚举值
 '''
 class SysEnum(BaseModel, db.Model):
     key = db.Column(db.String(8))                                                               # 枚举key
@@ -135,8 +134,14 @@ class SysEnum(BaseModel, db.Model):
     dict_id = db.Column(db.String(32), db.ForeignKey('sys_dict.id'))                            # 所属字典ID
     dictionary = db.relationship('SysDict', back_populates='enums')                             # 所属字典
     program_member_role = db.relationship('BizProgramMember', back_populates='pro_role')        # 关联项目成员表(项目成员类型)
+    program_clazz = db.relationship('BizProgramStatus', back_populates='clazz', lazy=True,
+                                    primaryjoin='BizProgramStatus.clazz_id == SysEnum.id')      # 项目类别
+    program_state = db.relationship('BizProgramStatus', back_populates='state', lazy=True,
+                                    primaryjoin='BizProgramStatus.state_id == SysEnum.id')      # 项目状态
+    program_process = db.relationship('BizProgramStatus', back_populates='process', lazy=True,
+                                    primaryjoin='BizProgramStatus.process_id == SysEnum.id')    # 项目进行现况
 '''
-    系统操作日志
+系统操作日志
 '''
 class SysLog(BaseModel, db.Model):
     url = db.Column(db.String(24))          # 菜单url
@@ -144,7 +149,7 @@ class SysLog(BaseModel, db.Model):
     user_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
     user = db.relationship('SysUser', back_populates='logs')
 '''
-    部门层级关系
+部门层级关系
 '''
 class BizDeptRel(BaseModel, db.Model):
     parent_dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
@@ -152,7 +157,7 @@ class BizDeptRel(BaseModel, db.Model):
     child_dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))
     child_dept = db.relationship('BizDept', foreign_keys=[child_dept_id], back_populates='child_dept', lazy='joined')   # 子部门
 '''
-    部门
+部门
 '''
 class BizDept(BaseModel, db.Model):
     code = db.Column(db.String(32), unique=True)                # 部门代码
@@ -197,7 +202,7 @@ class BizDept(BaseModel, db.Model):
     def my_child_dept(self):
         return BizDeptRel.query.filter_by(parent_dept_id=self.id).order_by(BizDeptRel.timestamp_loc.desc()).all()
 '''
-    项目和项目成员关联表(多对多)
+项目和项目成员关联表(多对多)
 '''
 rel_program_member = db.Table('rel_program_member',
     db.Column('program_id', db.String(32), db.ForeignKey('biz_program.id')),
@@ -215,7 +220,8 @@ class BizProgram(BaseModel, db.Model):
     svn = db.Column(db.String(128))                 # SVN地址
     owner_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))   # 项目负责人ID
     owner = db.relationship('SysUser', back_populates='programs')       # 项目负责人
-    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')   # 项目成员
+    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')   # 项目成员(一对多)
+    pro_status = db.relationship('BizProgramStatus', uselist=False)                                            # 项目状态(一对一)
 '''
 项目成员信息
 '''
@@ -225,3 +231,24 @@ class BizProgramMember(BaseModel, db.Model):
     member_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                      # 用户ID
     member = db.relationship('SysUser', back_populates='program_members')                                   # 关联用户
     programs = db.relationship('BizProgram', secondary='rel_program_member', back_populates='members')     # 所属项目
+'''
+项目状态信息
+'''
+class BizProgramStatus(BaseModel, db.Model):
+    program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
+    program = db.relationship('BizProgram', back_populates='pro_status')                                        # 对应项目
+    enterprise = db.Column(db.String(128))                                                                      # 法人
+    client = db.Column(db.String(128))                                                                          # 客户公司
+    client_dept = db.Column(db.String(128))                                                                     # 客户公司主管部门
+    charge_dept = db.Column(db.String(128))                                                                     # 公司主管部门
+    new = db.Column(db.Boolean, default=True)                                                                   # 是否新项目
+    clazz_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
+    clazz = db.relationship('SysEnum', back_populates='program_clazz', lazy=True, foreign_keys=[clazz_id])      # 项目分类
+    state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
+    state = db.relationship('SysEnum', back_populates='program_state', lazy=True, foreign_keys=[state_id])      # 项目状态
+    odds = db.Column(db.Integer)                                                                                # 执行几率
+    con_start = db.Column(db.String(24))                                                                        # 合同开始日期
+    con_end = db.Column(db.String(24))                                                                          # 合同结束日期
+    process_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
+    process = db.relationship('SysEnum', back_populates='program_process', lazy=True, foreign_keys=[process_id])# 项目进行现况
+    budget = db.Column(db.Float)                                                                                # 事业预算
