@@ -44,7 +44,7 @@ class ProgramStatusForm(FlaskForm):
     new = BooleanField('是否新项目')
     clazz_id = SelectField('项目分类', validators=[DataRequired('请选择项目分类！')], choices=[])
     state_id = SelectField('项目状态', validators=[DataRequired('请选择项目状态！')], choices=[])
-    odds = IntegerField('执行可能性', validators=[DataRequired('请填写执行可能性！', NumberRange(min=1, max=100, message='执行可能性只能介于1~100！'))])
+    odds = IntegerField('执行可能性', validators=[DataRequired('请填写执行可能性！'),NumberRange(min=1, max=100, message='执行可能性只能介于1~100！')])
     con_start = StringField('合同开始日期', validators=[DataRequired('请填写合同开始日期！')])
     con_end = StringField('合同结束日期', validators=[DataRequired('请填写合同结束日期！')])
     process_id = SelectField('进行现况', validators=[DataRequired('请选择项目进行现况！')], choices=[])
