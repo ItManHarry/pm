@@ -25,11 +25,11 @@
                         <div class="row">
                             <div class="col-3">
                                 {{form.user_dept.label}}
-                                {{form.user_dept(class='form-control', onchange='change_dept()')}}
+                                {{form.user_dept(class='form-control')}}
                             </div>
                             <div class="col-3 offset-4">
                                 {{form.pro_roles.label}}
-                                {{form.pro_roles(class='form-control', onchange='change_role()')}}
+                                {{form.pro_roles(class='form-control')}}
                             </div>
                         </div><br>
                         <div class="row">
@@ -72,44 +72,124 @@
 {% block script %}
     {{ super() }}
     $(function(){
+        $('#user_dept').change(function(){
+            reload_data()
+        })
+        $('#pro_roles').change(function(){
+            reload_data()
+        })
         $('#to_right_all').click(function(){
-            var selected = []
-            $('#selected option').each(function(){
-                selected.push($(this).val())
-            })
             $('#for_select option').each(function(){
-                //$(this).remove()
-                //$('#selected').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>")
                 $('#selected').append($(this))
             })
-            /*$('#selected').each(function(){
-                selected.push($(this).val())
+        })
+        $('#to_right').click(function(){
+            $('#for_select option').each(function(){
+                if($(this).prop('selected'))
+                    $('#selected').append($(this))
             })
-            alert('Selected : ' + selected)*/
         })
         $('#to_left_all').click(function(){
-            var for_select = []
-            $('#for_select option').each(function(){
-                for_select.push($(this).val())
-            })
             $('#selected option').each(function(){
-                if($.inArray($(this).val(), for_select) < 0)
+                $('#for_select').append($(this))
+            })
+        })
+        $('#to_left').click(function(){
+            $('#selected option').each(function(){
+                if($(this).prop('selected'))
                     $('#for_select').append($(this))
             })
         })
     })
-    //更改角色
-    function change_role(){
-       alert('change role')
+    //重新获取待选及已选人员清单
+    function reload_data(){
+        var pro_id = $('#pro_id').val()
+        var dept_id = $('#user_dept').val()
+        var role_id = $('#pro_roles').val()
+        //alert('Program id : ' + pro_id)
+        //alert('Department id : ' + dept_id)
+        //alert('Program role id : ' + role_id)
+        $.ajax({
+            method:'post',
+            url:'/pro/current_members/'+pro_id+'/'+dept_id+'/'+role_id,
+            contentType:'application/json;charset=UTF-8',
+            success:function(data){
+                var for_select = data.for_select
+                $('#for_select').empty()
+                for(var i = 0; i < for_select.length; i++){
+                    $('#for_select').append("<option value='"+for_select[i][0]+"'>"+for_select[i][1]+"</option>")
+                }
+                var selected = data.selected
+                $('#selected').empty()
+                for(var i = 0; i < selected.length; i++){
+                    $('#selected').append("<option value='"+selected[i][0]+"'>"+selected[i][1]+"</option>")
+                }
+            },
+            error:function(){
+                $.alert({
+                   type:'red',
+                   title:'系统提示',
+                   content: '系统错误,请联系管理员',
+                   onClose:function(){
+
+                   }
+               })
+            }
+        })
+    }
+    // 获取已选人员
+    function get_selected(){
+        var selected = []
+        $('#selected option').each(function(){
+            selected.push($(this).val())
+        })
+        return selected
     }
     //执行保存
     function do_save(){
-        $('#sign').val('save')
-        var selected_ids = []
+        var pro_id = $('#pro_id').val()
+        var role_id = $('#pro_roles').val()
+        var selected = []
         $('#selected option').each(function(){
-            selected_ids.push($(this).val())
+            selected.push($(this).val())
         })
-        $('#selected_ids').val(selected_ids.join(','))
-        $('#member_form').submit()
+        if(selected.length > 0){
+            $.ajax({
+                type:'post',
+                url:'/pro/add_members',
+                data:JSON.stringify({pro_id:pro_id, role_id:role_id,selected:selected.join(',')}),
+                contentType:'application/json;charset=UTF-8',
+                success:function(data){
+                    if(data.code == 1)
+                        $.alert({
+                           type:'green',
+                           title:'系统提示',
+                           content: data.message,
+                           onClose:function(){
+
+                           }
+                       })
+                },
+                error:function(){
+                    $.alert({
+                       type:'red',
+                       title:'系统提示',
+                       content: '系统错误,请联系管理员',
+                       onClose:function(){
+
+                       }
+                   })
+                }
+            })
+        }else{
+            $.alert({
+               type:'red',
+               title:'系统提示',
+               content: '请选择成员！',
+               onClose:function(){
+
+               }
+           })
+        }
     }
 {% endblock %}

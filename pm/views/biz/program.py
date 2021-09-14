@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash
+from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify
 from flask_login import login_required, current_user
 from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm
 from pm.models import BizProgram, SysDict, SysUser, BizProgramMember, BizDept
@@ -93,18 +93,86 @@ def members(pro_id):
     form.pro_roles.choices = pro_roles
     # 已选成员
     pro_members = program.members
-    selected_ids = []               # 已选人员ID(用于过滤可选成员)
-    selected = [(1, 1), (2, 2)]     # 已选人员(用于列表显示)
+    selected_ids = []        # 已选人员ID(用于过滤可选成员)
+    selected = []            # 已选人员(用于列表显示)
     form.pro_roles.data = enum_id
     for pro_member in pro_members:
+        # 添加所有已添加人员，用于过滤可选人员
         selected_ids.append(pro_member.member.id)
-        selected.append((pro_member.member.id, pro_member.member.name))
+        # 添加当前项目角色的已选人员
+        if pro_member.pro_role_id == enum_id:
+            selected.append((pro_member.member.id, pro_member.member.user_name))
     form.selected.choices = selected
     # 可选成员
-    all_users = SysUser.query.with_parent(BizDept.query.get(dept_id)).all()
+    all_users = SysUser.query.all()
     for_select = []
+    #print('Select id : ', selected_ids)
+    #print('Department id : ', dept_id)
     for user in all_users:
-        if user.user_id != 'admin' and user.user_id not in selected_ids: # 除去管理员及已添加人员
+        #print('User id is : ', user.user_id, ', department id : ' , user.dept_id)
+        if user.user_id != 'admin' and user.id not in selected_ids and user.dept_id == dept_id: # 除去管理员及已添加到项目的人员之后当前部门下的人员
             for_select.append((user.id, user.user_name))
     form.for_select.choices = for_select
     return render_template('biz/program/members.html', form=form, program=program)
+@bp_pro.route('/current_members/<pro_id>/<dept_id>/<role_id>', methods=['POST'])
+@login_required
+@log_record('获取当前项目成员')
+def current_members(pro_id, dept_id, role_id):
+    program = BizProgram.query.get_or_404(pro_id)
+    # 已选成员
+    pro_members = program.members
+    selected_ids = []   # 已选人员ID(用于过滤可选成员)
+    selected = []       # 已选人员(用于列表显示)
+    for pro_member in pro_members:
+        # 添加所有已添加人员，用于过滤可选人员
+        selected_ids.append(pro_member.member.id)
+        # 添加当前项目角色的已选人员
+        if pro_member.pro_role_id == role_id:
+            selected.append((pro_member.member.id, pro_member.member.user_name))
+    # 可选成员
+    all_users = SysUser.query.all()
+    for_select = []
+    for user in all_users:
+        if user.user_id != 'admin' and user.id not in selected_ids and user.dept_id == dept_id: # 除去管理员及已添加到项目的人员之后当前部门下的人员
+            for_select.append((user.id, user.user_name))
+    return jsonify(selected=selected, for_select=for_select)
+@bp_pro.route('/add_members', methods=['POST'])
+@login_required
+@log_record('保存项目成员')
+def add_members():
+    data = request.get_json()
+    pro_id = data['pro_id']
+    role_id = data['role_id']
+    selected = data['selected']
+    '''
+    print('Program id : ', pro_id)
+    print('Role id : ', role_id)
+    print('Selected : ', selected)
+    '''
+    # 解除对应角色的人员关联信息并删除对应的人员
+    program = BizProgram.query.get_or_404(pro_id)
+    for pro_member in program.members:
+        if pro_member.pro_role_id == role_id:
+            # 解除关联
+            program.members.remove(pro_member)
+            db.session.commit()
+            # 删除成员
+            db.session.delete(pro_member)
+            db.session.commit()
+    # 添加当前选择的用户
+    new_members = selected.split(',')
+    for member_id in new_members:
+        print('New member id : ', member_id)
+        new_member = BizProgramMember(
+            id=uuid.uuid4().hex,
+            pro_role_id=role_id,
+            member_id=member_id,
+            operator_id=current_user.id
+        )
+        db.session.add(new_member)
+        db.session.commit()
+        # 创建关联
+        program.members.append(new_member)
+    # 提交保存关联
+    db.session.commit()
+    return jsonify(code=1, message='添加成功!')
