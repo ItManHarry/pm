@@ -13,7 +13,7 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-10 offset-1 text-center text-info">
+                <div class="col-12 text-center text-info">
                     {% if get_flashed_messages() %}
                         <div class="alert alert-info alert-dismissible fade show" role="alert">
                           {% for message in get_flashed_messages() %}
@@ -30,11 +30,11 @@
                 {{form.csrf_token}}
                 {{form.id}}
                 <div class="form-row">
-                    <div class="form-group col-md-5 offset-md-1">
+                    <div class="form-group col-md-6">
                         {{form.no.label}}
                         {{form.no(class='form-control', disabled=True, placeholder='项目编号系统自动生成')}}
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         {{form.name.label}}
                         {{form.name(class='form-control')}}
                         {% for message in form.name.errors %}
@@ -43,32 +43,32 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-5 offset-md-1">
+                    <div class="form-group col-md-6">
                         {{form.pr.label}}
                         {{form.pr(class='form-control')}}
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         {{form.contract.label}}
                         {{form.contract(class='form-control')}}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-10 offset-md-1">
+                    <div class="form-group col-md-12">
                         {{form.svn.label}}
                         {{form.svn(class='form-control')}}
                     </div>
                  </div>
                 <div class="form-row">
-                    <div class="form-group col-md-10 offset-md-1">
+                    <div class="form-group col-md-12">
                         {{form.desc.label}}
                         {{form.desc(class='form-control', rows=3)}}
                     </div>
                  </div>
                 <div class="form-row">
-                    <div class="form-group col-md-5 offset-md-1">
+                    <div class="form-group col-md-6">
                         <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
                     </div>
-                    <div class="form-group col-md-5 text-right">
+                    <div class="form-group col-md-6 text-right">
                         <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
                     </div>
                 </div>

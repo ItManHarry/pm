@@ -66,4 +66,4 @@ def menus(id):
     ms = []
     for menu in module.menus:
         ms.append(menu.name)
-    return jsonify(menus=ms)
+    return jsonify(menus=ms, module=module.name)
