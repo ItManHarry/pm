@@ -138,8 +138,6 @@ class SysEnum(BaseModel, db.Model):
                                     primaryjoin='BizProgramStatus.clazz_id == SysEnum.id')      # 项目类别
     program_state = db.relationship('BizProgramStatus', back_populates='state', lazy=True,
                                     primaryjoin='BizProgramStatus.state_id == SysEnum.id')      # 项目状态
-    program_process = db.relationship('BizProgramStatus', back_populates='process', lazy=True,
-                                    primaryjoin='BizProgramStatus.process_id == SysEnum.id')    # 项目进行现况
 '''
 系统操作日志
 '''
@@ -247,8 +245,7 @@ class BizProgramStatus(BaseModel, db.Model):
     state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
     state = db.relationship('SysEnum', back_populates='program_state', lazy=True, foreign_keys=[state_id])      # 项目状态
     odds = db.Column(db.Integer)                                                                                # 执行几率
-    con_start = db.Column(db.String(24))                                                                        # 合同开始日期
-    con_end = db.Column(db.String(24))                                                                          # 合同结束日期
-    process_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
-    process = db.relationship('SysEnum', back_populates='program_process', lazy=True, foreign_keys=[process_id])# 项目进行现况
+    con_start = db.Column(db.Date())                                                                            # 合同开始日期
+    con_end = db.Column(db.Date())                                                                              # 合同结束日期
+    process_now = db.Column(db.String(32))                                                                      # 项目进行现况
     budget = db.Column(db.Float)                                                                                # 事业预算

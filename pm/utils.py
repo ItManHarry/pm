@@ -44,3 +44,14 @@ def random_filename(filename):
     ext = os.path.splitext(filename)[1]
     new_file_name = uuid.uuid4().hex + ext
     return new_file_name
+'''
+根据字典代码获取枚举下拉值
+'''
+def get_options(code):
+    from pm.models import SysDict
+    dictionary = SysDict.query.filter_by(code=code).first()
+    enums = dictionary.enums
+    options = []
+    for enum in enums:
+        options.append((enum.id, enum.display))
+    return options

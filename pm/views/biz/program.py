@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify
 from flask_login import login_required, current_user
 from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm, ProgramStatusForm
-from pm.models import BizProgram, SysDict, SysUser, BizProgramMember, BizDept
+from pm.models import BizProgram, SysUser, BizProgramMember, BizDept, BizProgramStatus
 from pm.plugins import db
 from pm.decorators import log_record
-from pm.utils import get_date
+from pm.utils import get_date, get_options
 import uuid, random
 bp_pro = Blueprint('pro', __name__)
 @bp_pro.route('/index', methods=['GET', 'POST'])
@@ -84,11 +84,7 @@ def members(pro_id):
     dept_id = departments[0][0]
     form.user_dept.choices = departments
     # 项目成员角色字典
-    dictionary = SysDict.query.filter_by(code='D002').first()
-    enums = dictionary.enums
-    pro_roles = []
-    for enum in enums:
-        pro_roles.append((enum.id, enum.display))
+    pro_roles = get_options('D002')
     enum_id = pro_roles[0][0]
     form.pro_roles.choices = pro_roles
     # 已选成员
@@ -181,9 +177,62 @@ def add_members():
 @log_record('维护项目状态')
 def status(pro_id):
     program = BizProgram.query.get_or_404(pro_id)
+    status = program.status
     form = ProgramStatusForm()
     form.pro_id.data = pro_id
+    # 获取下拉列表值
+    form.clazz_id.choices = get_options('D004')
+    form.state_id.choices = get_options('D003')
+    # GET请求下如果已经有状态信息的话进行form赋值
+    if request.method == 'GET' and status:
+        form.enterprise.data = status.enterprise
+        form.client.data = status.client
+        form.client_dept.data = status.client_dept
+        form.charge_dept.data = status.charge_dept
+        form.new.data = status.new
+        form.clazz_id.data = status.clazz_id
+        form.state_id.data = status.state_id
+        form.odds.data = status.odds
+        form.con_start.data = status.con_start
+        form.con_end.data = status.con_end
+        form.process_now.data = status.process_now
+        form.budget.data = status.budget
     if form.validate_on_submit():
-        flash('状态维护完成！')
+        if status:  # 执行修改
+            status.enterprise = form.enterprise.data
+            status.client = form.client.data
+            status.client_dept = form.client_dept.data
+            status.charge_dept = form.charge_dept.data
+            status.new = form.new.data
+            status.clazz_id = form.clazz_id.data
+            status.state_id = form.state_id.data
+            status.odds = form.odds.data
+            status.con_start = form.con_start.data
+            status.con_end = form.con_end.data
+            status.process_now = form.process_now.data
+            status.budget = form.budget.data
+            status.operator_id = current_user.id
+            db.session.commit()
+        else:   # 执行新增
+            status = BizProgramStatus(
+                id=uuid.uuid4().hex,
+                program=program,
+                enterprise=form.enterprise.data,
+                client=form.client.data,
+                client_dept=form.client_dept.data,
+                charge_dept=form.charge_dept.data,
+                new=form.new.data,
+                clazz_id=form.clazz_id.data,
+                state_id=form.state_id.data,
+                odds=form.odds.data,
+                con_start=form.con_start.data,
+                con_end=form.con_end.data,
+                process_now=form.process_now.data,
+                budget=form.budget.data,
+                operator_id=current_user.id
+            )
+            db.session.add(status)
+            db.session.commit()
+        flash('项目状态维护完成！')
         return redirect(url_for('.status', pro_id=form.pro_id.data))
     return render_template('biz/program/status.html', form=form, program=program)

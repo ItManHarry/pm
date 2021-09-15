@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}项目状态管理{% endblock %}
 {% block link %}
-    {{static_file('css', 'multiselect/style.css')}}
+    {{static_file('css','css/bootstrap-datepicker3.min.css')}}
 {% endblock %}
 {% block scripts %}
-    {{static_file('js', 'multiselect/multiselect.min.js')}}
+    {{static_file('js','js/bootstrap-datepicker.min.js')}}
+    {{static_file('js','js/bootstrap-datepicker.zh-CN.min.js')}}
 {% endblock %}
 {% block main %}
 <div class="container-fluid" style="margin-top:20px;">
@@ -17,19 +18,33 @@
                 </div>
             </div>
             <hr>
+            <div class="row">
+                <div class="col">
+                    {% if get_flashed_messages() %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                          {% for message in get_flashed_messages() %}
+                            <small>{{ message }}</small>
+                          {% endfor %}
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
             <form method="post" id="member_form">
                 {{form.csrf_token}}
                 {{form.pro_id}}
                 <div class="form-row">
-                    <div class="form-group col-9 offset-1">
+                    <div class="form-group col-12">
                         <div class="form-check">
-                            {{form.new(class='form-check-input')}}
+                            {{form.new(class='form-check-input', checked=True)}}
                             {{form.new.label}}
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-3 offset-1">
+                    <div class="form-group col-3">
                         {{form.enterprise.label}}
                         {{form.enterprise(class='form-control')}}
                         {% for message in form.enterprise.errors %}
@@ -37,22 +52,6 @@
                         {% endfor %}
                     </div>
                     <div class="form-group col-3">
-                        {{form.budget.label}}
-                        {{form.budget(class='form-control')}}
-                        {% for message in form.budget.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
-                    </div>
-                    <div class="form-group col-3">
-                        {{form.process_id.label}}
-                        {{form.process_id(class='form-control')}}
-                        {% for message in form.process_id.errors %}
-                            <small class="text-danger">{{message}}</small>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-row">
-                     <div class="form-group col-3 offset-1">
                         {{form.client.label}}
                         {{form.client(class='form-control')}}
                         {% for message in form.client.errors %}
@@ -75,7 +74,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-3 offset-1">
+                    <div class="form-group col-3">
                         {{form.clazz_id.label}}
                         {{form.clazz_id(class='form-control')}}
                         {% for message in form.clazz_id.errors %}
@@ -96,9 +95,16 @@
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
+                    <div class="form-group col-3">
+                        {{form.budget.label}}
+                        {{form.budget(class='form-control')}}
+                        {% for message in form.budget.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-3 offset-1">
+                    <div class="form-group col-3">
                         {{form.con_start.label}}
                         {{form.con_start(class='form-control')}}
                         {% for message in form.con_start.errors %}
@@ -112,12 +118,19 @@
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}
                     </div>
+                    <div class="form-group col-3">
+                        {{form.process_now.label}}
+                        {{form.process_now(class='form-control')}}
+                        {% for message in form.process_now.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-5 offset-1">
+                    <div class="col-6">
                         <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
                     </div>
-                    <div class="col-5 text-right">
+                    <div class="col-6 text-right">
                         <a class="btn btn-outline-secondary" href="{{url_for('pro.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
                     </div>
                 </div>
@@ -127,6 +140,20 @@
 </div>
 {% endblock %}
 {% block script %}
-    {{ super() }}
-
+    $(function(){
+        $('#con_start').datepicker({
+            weekStart: 1,
+            autoclose: true,
+            daysOfWeekHighlighted: "0,6",
+            format: "yyyy-mm-dd",
+            language: "zh-CN"
+        })
+        $('#con_end').datepicker({
+            weekStart: 1,
+            autoclose: true,
+            daysOfWeekHighlighted: "0,6",
+            format: "yyyy-mm-dd",
+            language: "zh-CN"
+        })
+    })
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, HiddenField, SelectField, IntegerField, FloatField, BooleanField
+from wtforms import StringField, TextAreaField, HiddenField, SelectField, IntegerField, FloatField, BooleanField, DateField
 from wtforms.validators import DataRequired, NumberRange
 from wtforms import ValidationError, validators
 from pm.models import BizProgram
@@ -44,8 +44,8 @@ class ProgramStatusForm(FlaskForm):
     new = BooleanField('是否新项目')
     clazz_id = SelectField('项目分类', validators=[DataRequired('请选择项目分类！')], choices=[])
     state_id = SelectField('项目状态', validators=[DataRequired('请选择项目状态！')], choices=[])
-    odds = IntegerField('执行可能性', validators=[DataRequired('请填写执行可能性！'),NumberRange(min=1, max=100, message='执行可能性只能介于1~100！')])
-    con_start = StringField('合同开始日期', validators=[DataRequired('请填写合同开始日期！')])
-    con_end = StringField('合同结束日期', validators=[DataRequired('请填写合同结束日期！')])
-    process_id = SelectField('进行现况', validators=[DataRequired('请选择项目进行现况！')], choices=[])
-    budget = FloatField('事业预算', validators=[DataRequired('请填写事业预算'), NumberRange(message='请输入数字！')])
+    odds = IntegerField('执行可能性(%)', validators=[DataRequired('执行可能性只能是1~100的数字！'), NumberRange(min=1, max=100, message='执行可能性只能介于1~100！')])
+    con_start = DateField('合同开始日期', validators=[DataRequired('请填写合同开始日期！')])
+    con_end = DateField('合同结束日期', validators=[DataRequired('请填写合同结束日期！')])
+    process_now = StringField('进行现况', validators=[DataRequired('请填写进行现况！')])
+    budget = FloatField('事业预算', validators=[DataRequired('事业预算只能是数字！'), NumberRange(message='请输入数字！')])
