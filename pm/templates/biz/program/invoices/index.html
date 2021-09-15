@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}项目发票{% endblock %}
+{% block main %}
+<div class="container-fluid" style="margin-top:20px;">
+    <div class="row">
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;项目管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('pro.index')}}" class="text-secondary">我的项目</a></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">{{program.name}}</small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">发票信息</small>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col text-right">
+                    <a class="btn btn-link" href="{{url_for('pro.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+            </div><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="18%">发票区分</th>
+                    <th scope="col" width="18%">支付比例(%)</th>
+                    <th scope="col" width="18%">已开票</th>
+                    <th scope="col" width="18%">开票日期</th>
+                    <th scope="col" width="18%">验收日期</th>
+                    <th scope="col" class="text-center" width="10%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if programs %}
+                    {% for program in programs %}
+                        <tr>
+                            <td>{{program.no}}</td>
+                            <td>{{program.name}}</td>
+                            <td>{{program.pr}}</td>
+                            <td>{{program.contract}}</td>
+                            <td>{{program.desc}}</td>
+                            <!--td>{{program.svn}}</td-->
+                            <td class="text-center">
+                                <a href="{{url_for('pro.edit', id=program.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                            </td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    {{ super() }}
+{% endblock %}

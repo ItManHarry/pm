@@ -53,6 +53,7 @@
                                 <a href="{{url_for('pro.edit', id=program.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
                                 <a href="{{url_for('pro.members', pro_id=program.id)}}" class="btn btn-link btn-sm text-success" title="添加成员"><i class="fas fa-users"></i></a>&nbsp;
                                 <a href="{{url_for('pro.status', pro_id=program.id)}}" class="btn btn-link btn-sm text-danger" title="项目状态"><i class="fas fa-flag"></i></a>&nbsp;
+                                <a href="{{url_for('pro.status', pro_id=program.id)}}" class="btn btn-link btn-sm text-secondary" title="发票信息"><i class="fas fa-money-bill"></i></a>&nbsp;
                                 <!-- 左右移动demo地址：https://blog.csdn.net/kangguowei/article/details/72758221 -->
                                 <!-- https://www.cnblogs.com/conswin/p/9952564.html -->
                                 {#
@@ -64,7 +65,7 @@
                     {%endfor%}
                 {% else %}
                     <tr>
-                        <td colspan="7" class="text-center"><small>没有记录!!!</small></td>
+                        <td colspan="6" class="text-center"><small>没有记录!!!</small></td>
                     </tr>
                 {% endif %}
               </tbody>

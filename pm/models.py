@@ -138,6 +138,7 @@ class SysEnum(BaseModel, db.Model):
                                     primaryjoin='BizProgramStatus.clazz_id == SysEnum.id')      # 项目类别
     program_state = db.relationship('BizProgramStatus', back_populates='state', lazy=True,
                                     primaryjoin='BizProgramStatus.state_id == SysEnum.id')      # 项目状态
+    program_invoice = db.relationship('BizProgramInvoice', back_populates='category')        # 关联项目成员表(项目成员类型)
 '''
 系统操作日志
 '''
@@ -218,14 +219,15 @@ class BizProgram(BaseModel, db.Model):
     svn = db.Column(db.String(128))                 # SVN地址
     owner_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))   # 项目负责人ID
     owner = db.relationship('SysUser', back_populates='programs')       # 项目负责人
-    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')    # 项目成员(一对多)
+    members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')    # 项目成员(多对多)
     status = db.relationship('BizProgramStatus', uselist=False)                                                 # 项目状态(一对一)
+    invoices = db.relationship('BizProgramInvoice', back_populates='program')                                   # 项目发票(一对多)
 '''
 项目成员信息
 '''
 class BizProgramMember(BaseModel, db.Model):
     pro_role_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                    # 关联枚举表(字典ID:D002)
-    pro_role = db.relationship('SysEnum', back_populates='program_member_role')                             # 关联枚举
+    pro_role = db.relationship('SysEnum', back_populates='program_member_role')                             # 项目角色-关联枚举
     member_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                      # 用户ID
     member = db.relationship('SysUser', back_populates='program_members')                                   # 关联用户
     programs = db.relationship('BizProgram', secondary='rel_program_member', back_populates='members')     # 所属项目
@@ -240,12 +242,22 @@ class BizProgramStatus(BaseModel, db.Model):
     client_dept = db.Column(db.String(128))                                                                     # 客户公司主管部门
     charge_dept = db.Column(db.String(128))                                                                     # 公司主管部门
     new = db.Column(db.Boolean, default=True)                                                                   # 是否新项目
-    clazz_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
+    clazz_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                           # 关联枚举表(字典ID:D004)
     clazz = db.relationship('SysEnum', back_populates='program_clazz', lazy=True, foreign_keys=[clazz_id])      # 项目分类
-    state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))
+    state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                           # 关联枚举表(字典ID:D003)
     state = db.relationship('SysEnum', back_populates='program_state', lazy=True, foreign_keys=[state_id])      # 项目状态
     odds = db.Column(db.Integer)                                                                                # 执行几率
     con_start = db.Column(db.Date())                                                                            # 合同开始日期
     con_end = db.Column(db.Date())                                                                              # 合同结束日期
     process_now = db.Column(db.String(32))                                                                      # 项目进行现况
     budget = db.Column(db.Float)                                                                                # 事业预算
+class BizProgramInvoice(BaseModel, db.Model):
+    program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
+    program = db.relationship('BizProgram', back_populates='invoices')                      # 对应项目
+    category_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                    # 关联枚举表(字典ID:D005)
+    category = db.relationship('SysEnum', back_populates='program_invoice')                 # 发票类别-关联枚举
+    percent = db.Column(db.Integer)                                                         # 支付比例
+    make_out = db.Column(db.Boolean, default=False)                                         # 已开票
+    make_out_dt = db.Column(db.Date())                                                      # 开票日期
+    delivery_dt = db.Column(db.Date())                                                      # 验收日期
+    remark = db.Column(db.Text())                                                           # 备注
