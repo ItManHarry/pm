@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify
 from flask_login import login_required, current_user
 from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm, ProgramStatusForm
-from pm.models import BizProgram, SysUser, BizProgramMember, BizDept, BizProgramStatus
+from pm.models import BizProgram, SysUser, BizProgramMember, BizDept, BizProgramStatus, BizProgramInvoice
 from pm.plugins import db
 from pm.decorators import log_record
 from pm.utils import get_date, get_options
@@ -236,3 +236,10 @@ def status(pro_id):
         flash('项目状态维护完成！')
         return redirect(url_for('.status', pro_id=form.pro_id.data))
     return render_template('biz/program/status.html', form=form, program=program)
+@bp_pro.route('/invoices/<pro_id>')
+@login_required
+@log_record('管理项目开票信息')
+def invoices(pro_id):
+    program = BizProgram.query.get_or_404(pro_id)
+    invoices = program.invoices
+    return render_template('biz/program/invoices/index.html', invoices=invoices, program=program)

@@ -28,17 +28,16 @@
                 </tr>
               </thead>
               <tbody>
-                {% if programs %}
-                    {% for program in programs %}
+                {% if invoices %}
+                    {% for invoice in invoices %}
                         <tr>
-                            <td>{{program.no}}</td>
-                            <td>{{program.name}}</td>
-                            <td>{{program.pr}}</td>
-                            <td>{{program.contract}}</td>
-                            <td>{{program.desc}}</td>
-                            <!--td>{{program.svn}}</td-->
+                            <td>{{invoice.category.display}}</td>
+                            <td>{{invoice.percent}}</td>
+                            <td>{{'是' if invoice.make_out else '否'}}</td>
+                            <td>{{invoice.make_out_dt}}</td>
+                            <td>{{invoice.delivery_dt}}</td>
                             <td class="text-center">
-                                <a href="{{url_for('pro.edit', id=program.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <a href="{{url_for('pro.edit', id=invoice.id)}}" class="btn btn-link btn-sm text-info" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
                             </td>
                         </tr>
                     {%endfor%}

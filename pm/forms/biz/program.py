@@ -49,3 +49,5 @@ class ProgramStatusForm(FlaskForm):
     con_end = DateField('合同结束日期', validators=[DataRequired('请填写合同结束日期！')])
     process_now = StringField('进行现况', validators=[DataRequired('请填写进行现况！')])
     budget = FloatField('事业预算', validators=[DataRequired('事业预算只能是数字！'), NumberRange(message='请输入数字！')])
+class ProgramInvoiceForm(FlaskForm):
+    pro_id = HiddenField()
