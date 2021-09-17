@@ -140,20 +140,9 @@
 </div>
 {% endblock %}
 {% block script %}
+    {{super()}}
     $(function(){
-        $('#con_start').datepicker({
-            weekStart: 1,
-            autoclose: true,
-            daysOfWeekHighlighted: "0,6",
-            format: "yyyy-mm-dd",
-            language: "zh-CN"
-        })
-        $('#con_end').datepicker({
-            weekStart: 1,
-            autoclose: true,
-            daysOfWeekHighlighted: "0,6",
-            format: "yyyy-mm-dd",
-            language: "zh-CN"
-        })
+        init_date('con_start')
+        init_date('con_end')
     })
 {% endblock %}
