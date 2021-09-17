@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify
 from flask_login import login_required, current_user
-from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm, ProgramStatusForm
+from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm, ProgramStatusForm, ProgramInvoiceForm
 from pm.models import BizProgram, SysUser, BizProgramMember, BizDept, BizProgramStatus, BizProgramInvoice
 from pm.plugins import db
 from pm.decorators import log_record
@@ -243,3 +243,28 @@ def invoices(pro_id):
     program = BizProgram.query.get_or_404(pro_id)
     invoices = program.invoices
     return render_template('biz/program/invoices/index.html', invoices=invoices, program=program)
+@bp_pro.route('/invoices/add_invoice/<pro_id>', methods=['GET', 'POST'])
+@login_required
+@log_record('新增项目发票信息')
+def add_invoice(pro_id):
+    program = BizProgram.query.get_or_404(pro_id)
+    form = ProgramInvoiceForm()
+    form.pro_id.data = pro_id
+    form.category_id.choices = get_options('D005')
+    if form.validate_on_submit():
+        invoice = BizProgramInvoice(
+            id=uuid.uuid4().hex,
+            program=program,
+            category_id=form.category_id.data,
+            percent=form.percent.data,
+            make_out=form.make_out.data,
+            make_out_dt=form.make_out_dt.data,
+            delivery_dt=form.delivery_dt.data,
+            remark=form.remark.data,
+            operator_id=current_user.id
+        )
+        db.session.add(invoice)
+        db.session.commit()
+        flash('发票信息新增成功！')
+        return redirect(url_for('.add_invoice', pro_id=form.pro_id.data))
+    return render_template('biz/program/invoices/add.html', form=form, program=program)

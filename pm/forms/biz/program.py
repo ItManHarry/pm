@@ -3,9 +3,15 @@ from wtforms import StringField, TextAreaField, HiddenField, SelectField, Intege
 from wtforms.validators import DataRequired, NumberRange
 from wtforms import ValidationError, validators
 from pm.models import BizProgram
+'''
+项目搜索表单
+'''
 class ProgramSearchForm(FlaskForm):
     no = StringField('项目编号', [validators.optional()])
     name = StringField('项目名称', [validators.optional()])
+'''
+项目主信息表单
+'''
 class ProgramForm(FlaskForm):
     id = HiddenField()
     no = StringField('项目编号', [validators.optional()]) # 项目编号自动生成
@@ -29,12 +35,18 @@ class ProgramForm(FlaskForm):
             # Check新的部门名称是否已经存在
             if field.data in names:
                 raise ValidationError('项目名称已存在!')
+'''
+项目成员表单
+'''
 class ProgramMemberForm(FlaskForm):
     pro_id = HiddenField()                                                                              # 项目ID
     pro_roles = SelectField('成员角色', [validators.optional()], choices=[])                             # 项目人员角色
     user_dept = SelectField('部门所属', [validators.optional()], choices=[])                             # 人员组织
     for_select = SelectField('选择成员', [validators.optional()], choices=[])                            # 待选人员
     selected = SelectField('已选成员',   [validators.optional()], choices=[])                            # 已选人员
+'''
+项目状态表单
+'''
 class ProgramStatusForm(FlaskForm):
     pro_id = HiddenField()
     enterprise = StringField('法人', validators=[DataRequired('请填写法人！')])
@@ -49,5 +61,25 @@ class ProgramStatusForm(FlaskForm):
     con_end = DateField('合同结束日期', validators=[DataRequired('请填写合同结束日期！')])
     process_now = StringField('进行现况', validators=[DataRequired('请填写进行现况！')])
     budget = FloatField('事业预算', validators=[DataRequired('事业预算只能是数字！'), NumberRange(message='请输入数字！')])
+'''
+项目发票表单
+'''
 class ProgramInvoiceForm(FlaskForm):
     pro_id = HiddenField()
+    category_id = SelectField('发票类别', validators=[DataRequired('请选择发票类别！')], choices=[])
+    percent = IntegerField('支付比例(%)', validators=[DataRequired('支付比例只能是1~100的数字！'), NumberRange(min=1, max=100, message='支付比例只能介于1~100！')])
+    make_out = BooleanField('已开票')
+    make_out_dt = DateField('开票日期', format='%Y-%m-%d', validators=[DataRequired('请填写开票日期！')])
+    delivery_dt = DateField('验收日期', format='%Y-%m-%d', validators=[DataRequired('请填写验收日期！')])
+    remark = TextAreaField('备注', [validators.optional()])
+    '''
+    def validate_make_out_dt(self, field):
+        if self.make_out.data:
+            if field.data is None:
+                raise ValidationError(message='请填写开票日期！')
+
+    def validate_delivery_dt(self, field):
+        if self.make_out.data:
+            if field.data is None:
+                raise ValidationError(message='请填写验收日期！')
+    '''
