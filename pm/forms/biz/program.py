@@ -66,6 +66,7 @@ class ProgramStatusForm(FlaskForm):
 '''
 class ProgramInvoiceForm(FlaskForm):
     pro_id = HiddenField()
+    invoice_id = HiddenField()
     category_id = SelectField('发票类别', validators=[DataRequired('请选择发票类别！')], choices=[])
     percent = IntegerField('支付比例(%)', validators=[DataRequired('支付比例只能是1~100的数字！'), NumberRange(min=1, max=100, message='支付比例只能介于1~100！')])
     make_out = BooleanField('已开票')
@@ -83,3 +84,13 @@ class ProgramInvoiceForm(FlaskForm):
             if field.data is None:
                 raise ValidationError(message='请填写验收日期！')
     '''
+    def validate_percent(self, field):
+        program = BizProgram.query.get_or_404(self.pro_id.data)
+        if program.invoices:
+            payed = 0
+            for invoice in program.invoices:
+                if invoice.id != self.invoice_id.data:
+                    payed += invoice.percent
+            payed += field.data
+            if payed > 100:
+                raise ValidationError('支付比例总和超过了100,请修改！')

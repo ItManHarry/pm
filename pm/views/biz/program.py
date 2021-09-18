@@ -268,3 +268,32 @@ def add_invoice(pro_id):
         flash('发票信息新增成功！')
         return redirect(url_for('.add_invoice', pro_id=form.pro_id.data))
     return render_template('biz/program/invoices/add.html', form=form, program=program)
+@bp_pro.route('/invoices/edit_invoice/<pro_id>/<invoice_id>', methods=['GET', 'POST'])
+@login_required
+@log_record('修改项目发票信息')
+def edit_invoice(pro_id, invoice_id):
+    program = BizProgram.query.get_or_404(pro_id)
+    form = ProgramInvoiceForm()
+    form.pro_id.data = pro_id
+    form.invoice_id.data = invoice_id
+    form.category_id.choices = get_options('D005')
+    invoice = BizProgramInvoice.query.get_or_404(invoice_id)
+    if request.method == 'GET':
+        form.category_id.data = invoice.category_id
+        form.percent.data = invoice.percent
+        form.make_out.data = invoice.make_out
+        form.make_out_dt.data = invoice.make_out_dt
+        form.delivery_dt.data = invoice.delivery_dt
+        form.remark.data = invoice.remark
+    if form.validate_on_submit():
+        invoice.category_id = form.category_id.data
+        invoice.percent = form.percent.data
+        invoice.make_out = form.make_out.data
+        invoice.make_out_dt = form.make_out_dt.data
+        invoice.delivery_dt = form.delivery_dt.data
+        invoice.remark = form.remark.data
+        invoice.operator_id = current_user.id
+        db.session.commit()
+        flash('发票信息更改成功！')
+        return redirect(url_for('.edit_invoice', pro_id=pro_id, invoice_id=invoice_id))
+    return render_template('biz/program/invoices/edit.html', form=form, program=program)
