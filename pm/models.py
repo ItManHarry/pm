@@ -43,13 +43,14 @@ class SysUser(BaseModel, db.Model, UserMixin):
     created_by = db.relationship('SysUserCreator', foreign_keys=[SysUserCreator.created_by_id], back_populates='created_by', lazy='dynamic', cascade='all')     # 创建者
     updated = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updated_id], back_populates='updated', lazy='dynamic', cascade='all')              # 被修改者
     updated_by = db.relationship('SysUserUpdater', foreign_keys=[SysUserUpdater.updated_by_id], back_populates='updated_by', lazy='dynamic', cascade='all')     # 修改者
-    role_id = db.Column(db.String(32), db.ForeignKey('sys_role.id'))                # 系统角色ID
-    role = db.relationship('SysRole', back_populates='users')                       # 系统角色
-    dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))                # 所属部门ID
-    dept = db.relationship('BizDept', back_populates='users')                       # 所属部门
-    programs = db.relationship('BizProgram', back_populates='owner')                # 负责项目清单
-    program_members = db.relationship('BizProgramMember', back_populates='member')  # 项目成员
-    logs = db.relationship('SysLog', back_populates='user')                         # 操作日志
+    role_id = db.Column(db.String(32), db.ForeignKey('sys_role.id'))                    # 系统角色ID
+    role = db.relationship('SysRole', back_populates='users')                           # 系统角色
+    dept_id = db.Column(db.String(32), db.ForeignKey('biz_dept.id'))                    # 所属部门ID
+    dept = db.relationship('BizDept', back_populates='users')                           # 所属部门
+    programs = db.relationship('BizProgram', back_populates='owner')                    # 负责项目清单
+    program_members = db.relationship('BizProgramMember', back_populates='member')      # 项目成员
+    issue_handlers = db.relationship('BizProgramIssue', back_populates='issue_handler') # ISSUE处理人员
+    logs = db.relationship('SysLog', back_populates='user')                             # 操作日志
 
 
     def set_password(self, password):
@@ -138,7 +139,13 @@ class SysEnum(BaseModel, db.Model):
                                     primaryjoin='BizProgramStatus.clazz_id == SysEnum.id')      # 项目类别
     program_state = db.relationship('BizProgramStatus', back_populates='state', lazy=True,
                                     primaryjoin='BizProgramStatus.state_id == SysEnum.id')      # 项目状态
-    program_invoice = db.relationship('BizProgramInvoice', back_populates='category')        # 关联项目成员表(项目成员类型)
+    program_invoice = db.relationship('BizProgramInvoice', back_populates='category')           # 关联项目成员表(项目成员类型)
+    issue_type = db.relationship('BizProgramIssue', back_populates='issue_type', lazy=True,
+                                    primaryjoin='BizProgramIssue.issue_type_id == SysEnum.id')  # ISSUE类型
+    issue_grade = db.relationship('BizProgramIssue', back_populates='issue_grade', lazy=True,
+                                    primaryjoin='BizProgramIssue.issue_grade_id == SysEnum.id')  # ISSUE等级
+    issue_state = db.relationship('BizProgramIssue', back_populates='issue_state', lazy=True,
+                                    primaryjoin='BizProgramIssue.issue_state_id == SysEnum.id')  # ISSUE状态
 '''
 系统操作日志
 '''
@@ -222,6 +229,7 @@ class BizProgram(BaseModel, db.Model):
     members = db.relationship('BizProgramMember', secondary='rel_program_member', back_populates='programs')    # 项目成员(多对多)
     status = db.relationship('BizProgramStatus', uselist=False)                                                 # 项目状态(一对一)
     invoices = db.relationship('BizProgramInvoice', back_populates='program')                                   # 项目发票(一对多)
+    issues = db.relationship('BizProgramIssue', back_populates='program')                                       # 项目ISSUE(一对多)
 '''
 项目成员信息
 '''
@@ -230,7 +238,7 @@ class BizProgramMember(BaseModel, db.Model):
     pro_role = db.relationship('SysEnum', back_populates='program_member_role')                             # 项目角色-关联枚举
     member_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                      # 用户ID
     member = db.relationship('SysUser', back_populates='program_members')                                   # 关联用户
-    programs = db.relationship('BizProgram', secondary='rel_program_member', back_populates='members')     # 所属项目
+    programs = db.relationship('BizProgram', secondary='rel_program_member', back_populates='members')      # 所属项目
 '''
 项目状态信息
 '''
@@ -261,3 +269,17 @@ class BizProgramInvoice(BaseModel, db.Model):
     make_out_dt = db.Column(db.Date())                                                      # 开票日期
     delivery_dt = db.Column(db.Date())                                                      # 验收日期
     remark = db.Column(db.Text())                                                           # 备注
+class BizProgramIssue(BaseModel, db.Model):
+    program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
+    program = db.relationship('BizProgram', back_populates='issues')                                                    # 对应项目
+    issue_type_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                              # 关联枚举表(字典ID:D006)
+    issue_type = db.relationship('SysEnum', back_populates='issue_type', lazy=True, foreign_keys=[issue_type_id])       # ISSUE类别
+    issue_grade_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                             # 关联枚举表(字典ID:D007)
+    issue_grade = db.relationship('SysEnum', back_populates='issue_grade', lazy=True, foreign_keys=[issue_grade_id])    # ISSUE等级
+    issue_state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                             # 关联枚举表(字典ID:D008)
+    issue_state = db.relationship('SysEnum', back_populates='issue_state', lazy=True, foreign_keys=[issue_state_id])    # ISSUE处理状态
+    issue_remark = db.Column(db.Text())                                                                                 # ISSUE描述
+    issue_handler_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                           # ISSUE处理人员ID
+    issue_handler = db.relationship('SysUser', back_populates='issue_handlers')                                         # ISSUE处理人员
+    ask_finish_dt = db.Column(db.Date())                                                                                # 邀请完成日期
+    real_finish_dt = db.Column(db.Date())                                                                               # 实际完成日期
