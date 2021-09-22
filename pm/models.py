@@ -49,7 +49,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
     dept = db.relationship('BizDept', back_populates='users')                           # 所属部门
     programs = db.relationship('BizProgram', back_populates='owner')                    # 负责项目清单
     program_members = db.relationship('BizProgramMember', back_populates='member')      # 项目成员
-    issue_handlers = db.relationship('BizProgramIssue', back_populates='issue_handler') # ISSUE处理人员
+    issue_handlers = db.relationship('BizProgramIssue', back_populates='handler') # ISSUE处理人员
     logs = db.relationship('SysLog', back_populates='user')                             # 操作日志
 
 
@@ -140,12 +140,12 @@ class SysEnum(BaseModel, db.Model):
     program_state = db.relationship('BizProgramStatus', back_populates='state', lazy=True,
                                     primaryjoin='BizProgramStatus.state_id == SysEnum.id')      # 项目状态
     program_invoice = db.relationship('BizProgramInvoice', back_populates='category')           # 关联项目成员表(项目成员类型)
-    issue_type = db.relationship('BizProgramIssue', back_populates='issue_type', lazy=True,
-                                    primaryjoin='BizProgramIssue.issue_type_id == SysEnum.id')  # ISSUE类型
-    issue_grade = db.relationship('BizProgramIssue', back_populates='issue_grade', lazy=True,
-                                    primaryjoin='BizProgramIssue.issue_grade_id == SysEnum.id')  # ISSUE等级
-    issue_state = db.relationship('BizProgramIssue', back_populates='issue_state', lazy=True,
-                                    primaryjoin='BizProgramIssue.issue_state_id == SysEnum.id')  # ISSUE状态
+    issue_category = db.relationship('BizProgramIssue', back_populates='category', lazy=True,
+                                    primaryjoin='BizProgramIssue.category_id == SysEnum.id')    # ISSUE类型
+    issue_grade = db.relationship('BizProgramIssue', back_populates='grade', lazy=True,
+                                    primaryjoin='BizProgramIssue.grade_id == SysEnum.id')       # ISSUE等级
+    issue_state = db.relationship('BizProgramIssue', back_populates='state', lazy=True,
+                                    primaryjoin='BizProgramIssue.state_id == SysEnum.id')       # ISSUE状态
 '''
 系统操作日志
 '''
@@ -272,14 +272,19 @@ class BizProgramInvoice(BaseModel, db.Model):
 class BizProgramIssue(BaseModel, db.Model):
     program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
     program = db.relationship('BizProgram', back_populates='issues')                                                    # 对应项目
-    issue_type_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                              # 关联枚举表(字典ID:D006)
-    issue_type = db.relationship('SysEnum', back_populates='issue_type', lazy=True, foreign_keys=[issue_type_id])       # ISSUE类别
-    issue_grade_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                             # 关联枚举表(字典ID:D007)
-    issue_grade = db.relationship('SysEnum', back_populates='issue_grade', lazy=True, foreign_keys=[issue_grade_id])    # ISSUE等级
-    issue_state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                             # 关联枚举表(字典ID:D008)
-    issue_state = db.relationship('SysEnum', back_populates='issue_state', lazy=True, foreign_keys=[issue_state_id])    # ISSUE处理状态
-    issue_remark = db.Column(db.Text())                                                                                 # ISSUE描述
-    issue_handler_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                           # ISSUE处理人员ID
-    issue_handler = db.relationship('SysUser', back_populates='issue_handlers')                                         # ISSUE处理人员
+    category_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                                # 关联枚举表(字典ID:D006)
+    category = db.relationship('SysEnum', back_populates='issue_category', lazy=True, foreign_keys=[category_id])       # ISSUE类别
+    grade_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                                   # 关联枚举表(字典ID:D007)
+    grade = db.relationship('SysEnum', back_populates='issue_grade', lazy=True, foreign_keys=[grade_id])                # ISSUE等级
+    state_id = db.Column(db.String(32), db.ForeignKey('sys_enum.id'))                                                   # 关联枚举表(字典ID:D008)
+    state = db.relationship('SysEnum', back_populates='issue_state', lazy=True, foreign_keys=[state_id])                # ISSUE处理状态
+    description = db.Column(db.Text())                                                                                  # ISSUE描述
+    handler_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))                                                 # ISSUE处理人员ID
+    handler = db.relationship('SysUser', back_populates='issue_handlers')                                               # ISSUE处理人员
     ask_finish_dt = db.Column(db.Date())                                                                                # 邀请完成日期
     real_finish_dt = db.Column(db.Date())                                                                               # 实际完成日期
+    logs = db.relationship('BizProgramIssueLog', back_populates='issue')                                                # issue处理日志
+class BizProgramIssueLog(BaseModel, db.Model):
+    issue_id = db.Column(db.String(32), db.ForeignKey('biz_program_issue.id'))
+    issue = db.relationship('BizProgramIssue', back_populates='logs')               # 所属issue
+    content = db.Column(db.Text())                                                  # 操作事项
