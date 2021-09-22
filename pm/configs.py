@@ -5,6 +5,20 @@ pro_db = os.getenv('PRO_DB')
 class GlobalConfig():
     SECRET_KEY = os.getenv('SECRET_KEY', '123456789qazxswedcvfr!@#@452631')
     ITEM_COUNT_PER_PAGE = 10
+    FILE_UPLOAD_PATH = 'D:/Development/Python/workplaces/uploads'
+    DROPZONE_MAX_FILE_SIZE = 3              # Dropzone上传文件大小(3M)
+    DROPZONE_MAX_FILES = 5                  # Dropzone上传文件最大数量
+    MAX_CONTENT_LENGTH = 3 * 1024 * 1024    # Flask内置文件上传大小设置
+    DROPZONE_ALLOWED_FILE_TYPE = 'image'    # Dropzone允许上传的文件类型
+    DROPZONE_ENABLE_CSRF = True             # Dropzone上传启用CSRF令牌验证
+    DROPZONE_IN_FORM = True                 # 嵌入表单
+    DROPZONE_UPLOAD_ON_CLICK = True         # 点击选择文件
+    # 以下为Dropzone错误消息提示
+    DROPZONE_INVALID_FILE_TYPE = '上传文件类型错误！'
+    DROPZONE_FILE_TOO_BIG = '上传文件超过最大限制！'
+    DROPZONE_SERVER_ERROR = '服务端错误!'
+    DROPZONE_BROWSER_UNSUPPORTED = '浏览器不支持！'
+    DROPZONE_MAX_FILE_EXCEED = '超出最大文件上传数量！'
 class DevelopConfig(GlobalConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('DEVELOP_DATABASE_URL', dev_db)

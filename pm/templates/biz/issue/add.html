@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}ISSUE管理{% endblock %}
+{% from 'bootstrap/pagination.html' import render_pagination with context %}
+{% block link %}
+    {{static_file('css','css/dropzone.min.css')}}
+    {{static_file('css','css/bootstrap-datepicker3.min.css')}}
+{% endblock %}
+{% block scripts %}
+    {{static_file('js','js/dropzone.min.js')}}
+    {{static_file('js','ckeditor/ckeditor.js')}}
+    {{static_file('js','js/bootstrap-datepicker.min.js')}}
+    {{static_file('js','js/bootstrap-datepicker.zh-CN.min.js')}}
+    {{dropzone.config()}}
+{% endblock %}
+{% block style %}
+    {{ dropzone.style('margin:20px 0; border:2px dashed #ccc; min-height:200px;')}}
+{% endblock %}
+{% block main %}
+<div class="container-fluid" style="margin-top:20px;">
+    <div class="row">
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;ISSUE管理&nbsp;&nbsp;/&nbsp;&nbsp;<a href="{{url_for('iss.index')}}" class="text-secondary">ISSUE事项</a></small></small>&nbsp;&nbsp;/&nbsp;&nbsp;</small><small class="text-secondary">新增ISSUE</small>
+                </div>
+            </div>
+            <hr>
+            <form enctype="multipart/form-data" method="post">
+                {{form.csrf_token}}
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        {{form.pro_id.label}}
+                        {{form.pro_id(class='form-control')}}
+                        {% for message in form.pro_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{form.category_id.label}}
+                        {{form.category_id(class='form-control')}}
+                        {% for message in form.category_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{form.grade_id.label}}
+                        {{form.grade_id(class='form-control')}}
+                        {% for message in form.grade_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{form.state_id.label}}
+                        {{form.state_id(class='form-control')}}
+                        {% for message in form.state_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{form.handler_id.label}}
+                        {{form.handler_id(class='form-control')}}
+                        {% for message in form.handler_id.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{form.ask_finish_dt.label}}
+                        {{form.ask_finish_dt(class='form-control')}}
+                        {% for message in form.ask_finish_dt.errors %}
+                            <small class="text-danger">{{message}}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{form.description.label}}
+                        {{form.description(class='ckeditor')}}
+                        {% for message in form.description.errors %}
+                            <small class="text-danger">
+                                {{ message }}
+                            </small>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h6>图片</h6>
+                        {{dropzone.create()}}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;&nbsp;保存</button>
+                    </div>
+                    <div class="form-group col-md-6 text-right">
+                        <a class="btn btn-outline-secondary" href="{{url_for('iss.index')}}"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;&nbsp;返回</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    {{ super() }}
+    $(function(){
+        init_date('ask_finish_dt')
+    })
+{% endblock %}

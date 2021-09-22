@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}ISSUE管理{% endblock %}
+{% from 'bootstrap/pagination.html' import render_pagination with context %}
+{% block link %}
+    {{static_file('css','css/dropzone.min.css')}}
+    {{static_file('css','css/bootstrap-datepicker3.min.css')}}
+{% endblock %}
+{% block scripts %}
+    {{static_file('js','js/dropzone.min.js')}}
+    {{static_file('js','ckeditor/ckeditor.js')}}
+    {{static_file('js','js/bootstrap-datepicker.min.js')}}
+    {{static_file('js','js/bootstrap-datepicker.zh-CN.min.js')}}
+    {{dropzone.config()}}
+{% endblock %}
+{% block style %}
+    {{ dropzone.style('margin:20px 0; border:2px dashed #ccc; min-height:200px;')}}
+{% endblock %}
+{% block main %}
+<div class="container-fluid" style="margin-top:20px;">
+    <div class="row">
+        <div class="col-2">{% include('_menus.html') %}</div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <small style="color:#888;"><i class="fas fa-lg fa-street-view"></i>&nbsp;&nbsp;ISSUE管理&nbsp;&nbsp;/&nbsp;&nbsp;<span class="text-secondary">ISSUE事项</span></small>
+                </div>
+            </div>
+            <hr>
+            <form method="post">
+              <div class="row">
+                <div class="col-2">
+                    {{form.csrf_token}}
+                    {{form.program.label}}
+                    {{form.program(class='form-control', placeholder='项目编号')}}
+                </div>
+                <div class="col-2">
+                    {{form.category.label}}
+                    {{form.category(class='form-control', placeholder='项目名称')}}
+                </div>
+                <div class="col-2">
+                    {{form.grade.label}}
+                    {{form.grade(class='form-control', placeholder='项目名称')}}
+                </div>
+                <div class="col-2">
+                    {{form.state.label}}
+                    {{form.state(class='form-control', placeholder='项目名称')}}
+                </div>
+                <div class="col-4 text-right">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                    <a class="btn btn-link" href="{{url_for('iss.add')}}"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            </form><br>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    {{ super() }}
+    $(function(){
+        init_date('ask_finish_dt')
+    })
+{% endblock %}

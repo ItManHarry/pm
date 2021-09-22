@@ -153,6 +153,7 @@ def register_webapp_commands(app):
             ('用户管理', 'user.index', '管理系统用户(添加、修改、启用/停用等)', 'fas fa-users', 'org'),
             ('组织管理', 'org.index', '管理部门组织信息(新增/修改/停用等)', 'fas fa-sitemap', 'org'),
             ('我的项目', 'pro.index', '当前用户管理自己负责的项目信息', 'fas fa-newspaper', 'pro'),
+            ('ISSUE事项', 'iss.index', '当前用户管理所属项目的ISSUE信息', 'fas fa-newspaper', 'iss')
         ]
         if SysMenu.query.all():
             click.echo('系统菜单已创建，跳过')
