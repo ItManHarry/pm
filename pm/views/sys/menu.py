@@ -19,7 +19,7 @@ def index():
         name = form.name.data
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
-    pagination = SysMenu.query.filter(SysMenu.name.like('%'+name+'%')).order_by(SysMenu.name).paginate(page, per_page)
+    pagination = SysMenu.query.filter(SysMenu.name.like('%'+name+'%')).order_by(SysMenu.module_id, SysMenu.name).paginate(page, per_page)
     menus = pagination.items
     return render_template('sys/menu/index.html', form=form, pagination=pagination, menus=menus)
 @bp_menu.route('/add', methods=['GET', 'POST'])

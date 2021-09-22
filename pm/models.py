@@ -259,6 +259,9 @@ class BizProgramStatus(BaseModel, db.Model):
     con_end = db.Column(db.Date())                                                                              # 合同结束日期
     process_now = db.Column(db.String(32))                                                                      # 项目进行现况
     budget = db.Column(db.Float)                                                                                # 事业预算
+'''
+项目发票信息
+'''
 class BizProgramInvoice(BaseModel, db.Model):
     program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
     program = db.relationship('BizProgram', back_populates='invoices')                      # 对应项目
@@ -269,6 +272,9 @@ class BizProgramInvoice(BaseModel, db.Model):
     make_out_dt = db.Column(db.Date())                                                      # 开票日期
     delivery_dt = db.Column(db.Date())                                                      # 验收日期
     remark = db.Column(db.Text())                                                           # 备注
+'''
+项目ISSUE事项
+'''
 class BizProgramIssue(BaseModel, db.Model):
     program_id = db.Column(db.String(32), db.ForeignKey('biz_program.id'))
     program = db.relationship('BizProgram', back_populates='issues')                                                    # 对应项目
@@ -284,6 +290,9 @@ class BizProgramIssue(BaseModel, db.Model):
     ask_finish_dt = db.Column(db.Date())                                                                                # 邀请完成日期
     real_finish_dt = db.Column(db.Date())                                                                               # 实际完成日期
     logs = db.relationship('BizProgramIssueLog', back_populates='issue')                                                # issue处理日志
+'''
+ISSUE事项处理日志
+'''
 class BizProgramIssueLog(BaseModel, db.Model):
     issue_id = db.Column(db.String(32), db.ForeignKey('biz_program_issue.id'))
     issue = db.relationship('BizProgramIssue', back_populates='logs')               # 所属issue

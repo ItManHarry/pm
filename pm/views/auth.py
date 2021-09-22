@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, current_user
 from pm.forms.auth import LoginForm
 from pm.plugins import db
-from pm.models import SysUser, SysLog
+from pm.models import SysUser, SysLog, SysMenu
 from pm.utils import redirect_back
 import uuid
 bp_auth = Blueprint('auth', __name__)
@@ -28,9 +28,16 @@ def login():
                     db.session.commit()
                     # 获取系统分配的模块权限
                     menus = user.role.menus
+                    menu_ids = []
+                    for menu in menus:
+                        menu_ids.append(menu.id)
+                    #print('All authed menu ids : >>>>>>>>>>>>>>>>>>>> ', menu_ids)
+                    # 按照模块别进行排序
+                    authed_menus = SysMenu.query.filter(SysMenu.id.in_(menu_ids)).order_by(SysMenu.module_id.desc()).all()
+                    #print('Authed menus order by module id >>>>>', authed_menus)
                     tmp = []
                     modules = []
-                    for menu in menus:
+                    for menu in authed_menus:
                         module = menu.module
                         if module not in tmp:
                             tmp.append(module)

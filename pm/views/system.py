@@ -1,6 +1,6 @@
 from flask import Blueprint, session, redirect, url_for
 from flask_login import login_required, current_user
-from pm.models import SysModule
+from pm.models import SysModule, SysMenu
 bp_sys = Blueprint('sys', __name__)
 @bp_sys.route('/index/<module_id>')
 @login_required
@@ -11,7 +11,11 @@ def index(module_id):
     session['module_id'] = module_id            # 每个页面的链接跳转参数
     # 已授权菜单
     role = current_user.role
-    authed_menus = role.menus
+    menu_ids = []
+    for menu in role.menus:
+        menu_ids.append(menu.id)
+    # 排序
+    authed_menus = SysMenu.query.filter(SysMenu.id.in_(menu_ids)).order_by(SysMenu.module_id, SysMenu.name).all()
     menus = []
     for menu in authed_menus:
         if menu.module_id == module.id:
