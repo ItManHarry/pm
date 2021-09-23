@@ -26,30 +26,26 @@
                 </div>
             </div>
             <hr>
-            <form method="post">
-              <div class="row">
-                <div class="col-2">
-                    {{form.csrf_token}}
-                    {{form.program.label}}
-                    {{form.program(class='form-control', placeholder='项目编号')}}
+            <form class="form-horizontal" method="post">
+                {{form.csrf_token}}
+                <div class="form-group row">
+                    {{form.program.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-2">
+                        {{form.program(class='form-control')}}
+                    </div>
+                    {{form.category.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-2">
+                        {{form.category(class='form-control')}}
+                    </div>
+                    {{form.grade.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-2">
+                        {{form.grade(class='form-control')}}
+                    </div>
+                    <div class="col-3 text-center">
+                        <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
+                        <a class="btn btn-link" href="{{url_for('iss.add')}}"><i class="fas fa-plus"></i></a>
+                    </div>
                 </div>
-                <div class="col-2">
-                    {{form.category.label}}
-                    {{form.category(class='form-control', placeholder='项目名称')}}
-                </div>
-                <div class="col-2">
-                    {{form.grade.label}}
-                    {{form.grade(class='form-control', placeholder='项目名称')}}
-                </div>
-                <div class="col-2">
-                    {{form.state.label}}
-                    {{form.state(class='form-control', placeholder='项目名称')}}
-                </div>
-                <div class="col-4 text-right">
-                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-                    <a class="btn btn-link" href="{{url_for('iss.add')}}"><i class="fas fa-plus"></i></a>
-                </div>
-              </div>
             </form><br>
         </div>
     </div>
@@ -57,7 +53,4 @@
 {% endblock %}
 {% block script %}
     {{ super() }}
-    $(function(){
-        init_date('ask_finish_dt')
-    })
 {% endblock %}
