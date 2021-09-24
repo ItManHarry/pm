@@ -30,18 +30,24 @@
                 {{form.csrf_token}}
                 <div class="form-group row">
                     {{form.program.label(class='col-1 col-form-label text-right')}}
-                    <div class="col-2">
+                    <div class="col-3">
                         {{form.program(class='form-control')}}
                     </div>
                     {{form.category.label(class='col-1 col-form-label text-right')}}
-                    <div class="col-2">
+                    <div class="col-3">
                         {{form.category(class='form-control')}}
                     </div>
                     {{form.grade.label(class='col-1 col-form-label text-right')}}
-                    <div class="col-2">
+                    <div class="col-3">
                         {{form.grade(class='form-control')}}
                     </div>
-                    <div class="col-3 text-center">
+                </div>
+                <div class="form-group row">
+                    {{form.state.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.state(class='form-control')}}
+                    </div>
+                    <div class="col-8 text-right">
                         <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
                         <a class="btn btn-link" href="{{url_for('iss.add')}}"><i class="fas fa-plus"></i></a>
                     </div>

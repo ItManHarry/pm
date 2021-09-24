@@ -85,7 +85,7 @@ def register_webapp_commands(app):
     @click.option('--admin_code', prompt=True, help='管理员账号')
     @click.option('--admin_password', prompt=True, help='管理员密码', hide_input=True, confirmation_prompt=True)
     def init(admin_code, admin_password):
-        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole, SysModule, SysMenu
+        from pm.models import SysUser, SysUserCreator, SysUserUpdater, SysRole, SysModule, SysMenu, SysDict, SysEnum
         click.echo('执行数据库初始化...')
         db.create_all()
         click.echo('数据库初始化完毕')
@@ -123,14 +123,14 @@ def register_webapp_commands(app):
         click.echo('管理员创建成功')
         click.echo('初始化系统模块')
         modules = SysModule.query.all()
-        if len(modules) > 0:
+        if modules:
             click.echo('系统模块已创建，跳过')
         else:
             modules = [
                 ('pro', '项目管理', 'pro.index'),
                 ('iss', 'ISSUE管理', 'iss.index'),
-                ('sys', '系统管理', 'module.index'),
-                ('org', '人事组织', 'user.index')
+                ('org', '人事组织', 'user.index'),
+                ('sys', '系统管理', 'module.index')
             ]
             for module_info in modules:
                 module = SysModule(
@@ -152,8 +152,8 @@ def register_webapp_commands(app):
             ('角色管理', 'role.index', '管理系统角色(新增/修改等)', 'fas fa-gavel', 'sys'),
             ('用户管理', 'user.index', '管理系统用户(添加、修改、启用/停用等)', 'fas fa-users', 'org'),
             ('组织管理', 'org.index', '管理部门组织信息(新增/修改/停用等)', 'fas fa-sitemap', 'org'),
-            ('我的项目', 'pro.index', '当前用户管理自己负责的项目信息', 'fas fa-newspaper', 'pro'),
-            ('ISSUE事项', 'iss.index', '当前用户管理所属项目的ISSUE信息', 'fas fa-newspaper', 'iss')
+            ('ISSUE事项', 'iss.index', '当前用户管理所属项目的ISSUE信息', 'fas fa-newspaper', 'iss'),
+            ('我的项目', 'pro.index', '当前用户管理自己负责的项目信息', 'fas fa-newspaper', 'pro')
         ]
         if SysMenu.query.all():
             click.echo('系统菜单已创建，跳过')
@@ -174,4 +174,74 @@ def register_webapp_commands(app):
                 role.menus.append(menu)
                 db.session.commit()
             click.echo('菜单初始化完成')
+        click.echo('初始化系统字典')
+        dicts = SysDict.query.all()
+        if dicts:
+            click.echo('系统字典已创建，跳过')
+        else:
+            dicts = [
+                ('D001', '是否'),
+                ('D002', '项目组成员角色'),
+                ('D003', '项目状态'),
+                ('D004', '项目分类'),
+                ('D005', '发票区分'),
+                ('D006', 'ISSUE类型'),
+                ('D007', 'ISSUE等级'),
+                ('D008', 'ISSUE状态')
+            ]
+            for d in dicts:
+                dictionary = SysDict(
+                    id=uuid.uuid4().hex,
+                    code=d[0],
+                    name=d[1],
+                    operator_id=user.id
+                )
+                db.session.add(dictionary)
+                db.session.commit()
+            click.echo('系统字典初始化完成')
+        click.echo('初始化字典枚举值')
+        enums = SysEnum.query.all()
+        if enums:
+            click.echo('字典枚举已维护，跳过')
+        else:
+            enums = [
+                ('1', '是', 'D001'),
+                ('2', '否', 'D001'),
+                ('1', '开发经理', 'D002'),
+                ('2', '开发人员', 'D002'),
+                ('3', '业务部门担当', 'D002'),
+                ('1', '等待', 'D003'),
+                ('2', '合同准备', 'D003'),
+                ('3', '起案进行', 'D003'),
+                ('4', '进行中', 'D003'),
+                ('5', '结束', 'D003'),
+                ('1', 'C&SI服务卖出', 'D004'),
+                ('2', 'C&SI商品卖出', 'D004'),
+                ('1', '首付款', 'D005'),
+                ('2', '中期款', 'D005'),
+                ('3', '尾款', 'D005'),
+                ('1', 'Bug', 'D006'),
+                ('2', '改善', 'D006'),
+                ('3', 'ISSUE事项', 'D006'),
+                ('1', '低', 'D007'),
+                ('2', '中', 'D007'),
+                ('3', '高', 'D007'),
+                ('1', '待确认', 'D008'),
+                ('2', '处理中', 'D008'),
+                ('3', '处理完成', 'D008'),
+                ('4', '已取消', 'D008'),
+                ('5', '已关闭', 'D008'),
+                ('6', 'Reopen', 'D008')
+            ]
+            for enum in enums:
+                enumeration = SysEnum(
+                    id=uuid.uuid4().hex,
+                    key=enum[0],
+                    display=enum[1],
+                    dictionary = SysDict.query.filter_by(code=enum[2]).first(),
+                    operator_id=user.id
+                )
+                db.session.add(enumeration)
+                db.session.commit()
+            click.echo('字典枚举初始化完成')
         click.echo('系统初始化完成')
