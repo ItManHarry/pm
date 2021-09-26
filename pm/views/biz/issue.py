@@ -38,8 +38,8 @@ def index():
             for member in program.members:
                 members.append((member.member_id, member.member.user_name))
             form.charge.choices += members
-        conditions = 'BizProgramIssue.category_id=category'
-        pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+        conditions = BizProgramIssue.category_id==category
+        pagination = BizProgramIssue.query.with_parent(program).filter(conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
         issues = pagination.items
     # 前台添加链接是否可用(项目情况是否为空)
     disabled = False if program_id_list else True
