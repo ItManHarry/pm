@@ -44,7 +44,6 @@ def index():
         # 某个项目的issue清单
         if pro != '0':
             program = BizProgram.query.get_or_404(pro)
-            print('Program is : >>>>>>>>>>>>>>>>>>>>>>>> %s' %program.name)
             members = []
             for member in program.members:
                 members.append((member.member_id, member.member.user_name))
@@ -94,6 +93,15 @@ def add(pro_id):
             operator_id=current_user.id
         )
         db.session.add(issue)
+        db.session.commit()
+        # 添加日志
+        log = BizProgramIssueLog(
+            id=uuid.uuid4().hex,
+            issue=issue,
+            content=current_user.user_name+'新增issue',
+            operator_id=current_user.id
+        )
+        db.session.add(log)
         db.session.commit()
         flash('ISSUE新增成功！')
         return redirect(url_for('.add', pro_id=form.pro_id.data))
