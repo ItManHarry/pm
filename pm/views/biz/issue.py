@@ -25,12 +25,23 @@ def index():
         pagination = BizProgramIssue.query.filter(BizProgramIssue.program_id.in_(program_id_list)).order_by(BizProgramIssue.program_id).paginate(page, per_page)
         issues = pagination.items
     if request.method == 'POST':
-        pro = form.program.data             # 所属项目
-        category = form.category.data       # issue类别
-        grade = form.grade.data             # issue等级
-        state = form.state.data             # issue状态
-        charge = form.charge.data           # issue担当
-        print('Program id is >>>>>>>>>>>>>>>>>>>>>>>>>>>> %s' %pro)
+        # 所属项目
+        pro = form.program.data
+        # 使用集合存储查询条件
+        conditions = set()
+        # issue类别
+        if form.category.data != '0':
+            conditions.add(BizProgramIssue.category_id==form.category.data)
+        # issue等级
+        if form.grade.data !='0':
+            conditions.add(BizProgramIssue.grade_id==form.grade.data)
+        # issue状态
+        if form.state.data != '0':
+            conditions.add(BizProgramIssue.state_id == form.state.data)
+        # issue担当
+        if form.charge.data != '0':
+            conditions.add(BizProgramIssue.handler_id == form.charge.data)
+        # 某个项目的issue清单
         if pro != '0':
             program = BizProgram.query.get_or_404(pro)
             print('Program is : >>>>>>>>>>>>>>>>>>>>>>>> %s' %program.name)
@@ -38,10 +49,15 @@ def index():
             for member in program.members:
                 members.append((member.member_id, member.member.user_name))
             form.charge.choices += members
-        conditions = BizProgramIssue.category_id==category
-        pagination = BizProgramIssue.query.with_parent(program).filter(conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+            if conditions:
+                pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+            else:
+                pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+        else:
+            conditions.add(BizProgramIssue.program_id.in_(program_id_list))
+            pagination = BizProgramIssue.query.filter(conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
         issues = pagination.items
-    # 前台添加链接是否可用(项目情况是否为空)
+    # 前台添加链接是否可用(项目清单是否为空)
     disabled = False if program_id_list else True
     return render_template('biz/issue/index.html', form=form, issues=issues, pagination=pagination, disabled=disabled)
 @bp_issue.route('/add/<pro_id>', methods=['GET', 'POST'])
