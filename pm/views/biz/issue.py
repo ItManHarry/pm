@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, request, current_app, jsonify
+from flask import Blueprint, render_template, request, current_app, jsonify, flash, redirect, url_for
 from flask_login import login_required, current_user
 from pm.decorators import log_record
 from pm.forms.biz.issue import IssueForm, IssueSearchForm
+from pm.plugins import db
 from pm.models import BizProgramIssue, BizProgramIssueLog, BizProgram
 from pm.utils import get_options
+import uuid
 bp_issue = Blueprint('iss', __name__)
 @bp_issue.route('/index', methods=['GET', 'POST'])
 @login_required
@@ -16,10 +18,10 @@ def index():
     form.grade.choices = [('0', '---请选择---')]+get_options('D007')
     form.state.choices = [('0', '---请选择---')]+get_options('D008')
     form.charge.choices = [('0', '---请选择---')]
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     if request.method == 'GET':     # 获取所有的issue事项(注:前台页面控制不是自己负责的issue不能编辑)
         form.program.data = '0'
-        page = request.args.get('page', 1, type=int)
-        per_page = current_app.config['ITEM_COUNT_PER_PAGE']
         pagination = BizProgramIssue.query.filter(BizProgramIssue.program_id.in_(program_id_list)).order_by(BizProgramIssue.program_id).paginate(page, per_page)
         issues = pagination.items
     if request.method == 'POST':
@@ -28,14 +30,17 @@ def index():
         grade = form.grade.data             # issue等级
         state = form.state.data             # issue状态
         charge = form.charge.data           # issue担当
+        print('Program id is >>>>>>>>>>>>>>>>>>>>>>>>>>>> %s' %pro)
         if pro != '0':
             program = BizProgram.query.get_or_404(pro)
+            print('Program is : >>>>>>>>>>>>>>>>>>>>>>>> %s' %program.name)
             members = []
             for member in program.members:
                 members.append((member.member_id, member.member.user_name))
             form.charge.choices += members
-        issues = []
-        pagination = []
+        conditions = 'BizProgramIssue.category_id=category'
+        pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+        issues = pagination.items
     # 前台添加链接是否可用(项目情况是否为空)
     disabled = False if program_id_list else True
     return render_template('biz/issue/index.html', form=form, issues=issues, pagination=pagination, disabled=disabled)
@@ -47,10 +52,11 @@ def add(pro_id):
     form = IssueForm()
     program_id_list, program_list = get_programs('add')
     form.pro_id.choices = program_list
-    if pro_id != '0':
-        form.pro_id.data = pro_id
-    else:
-        form.pro_id.data = program_id_list[0]
+    if request.method == 'GET':
+        if pro_id != '0':
+            form.pro_id.data = pro_id
+        else:
+            form.pro_id.data = program_id_list[0]
     form.category_id.choices = get_options('D006')
     form.grade_id.choices = get_options('D007')
     form.state_id.choices = get_options('D008')
@@ -59,6 +65,22 @@ def add(pro_id):
     for member in program.members:
         members.append((member.member_id, member.member.user_name))
     form.handler_id.choices = members
+    if form.validate_on_submit():
+        issue = BizProgramIssue(
+            id=uuid.uuid4().hex,
+            program=program,
+            category_id=form.category_id.data,
+            grade_id=form.grade_id.data,
+            state_id=form.state_id.data,
+            description=form.description.data,
+            handler_id=form.handler_id.data,
+            ask_finish_dt=form.ask_finish_dt.data,
+            operator_id=current_user.id
+        )
+        db.session.add(issue)
+        db.session.commit()
+        flash('ISSUE新增成功！')
+        return redirect(url_for('.add', pro_id=form.pro_id.data))
     return render_template('biz/issue/add.html', form=form)
 @bp_issue.route('/pro/<pro_id>/members', methods=['POST'])
 @login_required

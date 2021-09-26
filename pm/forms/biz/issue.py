@@ -24,4 +24,4 @@ class IssueForm(FlaskForm):
     state_id = SelectField('状态', validators=[DataRequired('请选择状态！')], choices=[])
     description = CKEditorField('描述', validators=[DataRequired('请输入描述!')])
     handler_id = SelectField('处理人员', validators=[DataRequired('请选择处理人员！')], choices=[])
-    ask_finish_dt = StringField('邀请完成日期', validators=[DataRequired('请填写邀请完成日期')])
+    ask_finish_dt = DateField('邀请完成日期', validators=[DataRequired('请填写邀请完成日期')])

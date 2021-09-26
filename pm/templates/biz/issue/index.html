@@ -61,18 +61,26 @@
                 <thead>
                     <tr>
                         <th scope="col" width="15%">项目所属</th>
-                        <th scope="col" width="10%">类别</th>
-                        <th scope="col" width="10%">等级</th>
+                        <th scope="col" width="15%">类别</th>
+                        <th scope="col" width="15%">等级</th>
                         <th scope="col" width="15%">状态</th>
                         <th scope="col" width="10%">负责人</th>
                         <th scope="col" width="20%">邀请完成日期</th>
-                        <th scope="col" class="text-center" width="20%">Action</th>
+                        <th scope="col" class="text-center" width="10%">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {%if issues%}
                         {%for issue in issues%}
-
+                        <tr>
+                            <td>{{issue.program.name}}</td>
+                            <td>{{issue.category.display}}</td>
+                            <td>{{issue.grade.display}}</td>
+                            <td>{{issue.state.display}}</td>
+                            <td>{{issue.handler.user_name}}</td>
+                            <td>{{issue.ask_finish_dt}}</td>
+                            <td>&nbsp;</td>
+                        </tr>
                         {%endfor%}
                     {%else%}
                         <tr>
@@ -81,6 +89,7 @@
                     {%endif%}
                 </tbody>
             </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
 </div>
