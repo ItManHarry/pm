@@ -106,5 +106,32 @@
     {{ super() }}
     $(function(){
         init_date('ask_finish_dt')
+        // 重新获取项目组人员
+        $('#pro_id').change(function(){
+            var pro_id = $(this).val()
+            $('#handler_id').empty()
+            $.ajax({
+                type:'post',
+                url:'/iss/pro/'+pro_id+'/members',
+                contentType:'application/json;charset=UTF-8',
+                success:function(data){
+                    var members = data.members
+                    for(var i = 0; i < members.length; i++){
+                        //alert(members[i][0] + ' : ' + members[i][1])
+                        $('#handler_id').append("<option value='"+members[i][0]+"'>"+members[i][1]+"</option>")
+                    }
+                },
+                error:function(){
+                    $.alert({
+                       type:'red',
+                       title:'系统提示',
+                       content: '系统错误,请联系管理员',
+                       onClose:function(){
+
+                       }
+                   })
+                }
+            })
+        })
     })
 {% endblock %}

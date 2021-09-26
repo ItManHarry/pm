@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, current_app, jsonify
 from flask_login import login_required, current_user
 from pm.decorators import log_record
 from pm.forms.biz.issue import IssueForm, IssueSearchForm
@@ -36,17 +36,41 @@ def index():
             form.charge.choices += members
         issues = []
         pagination = []
-    return render_template('biz/issue/index.html', form=form, issues=issues, pagination=pagination)
+    # 前台添加链接是否可用(项目情况是否为空)
+    disabled = False if program_id_list else True
+    return render_template('biz/issue/index.html', form=form, issues=issues, pagination=pagination, disabled=disabled)
 @bp_issue.route('/add/<pro_id>', methods=['GET', 'POST'])
 @login_required
 @log_record('新增issue事项')
 def add(pro_id):
     print('Program id is : %s' %pro_id)
     form = IssueForm()
+    program_id_list, program_list = get_programs('add')
+    form.pro_id.choices = program_list
+    if pro_id != '0':
+        form.pro_id.data = pro_id
+    else:
+        form.pro_id.data = program_id_list[0]
+    form.category_id.choices = get_options('D006')
+    form.grade_id.choices = get_options('D007')
+    form.state_id.choices = get_options('D008')
+    program = BizProgram.query.get_or_404(form.pro_id.data)
+    members = []
+    for member in program.members:
+        members.append((member.member_id, member.member.user_name))
+    form.handler_id.choices = members
     return render_template('biz/issue/add.html', form=form)
+@bp_issue.route('/pro/<pro_id>/members', methods=['POST'])
+@login_required
+def get_members(pro_id):
+    program = BizProgram.query.get_or_404(pro_id)
+    members = []
+    for member in program.members:
+        members.append((member.member_id, member.member.user_name))
+    return jsonify(members=members)
 '''
 获取项目下拉清单(自己创建的项目及参与的项目集合)
-sign:哪个页面获取项目清单 index：issue主页
+sign:哪个页面获取项目清单 index:issue主页
 '''
 def get_programs(sign):
     # 自己负责的项目

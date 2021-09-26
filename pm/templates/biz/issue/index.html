@@ -53,7 +53,7 @@
                     </div>
                     <div class="col-4 text-right">
                         <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-                        <a class="btn btn-link" href="{{url_for('iss.add', pro_id=form.program.data)}}"><i class="fas fa-plus"></i></a>
+                        <a class="btn btn-link {%if disabled%}disabled{%endif%}" href="{{url_for('iss.add', pro_id=form.program.data)}}"><i class="fas fa-plus"></i></a>
                     </div>
                 </div>
             </form>
