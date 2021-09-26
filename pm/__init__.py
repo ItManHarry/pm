@@ -130,7 +130,7 @@ def register_webapp_commands(app):
                 ('pro', '项目管理', 'pro.index'),
                 ('iss', 'ISSUE管理', 'iss.index'),
                 ('org', '人事组织', 'user.index'),
-                ('sys', '系统管理', 'module.index')
+                ('sys', '系统管理', 'dict.index')
             ]
             for module_info in modules:
                 module = SysModule(

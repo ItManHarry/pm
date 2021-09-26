@@ -12,6 +12,7 @@ class IssueSearchForm(FlaskForm):
     category = SelectField('类别', [validators.optional()], choices=[])
     grade = SelectField('等级', [validators.optional()], choices=[])
     state = SelectField('状态', [validators.optional()], choices=[])
+    charge = SelectField('担当', [validators.optional()], choices=[])
 '''
 ISSUE信息表单
 '''

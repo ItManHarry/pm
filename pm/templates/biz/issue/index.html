@@ -26,7 +26,7 @@
                 </div>
             </div>
             <hr>
-            <form class="form-horizontal" method="post">
+            <form class="form-horizontal" method="post" id="search_form">
                 {{form.csrf_token}}
                 <div class="form-group row">
                     {{form.program.label(class='col-1 col-form-label text-right')}}
@@ -47,24 +47,39 @@
                     <div class="col-3">
                         {{form.state(class='form-control')}}
                     </div>
-                    <div class="col-8 text-right">
+                    {{form.charge.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.charge(class='form-control')}}
+                    </div>
+                    <div class="col-4 text-right">
                         <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>&nbsp;&nbsp;
-                        <a class="btn btn-link" href="{{url_for('iss.add')}}"><i class="fas fa-plus"></i></a>
+                        <a class="btn btn-link" href="{{url_for('iss.add', pro_id=form.program.data)}}"><i class="fas fa-plus"></i></a>
                     </div>
                 </div>
             </form>
             <table class="table table-hover table-sm">
-              <thead>
-                <tr>
-                    <th scope="col" width="15%">项目所属</th>
-                    <th scope="col" width="10%">类别</th>
-                    <th scope="col" width="10%">等级</th>
-                    <th scope="col" width="15%">状态</th>
-                    <th scope="col" width="10%">负责人</th>
-                    <th scope="col" width="20%">邀请完成日期</th>
-                    <th scope="col" class="text-center" width="20%">Action</th>
-                </tr>
-              </thead>
+                <thead>
+                    <tr>
+                        <th scope="col" width="15%">项目所属</th>
+                        <th scope="col" width="10%">类别</th>
+                        <th scope="col" width="10%">等级</th>
+                        <th scope="col" width="15%">状态</th>
+                        <th scope="col" width="10%">负责人</th>
+                        <th scope="col" width="20%">邀请完成日期</th>
+                        <th scope="col" class="text-center" width="20%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%if issues%}
+                        {%for issue in issues%}
+
+                        {%endfor%}
+                    {%else%}
+                        <tr>
+                            <td colspan="7" class="text-center"><small>没有记录!!!</small></td>
+                        </tr>
+                    {%endif%}
+                </tbody>
             </table>
         </div>
     </div>
@@ -72,4 +87,21 @@
 {% endblock %}
 {% block script %}
     {{ super() }}
+    $(function(){
+        $('#program').change(function(){
+            $('#search_form').submit()
+        })
+        $('#category').change(function(){
+            $('#search_form').submit()
+        })
+        $('#grade').change(function(){
+            $('#search_form').submit()
+        })
+        $('#state').change(function(){
+            $('#search_form').submit()
+        })
+        $('#charge').change(function(){
+            $('#search_form').submit()
+        })
+    })
 {% endblock %}

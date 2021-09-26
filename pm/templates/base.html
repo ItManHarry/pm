@@ -31,7 +31,7 @@
 <body>
 <header>{% block header %}{% include '_header.html' %}{% endblock %}</header>
 <main>{% block main %}<h1>Content Of the System</h1>{% endblock %}</main>
-<footer>{% block footer %}{% include '_footer.html' %}{% endblock %}</footer>
+{#<footer>{% block footer %}{% include '_footer.html' %}{% endblock %}</footer>#}
 <script>
 {% block script %}
 var csrf_token = "{{ csrf_token() }}"                   //CSRF令牌

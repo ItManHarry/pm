@@ -98,6 +98,10 @@
         //alert('Program id : ' + pro_id)
         //alert('Department id : ' + dept_id)
         //alert('Program role id : ' + role_id)
+        //锁定左右移动按钮
+        $('button[id^=to]').each(function(){
+            $(this).attr({"disabled":"disabled"})
+        })
         $.ajax({
             method:'post',
             url:'/pro/current_members/'+pro_id+'/'+dept_id+'/'+role_id,
@@ -113,6 +117,10 @@
                 for(var i = 0; i < selected.length; i++){
                     $('#selected').append("<option value='"+selected[i][0]+"'>"+selected[i][1]+"</option>")
                 }
+                //解除锁定左右移动按钮
+                $('button[id^=to]').each(function(){
+                    $(this).removeAttr('disabled')
+                })
             },
             error:function(){
                 $.alert({
