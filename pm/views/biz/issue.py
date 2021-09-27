@@ -54,7 +54,7 @@ def index():
                 pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
         else:
             conditions.add(BizProgramIssue.program_id.in_(program_id_list))
-            pagination = BizProgramIssue.query.filter(conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
+            pagination = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
         issues = pagination.items
     # 前台添加链接是否可用(项目清单是否为空)
     disabled = False if program_id_list else True
