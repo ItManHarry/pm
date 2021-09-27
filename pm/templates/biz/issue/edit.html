@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}新增ISSUE{% endblock %}
+{% block title %}修改ISSUE{% endblock %}
 {% from 'bootstrap/pagination.html' import render_pagination with context %}
 {% block link %}
     {{static_file('css','css/dropzone.min.css')}}
@@ -45,7 +45,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         {{form.pro_id.label}}
-                        {{form.pro_id(class='form-control')}}
+                        {{form.pro_id(class='form-control', disabled=True)}}
                         {% for message in form.pro_id.errors %}
                             <small class="text-danger">{{message}}</small>
                         {% endfor %}

@@ -18,7 +18,7 @@ ISSUE信息表单
 '''
 class IssueForm(FlaskForm):
     id = HiddenField()
-    pro_id = SelectField('项目', validators=[DataRequired('请选择项目！')], choices=[])
+    pro_id = SelectField('项目', [validators.optional()], choices=[])
     category_id = SelectField('类别', validators=[DataRequired('请选择类别！')], choices=[])
     grade_id = SelectField('等级', validators=[DataRequired('请选择等级！')], choices=[])
     state_id = SelectField('状态', validators=[DataRequired('请选择状态！')], choices=[])

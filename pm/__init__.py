@@ -33,10 +33,10 @@ def register_webapp_global_path(app):
     def request_intercept():
         pass
 def register_webapp_global_context(app):
-    from pm.utils import get_time, format_time
+    from pm.utils import get_time, format_time, get_current_user
     @app.context_processor
     def config_template_context():
-        return dict(get_time=get_time, format_time=format_time)
+        return dict(get_time=get_time, format_time=format_time, get_current_user=get_current_user)
 def register_webapp_errors(app):
     @app.errorhandler(400)
     def request_invalid(e):

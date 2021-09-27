@@ -49,7 +49,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
     dept = db.relationship('BizDept', back_populates='users')                           # 所属部门
     programs = db.relationship('BizProgram', back_populates='owner')                    # 负责项目清单
     program_members = db.relationship('BizProgramMember', back_populates='member')      # 项目成员
-    issue_handlers = db.relationship('BizProgramIssue', back_populates='handler') # ISSUE处理人员
+    issue_handlers = db.relationship('BizProgramIssue', back_populates='handler')       # ISSUE处理人员
     logs = db.relationship('SysLog', back_populates='user')                             # 操作日志
 
 

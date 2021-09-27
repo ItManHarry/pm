@@ -4,7 +4,7 @@ from pm.decorators import log_record
 from pm.forms.biz.issue import IssueForm, IssueSearchForm
 from pm.plugins import db
 from pm.models import BizProgramIssue, BizProgramIssueLog, BizProgram
-from pm.utils import get_options
+from pm.utils import get_options, format_time, get_current_user
 import uuid
 bp_issue = Blueprint('iss', __name__)
 @bp_issue.route('/index', methods=['GET', 'POST'])
@@ -98,7 +98,7 @@ def add(pro_id):
         log = BizProgramIssueLog(
             id=uuid.uuid4().hex,
             issue=issue,
-            content=current_user.user_name+'新增issue',
+            content='新增issue',
             operator_id=current_user.id
         )
         db.session.add(log)
@@ -106,6 +106,56 @@ def add(pro_id):
         flash('ISSUE新增成功！')
         return redirect(url_for('.add', pro_id=form.pro_id.data))
     return render_template('biz/issue/add.html', form=form)
+@bp_issue.route('/edit/<issue_id>', methods=['GET', 'POST'])
+@login_required
+@log_record('修改issue事项')
+def edit(issue_id):
+    issue = BizProgramIssue.query.get_or_404(issue_id)
+    state_before_update = issue.state.display
+    form = IssueForm()
+    program_id_list, program_list = get_programs('edit')
+    form.pro_id.choices = program_list
+    form.category_id.choices = get_options('D006')
+    form.grade_id.choices = get_options('D007')
+    form.state_id.choices = get_options('D008')
+    members = []
+    for member in issue.program.members:
+        members.append((member.member_id, member.member.user_name))
+    form.handler_id.choices = members
+    if request.method == 'GET':
+        form.id.data = issue.program_id
+        form.pro_id.data = issue.program_id
+        form.category_id.data = issue.category_id
+        form.grade_id.data = issue.grade_id
+        form.state_id.data = issue.state_id
+        form.description.data = issue.description
+        form.handler_id.data = issue.handler_id
+        form.ask_finish_dt.data = issue.ask_finish_dt
+    if form.validate_on_submit():
+        issue.category_id = form.category_id.data
+        issue.grade_id = form.grade_id.data
+        issue.state_id = form.state_id.data
+        issue.description = form.description.data
+        issue.handler_id = form.handler_id.data
+        issue.ask_finish_dt = form.ask_finish_dt.data
+        db.session.commit()
+        state_after_update = issue.state.display
+        if state_before_update == state_after_update:
+            content = '修改issue信息'
+        else:
+            content = '将issue状态由('+state_before_update+')变更为('+state_after_update+')'
+        # 添加日志
+        log = BizProgramIssueLog(
+            id=uuid.uuid4().hex,
+            issue=issue,
+            content=content,
+            operator_id=current_user.id
+        )
+        db.session.add(log)
+        db.session.commit()
+        flash('ISSUE信息更改成功！')
+        return redirect(url_for('.edit', issue_id=issue_id))
+    return render_template('biz/issue/edit.html', form=form)
 @bp_issue.route('/pro/<pro_id>/members', methods=['POST'])
 @login_required
 def get_members(pro_id):
@@ -114,6 +164,15 @@ def get_members(pro_id):
     for member in program.members:
         members.append((member.member_id, member.member.user_name))
     return jsonify(members=members)
+@bp_issue.route('/logs/<issue_id>', methods=['POST'])
+@login_required
+def get_logs(issue_id):
+    issue = BizProgramIssue.query.get_or_404(issue_id)
+    logs = BizProgramIssueLog.query.with_parent(issue).order_by(BizProgramIssueLog.timestamp_loc.desc()).all()
+    log_list = []
+    for log in logs:
+        log_list.append((get_current_user(log.operator_id).user_name, log.content, format_time(log.timestamp_utc)))
+    return jsonify(logs=log_list)
 '''
 获取项目下拉清单(自己创建的项目及参与的项目集合)
 sign:哪个页面获取项目清单 index:issue主页

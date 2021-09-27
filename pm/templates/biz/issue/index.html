@@ -60,13 +60,14 @@
             <table class="table table-hover table-sm">
                 <thead>
                     <tr>
-                        <th scope="col" width="15%">项目所属</th>
-                        <th scope="col" width="15%">类别</th>
-                        <th scope="col" width="15%">等级</th>
-                        <th scope="col" width="15%">状态</th>
-                        <th scope="col" width="10%">负责人</th>
-                        <th scope="col" width="20%">邀请完成日期</th>
-                        <th scope="col" class="text-center" width="10%">Action</th>
+                        <th scope="col" width="20%">项目所属</th>
+                        <th scope="col" width="10%">类别</th>
+                        <th scope="col" width="10%">等级</th>
+                        <th scope="col" width="10%">状态</th>
+                        <th scope="col" width="10%">提出人</th>
+                        <th scope="col" width="10%">处理人</th>
+                        <th scope="col" width="15%">邀请完成日期</th>
+                        <th scope="col" class="text-center" width="15%">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,9 +78,15 @@
                             <td>{{issue.category.display}}</td>
                             <td>{{issue.grade.display}}</td>
                             <td>{{issue.state.display}}</td>
+                            <!-- 使用全局函数获取用户名 -->
+                            <td>{{get_current_user(issue.operator_id).user_name}}</td>
                             <td>{{issue.handler.user_name}}</td>
                             <td>{{issue.ask_finish_dt}}</td>
-                            <td>&nbsp;</td>
+                            <td class="text-center">
+                                <!-- 创建者和处理者可以修改 -->
+                                <a href="{{url_for('iss.edit', issue_id=issue.id)}}" class="btn btn-link btn-sm text-info {%if issue.handler_id!=current_user.id and issue.operator_id!=current_user.id%}disabled{%endif%}" title="编辑"><i class="fas fa-edit"></i></a>&nbsp;
+                                <button class="btn btn-link btn-sm text-success" title="处理履历" onclick="get_logs('{{issue.id}}')"><i class="fas fa-list"></i></button>
+                            </td>
                         </tr>
                         {%endfor%}
                     {%else%}
@@ -91,6 +98,25 @@
             </table>
             {{render_pagination(pagination, align='right')}}
         </div>
+    </div>
+    <!-- Issue Log Modal -->
+    <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logTitle">处理履历</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group" id="logs"></ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
     </div>
 </div>
 {% endblock %}
@@ -113,4 +139,42 @@
             $('#search_form').submit()
         })
     })
+    //获取issue操作日志
+    function get_logs(id){
+        $.ajax({
+            type:'post',
+            url:'/iss/logs/'+id,
+            contentType:'application/json;charset=UTF-8',
+            success:function(data){
+                //$('#logTitle').text(data.module)
+                $('#logs').empty()
+                $('#logs').append(
+                "<li class='list-group-item list-group-item-action'>"+
+                "<div class='row'><div class='col-4'><small>更改人</small></div><div class='col-4'><small>更改内容</small></div><div class='col-4'><small>更改时间</small></div></div>"+
+                "</div></li>")
+                if(data.logs.length == 0){
+                    $('#logs').append("<li class='list-group-item'><div class='row'><div class='col-12'>没有日志！</div></div></li>")
+                }else{
+                    for(var i = 0; i < data.logs.length; i++){
+                        //$('#logs').append("<li class='list-group-item list-group-item-action'><i class='fas fa-list'></i>&nbsp;&nbsp;"+data.logs[i][1]+"</li>")
+                        $('#logs').append(
+                        "<li class='list-group-item list-group-item-action'>"+
+                        "<div class='row'><div class='col-4'>"+data.logs[i][0]+"</div><div class='col-4'>"+data.logs[i][1]+"</div><div class='col-4'>"+data.logs[i][2]+"</div></div>"+
+                        "</div></li>")
+                    }
+                }
+                $('#logModal').modal('show')
+            },
+            error:function(){
+                $.alert({
+                   type:'red',
+                   title:'系统提示',
+                   content: '系统错误,请联系管理员',
+                   onClose:function(){
+
+                   }
+               })
+            }
+        })
+    }
 {% endblock %}

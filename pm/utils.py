@@ -1,11 +1,10 @@
 '''
     系统工具函数
 '''
+import time, datetime, os, uuid
 from flask import request, redirect, url_for
-import time
-import datetime
 from urllib.parse import urlparse, urljoin
-import os, uuid
+from pm.models import SysUser
 #utc时间转本地
 def utc_to_locale(utc_date):
     now_stamp = time.time()
@@ -55,3 +54,8 @@ def get_options(code):
     for enum in enums:
         options.append((enum.id, enum.display))
     return options
+'''
+获取当前用户
+'''
+def get_current_user(id):
+    return SysUser.query.get(id)
