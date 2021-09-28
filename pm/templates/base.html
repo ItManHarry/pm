@@ -18,9 +18,9 @@
     {{static_file('js', 'js/jquery-confirm.min.js')}}
     {% endblock %}
     <!-- 生成执行时间渲染函数 -->
-    {{ moment.include_moment(local_js=url_for('static',filename='js/moment/moment-with-locales.js')) }}
+    {# moment.include_moment(local_js=url_for('static',filename='js/moment/moment-with-locales.js')) #}
     <!-- 设置自动识别显示语言 -->
-    {{ moment.locale(auto_detect=True) }}
+    {# moment.locale(auto_detect=True) #}
     {# --------- 引入子页面自己的css文件 --------- #}
     {% block link %}{% endblock %}
     {# --------- 引入子页面自己的JavaScript文件 --------- #}
