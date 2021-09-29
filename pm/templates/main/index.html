@@ -97,7 +97,47 @@
     var pro_chart = echarts.init(document.getElementById('pro_chart'))
     var iss_chart = echarts.init(document.getElementById('iss_chart'))
     $(function(){
-        pro_chart.setOption(pro_options, true)
-        iss_chart.setOption(iss_options, true)
+        $.ajax({
+            type:'post',
+            url:'/main/charts/programs',
+            data:{},
+            contentType:'application/json;charset=UTF-8',
+            success:function(result){
+                pro_options.series[0].data = result.data
+                pro_chart.setOption(pro_options, true)
+            },
+            error:function(){
+                $.alert({
+                   type:'red',
+                   title:'系统提示',
+                   content: '系统错误,请联系管理员',
+                   onClose:function(){
+
+                   }
+               })
+            }
+        })
+        $.ajax({
+            type:'post',
+            url:'/main/charts/issues',
+            data:{},
+            contentType:'application/json;charset=UTF-8',
+            success:function(result){
+                pro_options.series[0].data = result.data
+                iss_options.xAxis[0].data = result.data.xdata
+  			    iss_options.series = result.data.ydata
+                iss_chart.setOption(iss_options, true)
+            },
+            error:function(){
+                $.alert({
+                   type:'red',
+                   title:'系统提示',
+                   content: '系统错误,请联系管理员',
+                   onClose:function(){
+
+                   }
+               })
+            }
+        })
     })
 {% endblock %}
