@@ -65,6 +65,7 @@ def register_webapp_views(app):
     from pm.views.sys.dicts import bp_dict
     from pm.views.biz.program import bp_pro
     from pm.views.biz.issue import bp_issue
+    from pm.views.biz.report import bp_report
     app.register_blueprint(bp_auth, url_prefix='/auth')
     app.register_blueprint(bp_main, url_prefix='/main')
     app.register_blueprint(bp_sys,  url_prefix='/sys')
@@ -76,6 +77,7 @@ def register_webapp_views(app):
     app.register_blueprint(bp_dict, url_prefix='/dict')
     app.register_blueprint(bp_pro, url_prefix='/pro')
     app.register_blueprint(bp_issue, url_prefix='/iss')
+    app.register_blueprint(bp_report, url_prefix='/rpt')
 def register_webapp_shell(app):
     @app.shell_context_processor
     def config_shell_context():
