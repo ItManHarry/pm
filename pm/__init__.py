@@ -132,7 +132,8 @@ def register_webapp_commands(app):
                 ('pro', '项目管理', 'pro.index'),
                 ('iss', 'ISSUE管理', 'iss.index'),
                 ('org', '人事组织', 'user.index'),
-                ('sys', '系统管理', 'dict.index')
+                ('sys', '系统管理', 'dict.index'),
+                ('rpt', '系统报表', 'rpt.program')
             ]
             for module_info in modules:
                 module = SysModule(
@@ -155,7 +156,9 @@ def register_webapp_commands(app):
             ('用户管理', 'user.index', '管理系统用户(添加、修改、启用/停用等)', 'fas fa-users', 'org'),
             ('组织管理', 'org.index', '管理部门组织信息(新增/修改/停用等)', 'fas fa-sitemap', 'org'),
             ('ISSUE事项', 'iss.index', '当前用户管理所属项目的ISSUE信息', 'fas fa-newspaper', 'iss'),
-            ('我的项目', 'pro.index', '当前用户管理自己负责的项目信息', 'fas fa-newspaper', 'pro')
+            ('我的项目', 'pro.index', '当前用户管理自己负责的项目信息', 'fas fa-newspaper', 'pro'),
+            ('R01-项目报表', 'rpt.program', '项目报表', 'fas fa-table', 'rpt'),
+            ('R02-ISSUE报表', 'rpt.issue', 'ISSUE报表', 'far fa-list-alt', 'rpt')
         ]
         if SysMenu.query.all():
             click.echo('系统菜单已创建，跳过')
