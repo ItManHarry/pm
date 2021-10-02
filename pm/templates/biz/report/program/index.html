@@ -12,7 +12,53 @@
                 </div>
             </div>
             <hr>
-            <h1>Program report.</h1>
+            <form method="post">
+              <div class="row">
+                <div class="col-3 offset-4 text-right">
+                    {{form.csrf_token}}
+                    {{form.no(class='form-control', placeholder='项目编号')}}
+                </div>
+                <div class="col-3 text-right">
+                    {{form.name(class='form-control', placeholder='项目名称')}}
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-link" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+              </div>
+            </form><br>
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                    <th scope="col" width="10%">项目编号</th>
+                    <th scope="col" width="10%">项目名称</th>
+                    <th scope="col" width="10%">PR编号</th>
+                    <th scope="col" width="10%">合同编号</th>
+                    <th scope="col" width="10%">负责人</th>
+                    <th scope="col" width="10%">项目状态</th>
+                    <th scope="col" width="25%">项目描述</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if programs %}
+                    {% for program in programs %}
+                        <tr>
+                            <td>{{program.no}}</td>
+                            <td>{{program.name}}</td>
+                            <td>{{program.pr}}</td>
+                            <td>{{program.contract}}</td>
+                            <td>{{program.owner.user_name}}</td>
+                            <td>{{program.status.state.display}}</td>
+                            <td>{{program.desc}}</td>
+                        </tr>
+                    {%endfor%}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center"><small>没有记录!!!</small></td>
+                    </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
 </div>
