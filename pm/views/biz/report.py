@@ -56,7 +56,13 @@ def export_program(sign):
         '项目状态': [program.status.state.display if program.status else '未维护' for program in program_data],
         '项目描述': [program.desc for program in program_data]
     }
-    return excel.make_response_from_dict(data, file_name=file_name, file_type='xlsx')
+    # 字典导出的问题在于列顺序是不固定的
+    #return excel.make_response_from_dict(data, file_name=file_name, file_type='xlsx')
+    # 采用列表导出即可
+    array_data = [['项目编号', '项目名称', 'PR编号', '合同编号', '负责人', '项目状态', '项目描述']]
+    for program in program_data:
+        array_data.append([program.no, program.name, program.pr, program.contract, program.owner.user_name , program.status.state.display if program.status else '未维护', program.desc])
+    return excel.make_response_from_array(array_data, file_name=file_name, file_type='xlsx')
 @bp_report.route('/issue', methods=['GET', 'POST'])
 @login_required
 @log_record('查看ISSUE报表')
