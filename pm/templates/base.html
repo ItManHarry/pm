@@ -13,8 +13,9 @@
     {{static_file('css', 'css/jquery-confirm.min.css')}}
     {{static_file('css', 'css/all.min.css')}}
     {{static_file('js', 'js/jquery-3.6.0.min.js')}}
-    {{static_file('js', 'js/popper.min.js')}}
-    {{static_file('js', 'js/bootstrap.min.js')}}
+    {#static_file('js', 'js/popper.min.js')#}
+    {#static_file('js', 'js/bootstrap.min.js')#}
+    {{static_file('js', 'js/bootstrap.bundle.min.js')}}
     {{static_file('js', 'js/jquery-confirm.min.js')}}
     {% endblock %}
     <!-- 生成执行时间渲染函数 -->
