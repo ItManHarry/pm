@@ -23,7 +23,6 @@ def index():
     if request.method == 'GET':     # 获取所有的issue事项(注:前台页面控制不是自己负责的issue不能编辑)
         form.program.data = '0'
         pagination = BizProgramIssue.query.filter(BizProgramIssue.program_id.in_(program_id_list)).order_by(BizProgramIssue.program_id).paginate(page, per_page)
-        issues = pagination.items
     if request.method == 'POST':
         # 所属项目
         pro = form.program.data
@@ -55,7 +54,7 @@ def index():
         else:
             conditions.add(BizProgramIssue.program_id.in_(program_id_list))
             pagination = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
-        issues = pagination.items
+    issues = pagination.items
     # 前台添加链接是否可用(项目清单是否为空)
     disabled = False if program_id_list else True
     return render_template('biz/issue/index.html', form=form, issues=issues, pagination=pagination, disabled=disabled)

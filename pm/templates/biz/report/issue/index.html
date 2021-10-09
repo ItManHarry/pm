@@ -12,11 +12,101 @@
                 </div>
             </div>
             <hr>
-            <h1>ISSUE report.</h1>
+            <form class="form-horizontal" method="post" id="search_form">
+                {{form.csrf_token}}
+                <div class="form-group row">
+                    {{form.program.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.program(class='form-control')}}
+                    </div>
+                    {{form.category.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.category(class='form-control')}}
+                    </div>
+                    {{form.grade.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.grade(class='form-control')}}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    {{form.state.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.state(class='form-control')}}
+                    </div>
+                    {{form.charge.label(class='col-1 col-form-label text-right')}}
+                    <div class="col-3">
+                        {{form.charge(class='form-control')}}
+                    </div>
+                    <div class="col-4 text-center">
+                        <button class="btn btn-link" type="submit"><i class="fas fa-search"></i>&nbsp;搜索</button>&nbsp;&nbsp;
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-link dropdown-toggle text-success" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-file-excel"></i>&nbsp;导出
+                          </button>
+                          <div class="dropdown-menu">
+                              <a class="dropdown-item" href="{{url_for('rpt.export_issue', sign=1)}}" target="_blank">当前页</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="{{url_for('rpt.export_issue', sign=0)}}" target="_blank">全&nbsp;&nbsp;&nbsp;&nbsp;部</a>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <table class="table table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col" width="20%">项目所属</th>
+                        <th scope="col" width="10%">类别</th>
+                        <th scope="col" width="10%">等级</th>
+                        <th scope="col" width="15%">状态</th>
+                        <th scope="col" width="15%">提出人</th>
+                        <th scope="col" width="15%">处理人</th>
+                        <th scope="col" width="15%">邀请完成日期</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%if issues%}
+                        {%for issue in issues%}
+                        <tr>
+                            <td>{{issue.program.name}}</td>
+                            <td>{{issue.category.display}}</td>
+                            <td>{{issue.grade.display}}</td>
+                            <td>{{issue.state.display}}</td>
+                            <!-- 使用全局函数获取用户名 -->
+                            <td>{{get_current_user(issue.operator_id).user_name}}</td>
+                            <td>{{issue.handler.user_name}}</td>
+                            <td>{{issue.ask_finish_dt}}</td>
+                        </tr>
+                        {%endfor%}
+                    {%else%}
+                        <tr>
+                            <td colspan="6" class="text-center"><small>没有记录!!!</small></td>
+                        </tr>
+                    {%endif%}
+                </tbody>
+            </table>
+            {{render_pagination(pagination, align='right')}}
         </div>
     </div>
 </div>
 {% endblock %}
 {% block script %}
     {{ super() }}
+    $(function(){
+        $('#program').change(function(){
+            $('#search_form').submit()
+        })
+        $('#category').change(function(){
+            $('#search_form').submit()
+        })
+        $('#grade').change(function(){
+            $('#search_form').submit()
+        })
+        $('#state').change(function(){
+            $('#search_form').submit()
+        })
+        $('#charge').change(function(){
+            $('#search_form').submit()
+        })
+    })
 {% endblock %}

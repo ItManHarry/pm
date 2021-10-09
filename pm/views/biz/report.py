@@ -1,8 +1,10 @@
 from flask import Blueprint, current_app, render_template, url_for, request, session
 from flask_login import login_required, current_user
-from pm.models import BizProgram
+from pm.models import BizProgram, BizProgramIssue, SysUser
 from pm.forms.biz.program import ProgramSearchForm
+from pm.forms.biz.issue import IssueSearchForm
 from pm.decorators import log_record
+from pm.utils import get_options, get_current_user
 import flask_excel as excel
 bp_report = Blueprint('rpt', __name__)
 @bp_report.route('/program', methods=['GET', 'POST'])
@@ -67,4 +69,135 @@ def export_program(sign):
 @login_required
 @log_record('查看ISSUE报表')
 def issue():
-    return render_template('biz/report/issue/index.html')
+    form = IssueSearchForm()
+    # 剔除admin后的所有用户
+    all_users = SysUser.query.filter(~SysUser.user_id.in_(['admin'])).order_by(SysUser.user_name).all()
+    user_list = []
+    for user in all_users:
+        user_list.append((user.id, user.user_name))
+    all_programs = BizProgram.query.order_by(BizProgram.name).all()
+    program_list = [('0', '---请选择---')]
+    for program in all_programs:
+        program_list.append((program.id, program.name))
+    form.program.choices = program_list
+    form.category.choices = [('0', '---请选择---')] + get_options('D006')
+    form.grade.choices = [('0', '---请选择---')] + get_options('D007')
+    form.state.choices = [('0', '---请选择---')] + get_options('D008')
+    form.charge.choices = [('0', '---请选择---')] + user_list
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ITEM_COUNT_PER_PAGE']
+    if request.method == 'GET':  # 获取所有的issue事项
+        pagination = BizProgramIssue.query.order_by(BizProgramIssue.program_id).paginate(page, per_page)
+    if request.method == 'POST':
+        page = 1
+        # 所属项目
+        pro = form.program.data
+        # 使用集合存储查询条件
+        conditions = set()
+        # issue类别
+        if form.category.data != '0':
+            conditions.add(BizProgramIssue.category_id == form.category.data)
+        # issue等级
+        if form.grade.data != '0':
+            conditions.add(BizProgramIssue.grade_id == form.grade.data)
+        # issue状态
+        if form.state.data != '0':
+            conditions.add(BizProgramIssue.state_id == form.state.data)
+        # issue担当
+        if form.charge.data != '0':
+            conditions.add(BizProgramIssue.handler_id == form.charge.data)
+        # 某个项目的issue清单
+        if pro != '0':
+            program = BizProgram.query.get_or_404(pro)
+            members = []
+            for member in program.members:
+                members.append((member.member_id, member.member.user_name))
+            form.charge.choices = [('0', '---请选择---')] + members
+            if conditions:
+                pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+            else:
+                pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+        else:
+            form.charge.choices = [('0', '---请选择---')] + user_list
+            pagination = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
+    issues = pagination.items
+    # 存储查询条件，执行导出
+    session['issue_current_page'] = page
+    session['issue_search_pro'] = form.program.data
+    session['issue_search_cat'] = form.category.data
+    session['issue_search_gra'] = form.grade.data
+    session['issue_search_sta'] = form.state.data
+    session['issue_search_cha'] = form.charge.data
+    return render_template('biz/report/issue/index.html', form=form, issues=issues, pagination=pagination)
+@bp_report.route('/issue/excel/export/<int:sign>', methods=['GET'])
+@login_required
+@log_record('导出ISSUE报表')
+def export_issue(sign):
+    '''
+    Program清单导出
+    :param sign: 0:导出全部 1:导出当前页
+    :return:
+    '''
+    excel.init_excel(current_app)
+    '''
+        print('Conditions : %s %s %s %s %s' %(session['issue_search_pro'],
+        session['issue_search_cat'],
+        session['issue_search_gra'],
+        session['issue_search_sta'],
+        session['issue_search_cha']))
+    '''
+    page = session['issue_current_page']
+    per_page = current_app.config['ITEM_COUNT_PER_PAGE']
+    data_header = [['项目所属', '类别', '等级', '状态', '提出人', '处理人', '邀请完成日期']]
+    data_body = []
+    if session['issue_search_pro'] is None:
+        print('进入页面后直接导出......')
+        if sign == 0:
+            issues = BizProgramIssue.query.order_by(BizProgramIssue.program_id).all()
+        else:
+            pagination = BizProgramIssue.query.order_by(BizProgramIssue.program_id).paginate(page, per_page)
+            issues = pagination.items
+    else:
+        print('查询数据后进行导出......')
+        # 所属项目
+        pro = session['issue_search_pro']
+        # 使用集合存储查询条件
+        conditions = set()
+        # issue类别
+        if session['issue_search_cat'] != '0':
+            conditions.add(BizProgramIssue.category_id == session['issue_search_cat'])
+        # issue等级
+        if session['issue_search_gra'] != '0':
+            conditions.add(BizProgramIssue.grade_id == session['issue_search_gra'])
+        # issue状态
+        if session['issue_search_sta'] != '0':
+            conditions.add(BizProgramIssue.state_id == session['issue_search_sta'])
+        # issue担当
+        if session['issue_search_cha'] != '0':
+            conditions.add(BizProgramIssue.handler_id == session['issue_search_cha'])
+        # 某个项目的issue清单
+        if pro != '0':
+            program = BizProgram.query.get_or_404(pro)
+            if conditions:
+                if sign == 0:
+                    issues = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).all()
+                else:
+                    pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+                    issues = pagination.items
+            else:
+                if sign == 0:
+                    issues = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).all()
+                else:
+                    pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+                    issues = pagination.items
+        else:
+            if sign == 0:
+                issues = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).all()
+            else:
+                pagination = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
+                issues = pagination.items
+    for issue in issues:
+        data_body.append([issue.program.name, issue.category.display, issue.grade.display, issue.state.display, get_current_user(issue.operator_id).user_name, issue.handler.user_name, issue.ask_finish_dt])
+    data = data_header + data_body
+    file_name = u'项目报表-all' if sign == 0 else u'项目报表-' + str(page)
+    return excel.make_response_from_array(data, file_name=file_name, file_type='xlsx')
