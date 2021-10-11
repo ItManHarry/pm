@@ -84,50 +84,72 @@ def issue():
     form.grade.choices = [('0', '---请选择---')] + get_options('D007')
     form.state.choices = [('0', '---请选择---')] + get_options('D008')
     form.charge.choices = [('0', '---请选择---')] + user_list
-    page = request.args.get('page', 1, type=int)
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
-    if request.method == 'GET':  # 获取所有的issue事项
-        pagination = BizProgramIssue.query.order_by(BizProgramIssue.program_id).paginate(page, per_page)
+    pro = '0'
+    category = '0'
+    grade = '0'
+    state = '0'
+    charge = '0'
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            pro = session['issue_search_pro'] if session['issue_search_pro'] else '0'
+            category = session['issue_search_cat'] if session['issue_search_cat'] else '0'
+            grade = session['issue_search_gra'] if session['issue_search_gra'] else '0'
+            state = session['issue_search_sta'] if session['issue_search_sta'] else '0'
+            charge = session['issue_search_cha'] if session['issue_search_cha'] else '0'
+        except KeyError:
+            pro = '0'
+            category = '0'
+            grade = '0'
+            state = '0'
+            charge = '0'
+        form.program.data = pro
+        form.category.data = category
+        form.grade.data = grade
+        form.state.data = state
+        form.charge.data = charge
     if request.method == 'POST':
         page = 1
         # 所属项目
         pro = form.program.data
-        # 使用集合存储查询条件
-        conditions = set()
-        # issue类别
-        if form.category.data != '0':
-            conditions.add(BizProgramIssue.category_id == form.category.data)
-        # issue等级
-        if form.grade.data != '0':
-            conditions.add(BizProgramIssue.grade_id == form.grade.data)
-        # issue状态
-        if form.state.data != '0':
-            conditions.add(BizProgramIssue.state_id == form.state.data)
-        # issue担当
-        if form.charge.data != '0':
-            conditions.add(BizProgramIssue.handler_id == form.charge.data)
-        # 某个项目的issue清单
-        if pro != '0':
-            program = BizProgram.query.get_or_404(pro)
-            members = []
-            for member in program.members:
-                members.append((member.member_id, member.member.user_name))
-            form.charge.choices = [('0', '---请选择---')] + members
-            if conditions:
-                pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
-            else:
-                pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
-        else:
-            form.charge.choices = [('0', '---请选择---')] + user_list
-            pagination = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
+        category = form.category.data
+        grade = form.grade.data
+        state = form.state.data
+        charge = form.charge.data
+        # 存储查询条件，执行导出
+        session['issue_current_page'] = page
+        session['issue_search_pro'] = pro
+        session['issue_search_cat'] = category
+        session['issue_search_gra'] = grade
+        session['issue_search_sta'] = state
+        session['issue_search_cha'] = charge
+    # 使用集合存储查询条件执行查询
+    conditions = set()
+    # issue类别
+    if category != '0':
+        conditions.add(BizProgramIssue.category_id == category)
+    # issue等级
+    if grade != '0':
+        conditions.add(BizProgramIssue.grade_id == grade)
+    # issue状态
+    if state != '0':
+        conditions.add(BizProgramIssue.state_id == state)
+    # issue担当
+    if charge != '0':
+        conditions.add(BizProgramIssue.handler_id == charge)
+    # 某个项目的issue清单
+    if pro != '0':
+        program = BizProgram.query.get_or_404(pro)
+        members = []
+        for member in program.members:
+            members.append((member.member_id, member.member.user_name))
+        form.charge.choices = [('0', '---请选择---')] + members
+        pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+    else:
+        form.charge.choices = [('0', '---请选择---')] + user_list
+        pagination = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).paginate(page, per_page)
     issues = pagination.items
-    # 存储查询条件，执行导出
-    session['issue_current_page'] = page
-    session['issue_search_pro'] = form.program.data
-    session['issue_search_cat'] = form.category.data
-    session['issue_search_gra'] = form.grade.data
-    session['issue_search_sta'] = form.state.data
-    session['issue_search_cha'] = form.charge.data
     return render_template('biz/report/issue/index.html', form=form, issues=issues, pagination=pagination)
 @bp_report.route('/issue/excel/export/<int:sign>', methods=['GET'])
 @login_required
