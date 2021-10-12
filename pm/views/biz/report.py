@@ -43,19 +43,22 @@ def export_program(sign):
     :return:
     '''
     excel.init_excel(current_app)
+    page = session['program_current_page']
     # 查询条件
-    print('No : %s, name %s ' %(session['program_search_no'], session['program_search_nm']))
-    no = session['program_search_no']
-    name = session['program_search_nm']
+    try:
+        print('No : %s, name %s ' %(session['program_search_no'], session['program_search_nm']))
+        no = session['program_search_no']
+        name = session['program_search_nm']
+    except KeyError:
+        no = ''
+        name = ''
     if sign == 0:
         program_data = BizProgram.query.filter(BizProgram.no.like('%' + no + '%'), BizProgram.name.like('%' + name + '%')).order_by(BizProgram.timestamp_loc).all()
-        file_name = u'项目报表-all'
     else:
-        page = session['program_current_page']
         per_page = current_app.config['ITEM_COUNT_PER_PAGE']
         pagination = BizProgram.query.filter(BizProgram.no.like('%' + no + '%'), BizProgram.name.like('%' + name + '%')).order_by(BizProgram.timestamp_loc).paginate(page, per_page)
         program_data = pagination.items
-        file_name = u'项目报表-'+str(page)
+    file_name = u'项目报表-all' if sign == 0 else u'项目报表-'+str(page)
     data = {
         '项目编号': [program.no for program in program_data],
         '项目名称': [program.name for program in program_data],
@@ -120,12 +123,12 @@ def issue():
         state = form.state.data
         charge = form.charge.data
         # 存储查询条件，执行导出
-        session['issue_current_page'] = page
         session['issue_search_pro'] = pro
         session['issue_search_cat'] = category
         session['issue_search_gra'] = grade
         session['issue_search_sta'] = state
         session['issue_search_cha'] = charge
+    session['issue_current_page'] = page
     # 使用集合存储查询条件执行查询
     conditions = set()
     # issue类别
@@ -174,7 +177,11 @@ def export_issue(sign):
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     data_header = [['项目所属', '类别', '等级', '状态', '提出人', '处理人', '邀请完成日期']]
     data_body = []
-    if session['issue_search_pro'] is None:
+    try:
+        beforeSearch = False if session['issue_search_pro'] else False
+    except KeyError:
+        beforeSearch = True
+    if beforeSearch:
         print('进入页面后直接导出......')
         if sign == 0:
             issues = BizProgramIssue.query.order_by(BizProgramIssue.program_id).all()
@@ -202,18 +209,11 @@ def export_issue(sign):
         # 某个项目的issue清单
         if pro != '0':
             program = BizProgram.query.get_or_404(pro)
-            if conditions:
-                if sign == 0:
-                    issues = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).all()
-                else:
-                    pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
-                    issues = pagination.items
+            if sign == 0:
+                issues = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).all()
             else:
-                if sign == 0:
-                    issues = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).all()
-                else:
-                    pagination = BizProgramIssue.query.with_parent(program).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
-                    issues = pagination.items
+                pagination = BizProgramIssue.query.with_parent(program).filter(*conditions).order_by(BizProgramIssue.timestamp_loc).paginate(page, per_page)
+                issues = pagination.items
         else:
             if sign == 0:
                 issues = BizProgramIssue.query.filter(*conditions).order_by(BizProgramIssue.program_id).all()
@@ -223,5 +223,5 @@ def export_issue(sign):
     for issue in issues:
         data_body.append([issue.program.name, issue.category.display, issue.grade.display, issue.state.display, get_current_user(issue.operator_id).user_name, issue.handler.user_name, issue.ask_finish_dt])
     data = data_header + data_body
-    file_name = u'项目报表-all' if sign == 0 else u'项目报表-' + str(page)
+    file_name = u'项目Issue报表-all' if sign == 0 else u'项目Issue报表-' + str(page)
     return excel.make_response_from_array(data, file_name=file_name, file_type='xlsx')
