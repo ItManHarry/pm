@@ -1,7 +1,7 @@
 '''
 系统部门信息管理
 '''
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
 from pm.models import BizDept
 from pm.plugins import db
@@ -9,23 +9,31 @@ from pm.forms.sys.org import OrgSearchForm, OrgForm
 from pm.decorators import log_record
 import uuid
 bp_org = Blueprint('org', __name__)
-
 @bp_org.route('/index', methods=['GET', 'POST'])
 @login_required
 @log_record('查询部门清单')
-def index():
-    code = ''
-    name = ''
+def index():    
     form = OrgSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            code = session['org_view_search_code'] if session['org_view_search_code'] else ''  # 组织代码
+            name = session['org_view_search_name'] if session['org_view_search_name'] else ''  # 组织名称
+        except KeyError:
+            code = ''
+            name = ''
+        form.code.data = code
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         code = form.code.data
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['org_view_search_code'] = code
+        session['org_view_search_name'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = BizDept.query.filter(BizDept.code.like('%'+code+'%'), BizDept.name.like('%'+name+'%')).order_by(BizDept.code).paginate(page, per_page)
     departments = pagination.items
     return render_template('sys/org/index.html', pagination=pagination, departments=departments, form=form)
-
 @bp_org.route('/add', methods=['GET', 'POST'])
 @login_required
 @log_record('新增部门信息')

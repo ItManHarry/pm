@@ -1,7 +1,7 @@
 '''
 系统字典信息管理
 '''
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
 from pm.models import SysDict, SysEnum
 from pm.plugins import db
@@ -12,14 +12,24 @@ bp_dict = Blueprint('dict', __name__)
 @bp_dict.route('/index', methods=['GET', 'POST'])
 @login_required
 @log_record('查询系统字典清单')
-def index():
-    code = ''
-    name = ''
+def index():   
     form = DictSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            code = session['dict_view_search_code'] if session['dict_view_search_code'] else ''  # 字典代码
+            name = session['dict_view_search_name'] if session['dict_view_search_name'] else ''  # 字典名称
+        except KeyError:
+            code = ''
+            name = ''
+        form.code.data = code
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         code = form.code.data
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['dict_view_search_code'] = code
+        session['dict_view_search_name'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = SysDict.query.filter(SysDict.code.like('%'+code+'%'), SysDict.name.like('%'+name+'%')).order_by(SysDict.code).paginate(page, per_page)
     dictionaries = pagination.items

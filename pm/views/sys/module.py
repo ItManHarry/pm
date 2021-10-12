@@ -2,7 +2,7 @@
 系统模块管理
 '''
 import uuid
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
 from pm.forms.sys.module import ModuleSearchForm, ModuleForm
 from pm.models import SysModule
@@ -12,12 +12,19 @@ bp_module = Blueprint('module', __name__)
 @bp_module.route('/index', methods=['GET', 'POST'])
 @login_required
 @log_record('查询系统模块清单')
-def index():
-    name = ''
+def index():    
     form = ModuleSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            name = session['module_view_search_name'] if session['module_view_search_name'] else ''  # 模块名称
+        except KeyError:
+            name = ''
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['module_view_search_name'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = SysModule.query.filter(SysModule.name.like('%' + name + '%')).order_by(SysModule.name.desc()).paginate(page, per_page)
     modules = pagination.items

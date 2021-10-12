@@ -11,20 +11,27 @@ bp_report = Blueprint('rpt', __name__)
 @login_required
 @log_record('查看项目报表')
 def program():
-    no = ''  # 项目编号
-    name = ''  # 项目名称
     form = ProgramSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            no = session['program_search_no'] if session['program_search_no'] else ''       # 项目编号
+            name = session['program_search_nm'] if session['program_search_nm'] else ''     # 项目名称
+        except KeyError:
+            no = ''
+            name = ''
+        form.no.data = no
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         no = form.no.data
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['program_search_no'] = no
+        session['program_search_nm'] = name
+    session['program_current_page'] = page
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = BizProgram.query.filter(BizProgram.no.like('%' + no + '%'), BizProgram.name.like('%' + name + '%')).order_by(BizProgram.timestamp_loc).paginate(page, per_page)
     programs = pagination.items
-    # 供导出使用
-    session['program_search_no'] = no
-    session['program_search_nm'] = name
-    session['program_current_page'] = page
     return render_template('biz/report/program/index.html', form=form, programs=programs, pagination=pagination)
 @bp_report.route('/program/excel/export/<int:sign>', methods=['GET'])
 @login_required
@@ -85,11 +92,6 @@ def issue():
     form.state.choices = [('0', '---请选择---')] + get_options('D008')
     form.charge.choices = [('0', '---请选择---')] + user_list
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
-    pro = '0'
-    category = '0'
-    grade = '0'
-    state = '0'
-    charge = '0'
     if request.method == 'GET':
         page = request.args.get('page', 1, type=int)
         try:

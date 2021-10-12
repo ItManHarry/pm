@@ -2,7 +2,7 @@
 系统角色管理
 '''
 import uuid
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
 from pm.forms.sys.role import RoleSearchForm, RoleForm
 from pm.models import SysRole, SysMenu
@@ -12,12 +12,19 @@ bp_role = Blueprint('role', __name__)
 @bp_role.route('/index', methods=['GET', 'POST'])
 @login_required
 @log_record('查询系统角色清单')
-def index():
-    name = ''
+def index():    
     form = RoleSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            name = session['role_view_search_name'] if session['role_view_search_name'] else ''  # 角色名称
+        except KeyError:
+            name = ''
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['role_view_search_name'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = SysRole.query.filter(SysRole.name.like('%' + name + '%')).order_by(SysRole.name.desc()).paginate(page, per_page)
     roles = pagination.items

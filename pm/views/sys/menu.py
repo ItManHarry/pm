@@ -1,7 +1,7 @@
 '''
 系统菜单管理
 '''
-from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
 from pm.models import SysMenu, SysModule
 from pm.plugins import db
@@ -14,10 +14,17 @@ bp_menu = Blueprint('menu', __name__)
 @log_record('查看系统菜单清单')
 def index():
     form = MenuSearchForm()
-    name = ''
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            name = session['menu_view_search_name'] if session['menu_view_search_name'] else ''  # 菜单名称
+        except KeyError:
+            name = ''
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['menu_view_search_name'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = SysMenu.query.filter(SysMenu.name.like('%'+name+'%')).order_by(SysMenu.module_id, SysMenu.name).paginate(page, per_page)
     menus = pagination.items

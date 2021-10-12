@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify
+from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash, jsonify, session
 from flask_login import login_required, current_user
 from pm.forms.biz.program import ProgramForm, ProgramSearchForm, ProgramMemberForm, ProgramStatusForm, ProgramInvoiceForm
 from pm.models import BizProgram, SysUser, BizProgramMember, BizDept, BizProgramStatus, BizProgramInvoice
@@ -11,13 +11,23 @@ bp_pro = Blueprint('pro', __name__)
 @login_required
 @log_record('查看项目清单')
 def index():
-    no = ''     # 项目编号
-    name = ''   # 项目名称
     form = ProgramSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            no = session['program_view_search_no'] if session['program_view_search_no'] else ''  # 项目编号
+            name = session['program_view_search_nm'] if session['program_view_search_nm'] else ''  # 项目名称
+        except KeyError:
+            no = ''
+            name = ''
+        form.no.data = no
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         no = form.no.data
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['program_view_search_no'] = no
+        session['program_view_search_nm'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = BizProgram.query.with_parent(current_user).filter(BizProgram.no.like('%' + no + '%'), BizProgram.name.like('%' + name + '%')).order_by(BizProgram.timestamp_loc).paginate(page, per_page)
     programs = pagination.items

@@ -1,7 +1,7 @@
 '''
 系统用户信息管理
 '''
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, flash, jsonify, session
 from flask_login import login_required, current_user
 from pm.decorators import log_record
 from pm.plugins import db
@@ -13,13 +13,23 @@ bp_user = Blueprint('user', __name__)
 @login_required
 @log_record('查看用户清单')
 def index():
-    code = ''
-    name = ''
     form = UserSearchForm()
+    if request.method == 'GET':
+        page = request.args.get('page', 1, type=int)
+        try:
+            code = session['user_view_search_code'] if session['user_view_search_code'] else ''  # 用户代码
+            name = session['user_view_search_name'] if session['user_view_search_name'] else ''  # 用户名称
+        except KeyError:
+            code = ''
+            name = ''
+        form.code.data = code
+        form.name.data = name
     if request.method == 'POST':
+        page = 1
         code = form.code.data
         name = form.name.data
-    page = request.args.get('page', 1, type=int)
+        session['user_view_search_code'] = code
+        session['user_view_search_name'] = name
     per_page = current_app.config['ITEM_COUNT_PER_PAGE']
     pagination = SysUser.query.filter(SysUser.user_id.like('%'+code+'%'), SysUser.user_name.like('%'+name+'%')).order_by(SysUser.user_name).paginate(page, per_page)
     users = pagination.items
