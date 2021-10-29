@@ -14,14 +14,14 @@
             <hr>
             <form method="post">
               <div class="row">
-                <div class="col-3 offset-4 text-right">
+                <div class="col-3 offset-3 text-right">
                     {{form.csrf_token}}
                     {{form.no(class='form-control', placeholder='项目编号')}}
                 </div>
                 <div class="col-3 text-right">
                     {{form.name(class='form-control', placeholder='项目名称')}}
                 </div>
-                <div class="col-2 text-center">
+                <div class="col-3 text-center">
                     <button class="btn btn-link" type="submit"><i class="fas fa-search"></i>&nbsp;搜索</button>
                     <div class="btn-group">
                       <button type="button" class="btn btn-link dropdown-toggle text-success" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
