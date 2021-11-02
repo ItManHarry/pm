@@ -52,6 +52,7 @@ def add():
             svn_pwd=form.svn_pwd.data,
             role_id=form.role.data,
             dept_id=form.dept.data,
+            is_ad=form.is_ad.data,
             operator_id=current_user.id
         )
         user.set_password(form.password.data)
@@ -83,6 +84,7 @@ def edit(id):
         form.id.data = user.id
         form.code.data = user.user_id
         form.name.data = user.user_name
+        form.is_ad.data = user.is_ad
         form.dept.data = user.dept_id
         form.role.data = user.role_id
         form.email.data = user.email
@@ -98,6 +100,7 @@ def edit(id):
             user.svn_pwd = form.svn_pwd.data
         user.role_id = form.role.data
         user.dept_id = form.dept.data
+        user.is_ad = form.is_ad.data
         user.operator_id = current_user.id
         db.session.commit()
         user.set_updated_by(current_user)

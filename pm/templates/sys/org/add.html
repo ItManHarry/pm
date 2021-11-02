@@ -68,7 +68,15 @@
 </div>
 {% endblock %}
 {% block script %}
-    $(function(){
-
+   $(function(){
+        $('#selectParent').change(function(){
+            if($(this).is(':checked')){
+                $('#parent').removeAttr('disabled')
+                $('#has_parent').val(1)
+            }else{
+                $('#parent').attr('disabled', true)
+                $('#has_parent').val(0)
+            }
+        })
     })
 {% endblock %}

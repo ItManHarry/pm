@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, HiddenField, PasswordField
+from wtforms import StringField, SelectField, HiddenField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 from wtforms import ValidationError, validators
 from pm.models import SysUser
@@ -17,6 +17,7 @@ class UserForm(FlaskForm):
     svn_pwd = PasswordField('SVN密码', [validators.optional()])
     role = SelectField('角色', validators=[DataRequired('请选择角色！')], choices=[])
     dept = SelectField('部门', validators=[DataRequired('请选择部门！')], choices=[])
+    is_ad = BooleanField('AD用户')
 
 class AddUserForm(UserForm):
     password = PasswordField('密码', validators=[DataRequired('请输入密码!!!'), Length(8, 128, '长度要介于8~128!!!'), EqualTo('password_confirm', message='密码不一致!!!'), Regexp('^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])).*$', message='密码必须包含大小写字母和数字!!!')])

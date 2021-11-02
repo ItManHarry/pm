@@ -34,6 +34,7 @@ class SysUser(BaseModel, db.Model, UserMixin):
     user_name = db.Column(db.String(24))            # 用户姓名
     user_pwd_hash = db.Column(db.String(128))       # 用户密码(加密后)
     status = db.Column(db.Boolean, default=True)    # 用户状态(默认在用)
+    is_ad = db.Column(db.Boolean, default=False)    # 工厂AD
     email = db.Column(db.String(128))               # 邮箱
     svn_id = db.Column(db.String(24))               # svn账号
     svn_pwd = db.Column(db.String(24))              # svn密码
@@ -51,7 +52,6 @@ class SysUser(BaseModel, db.Model, UserMixin):
     program_members = db.relationship('BizProgramMember', back_populates='member')      # 项目成员
     issue_handlers = db.relationship('BizProgramIssue', back_populates='handler')       # ISSUE处理人员
     logs = db.relationship('SysLog', back_populates='user')                             # 操作日志
-
 
     def set_password(self, password):
         self.user_pwd_hash = generate_password_hash(password)
