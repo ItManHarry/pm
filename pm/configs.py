@@ -2,8 +2,10 @@ import os
 dev_db = os.getenv('DEV_DB')
 test_db = os.getenv('TEST_DB')
 pro_db = os.getenv('PRO_DB')
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 class GlobalConfig():
     SECRET_KEY = os.getenv('SECRET_KEY', '123456789qazxswedcvfr!@#@452631')
+    AD_JAR_PATH = os.path.join(basedir, 'ad')  # AD验证jar包路径
     ITEM_COUNT_PER_PAGE = 10
     FILE_UPLOAD_PATH = 'D:/Development/Python/workplaces/uploads'
     DROPZONE_MAX_FILE_SIZE = 3              # Dropzone上传文件大小(3M)
@@ -22,14 +24,17 @@ class GlobalConfig():
 class DevelopConfig(GlobalConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('DEVELOP_DATABASE_URL', dev_db)
+    JVM_PATH = os.getenv('DEV_JVM_PATH', '')
 class TestConfig(GlobalConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DATABASE_URL', test_db)
+    JVM_PATH = os.getenv('TST_JVM_PATH', '')
     WTF_CSRF_ENABLED = False
     TESTING = True
 class ProductConfig(GlobalConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('PRODUCT_DATABASE_URL', pro_db)
+    JVM_PATH = os.getenv('PRO_JVM_PATH', '')
 configurations = {
     'dev_config': DevelopConfig,
     'test_config': TestConfig,

@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session, current_app
 from flask_login import login_user, logout_user, current_user
 from pm.forms.auth import LoginForm
 from pm.plugins import db
 from pm.models import SysUser, SysLog, SysMenu
 from pm.utils import redirect_back
-import uuid
+import uuid, jpype
 bp_auth = Blueprint('auth', __name__)
 @bp_auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -16,6 +16,19 @@ def login():
         #return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():
+        # AD验证
+        jvm_path = current_app.config['JVM_PATH']
+        ad_jar_path = current_app.config['AD_JAR_PATH'] + '\\ad.auth.module-1.0.jar'
+        print('Jar path is : ', ad_jar_path)
+        jpype.startJVM(jvm_path, '-ea', '-Djava.class.path='+ad_jar_path)
+        jpype.java.lang.System.out.println('Hello world from JAVA!!!')
+        package = jpype.JPackage('DSGAuthPkg')
+        auth = package.Auth("authsj.corp.doosan.com", "dsg\\"+"20112004", "123456")
+        if auth.validateUser('20112004', '123456'):
+            print('AD User Validation Passed...')
+        else:
+            print('AD User Validation Failed...')
+        # jpype.shutdownJVM()
         user_id = form.user_id.data
         user_pwd = form.user_pwd.data
         user = SysUser.query.filter_by(user_id=user_id.lower()).first()
