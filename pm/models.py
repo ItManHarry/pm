@@ -150,8 +150,8 @@ class SysEnum(BaseModel, db.Model):
 系统操作日志
 '''
 class SysLog(BaseModel, db.Model):
-    url = db.Column(db.String(24))          # 菜单url
-    operation = db.Column(db.String(64))    # 操作内容
+    url = db.Column(db.String(250))             # 菜单url
+    operation = db.Column(db.String(64))        # 操作内容
     user_id = db.Column(db.String(32), db.ForeignKey('sys_user.id'))
     user = db.relationship('SysUser', back_populates='logs')
 '''
