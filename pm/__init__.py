@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, render_template
 from flask_wtf.csrf import CSRFError
-import click, uuid
+import click, uuid, jpype
 from pm.configs import configurations
 from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
 def create_app(config=None):
@@ -30,7 +30,8 @@ def register_webapp_global_path(app):
     def index():
         return redirect(url_for('auth.login'))
     @app.before_request
-    def request_intercept():
+    def request_intercept_before():
+        print('Before the request...')
         pass
 def register_webapp_global_context(app):
     from pm.utils import get_time, format_time, get_current_user
