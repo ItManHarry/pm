@@ -1,0 +1,41 @@
+- 安装APScheduler插件
+
+    1. pip安装
+
+        pip install Flask-APScheduler
+
+    2. 引入插件（pm.plugins.py）
+
+        from flask_apscheduler import APScheduler
+        scheduler = APScheduler()
+
+    3. 编写任务pm.jobs.tasks.py
+
+        from pm.plugins import scheduler
+        from pm.models import SysUser
+        # 使用上下文，否则报错
+        def synch_job():
+            with scheduler.app.app_context():
+                print('User total is : ', len(SysUser.query.all()))
+
+    4. 配置Job（以配置方式启动，及系统启动后任务便加载） pm.configs.py
+
+        JOBS = [
+            {
+                "id": "synch_user",
+                "func": synch_job,
+                #"args": (1, 2),
+                "trigger": "interval",
+                "seconds": 10,
+            }
+        ]
+        SCHEDULER_API_ENABLED = True
+
+    5. 初始化并启动（pm.__init__.py）
+
+        from pm.plugins import scheduler
+        ...
+        def register_webapp_plugins(app):
+            ...
+            scheduler.init_app(app)
+            scheduler.start()

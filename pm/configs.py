@@ -1,5 +1,5 @@
 import os
-from pm.jobs.tasks import synch_job
+from pm.job.tasks import synch_job
 dev_db = os.getenv('DEV_DB')
 test_db = os.getenv('TEST_DB')
 pro_db = os.getenv('PRO_DB')
