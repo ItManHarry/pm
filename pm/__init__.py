@@ -2,7 +2,7 @@ from flask import Flask, redirect, url_for, render_template
 from flask_wtf.csrf import CSRFError
 import click, uuid, jpype
 from pm.configs import configurations
-from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager
+from pm.plugins import db, bootstrap, moment, ckeditor, migrate, csrf, dropzone, login_manager, scheduler
 def create_app(config=None):
     if config == None:
         config = 'dev_config'
@@ -25,6 +25,8 @@ def register_webapp_plugins(app):
     csrf.init_app(app)
     dropzone.init_app(app)
     login_manager.init_app(app)
+    scheduler.init_app(app)
+    scheduler.start()
 def register_webapp_global_path(app):
     @app.route('/')
     def index():

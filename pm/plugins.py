@@ -10,6 +10,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, AnonymousUserMixin
 from flask_wtf.csrf import CSRFProtect
 from flask_dropzone import Dropzone
+from flask_apscheduler import APScheduler
 #创建扩展实例
 bootstrap = Bootstrap()
 db = SQLAlchemy()
@@ -18,6 +19,7 @@ mail = Mail()
 ckeditor = CKEditor()
 migrate = Migrate()
 csrf = CSRFProtect()
+scheduler = APScheduler()
 login_manager = LoginManager()
 #配置login_required对应的跳转信息
 login_manager.login_view='auth.login'
