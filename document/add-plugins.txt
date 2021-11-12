@@ -14,8 +14,9 @@
         from pm.plugins import scheduler
         from pm.models import SysUser
         # 使用上下文，否则报错
-        def synch_job():
+        def synch_job(a, b):
             with scheduler.app.app_context():
+                print('Parameter a is %s b is %s' %(a, b))
                 print('User total is : ', len(SysUser.query.all()))
 
     4. 配置Job（以配置方式启动，及系统启动后任务便加载） pm.configs.py

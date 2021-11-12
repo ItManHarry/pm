@@ -27,9 +27,10 @@ class GlobalConfig():
         {
             "id": "synch_user",
             "func": synch_job,
-            #"args": (1, 2),
-            "trigger": "interval",
-            "seconds": 10,
+            "args": (1, 2),
+            "trigger": "cron",
+            "hour": 13,
+            "minute": 40
         }
     ]
     SCHEDULER_API_ENABLED = True
