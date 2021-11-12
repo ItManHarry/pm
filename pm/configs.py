@@ -1,5 +1,5 @@
 import os
-from pm.job.tasks import synch_job
+from pm.job.tasks import jobs
 dev_db = os.getenv('DEV_DB')
 test_db = os.getenv('TEST_DB')
 pro_db = os.getenv('PRO_DB')
@@ -23,16 +23,7 @@ class GlobalConfig():
     DROPZONE_BROWSER_UNSUPPORTED = '浏览器不支持！'
     DROPZONE_MAX_FILE_EXCEED = '超出最大文件上传数量！'
     # 配置定时任务
-    JOBS = [
-        {
-            "id": "synch_user",
-            "func": synch_job,
-            "args": (1, 2),
-            "trigger": "cron",
-            "hour": 13,
-            "minute": 40
-        }
-    ]
+    JOBS = jobs
     SCHEDULER_API_ENABLED = True
 class DevelopConfig(GlobalConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
